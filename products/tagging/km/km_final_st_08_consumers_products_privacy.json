@@ -1,0 +1,723 @@
+{
+  "km_id": "KM_FINAL_ST_08_CONSUMERS_PRODUCTS_PRIVACY",
+  "km_name": "SpecificTopic Binary KM - Consumers, End-Users, Product Safety and Privacy",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "SpecificTopic",
+  "purpose": "Binary Yes/No SpecificTopic decisions for the consumers_products_privacy family. This simplified KM owns its tag-level reconciliation and emits only final Yes tags for this family.",
+  "family_reconciliation": {
+    "standalone_specific_topic_reconciler_removed": true,
+    "reconciled_output_key": "final_specific_topics_from_this_family",
+    "rules": [
+      "Answer every tag in this KM independently as Yes or No before producing the family final list.",
+      "Emit only tags answered Yes in final_specific_topics_from_this_family.",
+      "Do not emit candidates, centrality labels, or nearby labels as final tags.",
+      "If two tags overlap, keep both only when the source has distinct operative evidence for both; otherwise answer Yes only for the more directly satisfied decision question.",
+      "Reject incidental, background, implementation-actor-only, and keyword-only evidence even when a semantic signal appears.",
+      "The standalone SpecificTopic reconciler has been removed; this family KM is responsible for suppressing weak/adjacent labels before code consolidation."
+    ],
+    "weak_evidence_policy": [
+      "Weak or not-observed tags remain in the enum, but need direct source evidence at runtime.",
+      "Do not use weak master examples as independent proof; use them only as cautionary boundary tests."
+    ],
+    "weak_or_not_observed_tags_in_this_family": [
+      "Product Design and Manufacturing",
+      "Product Recall",
+      "Data Privacy and Non-Financial Reporting",
+      "Personal Safety of Non-Consumers and End-Users",
+      "Social Inclusion of Consumers and End-Users"
+    ]
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical SpecificTopic value from this KM",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes; empty string allowed when No",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional canonical tag that better fits the evidence"
+      }
+    ],
+    "final_specific_topics_from_this_family": [
+      "all tags from tag_decisions with answer=Yes, already reconciled by this family KM"
+    ]
+  },
+  "tags": [
+    {
+      "tag": "Product Safety",
+      "binary_answer": "Yes|No",
+      "definition": "Safety requirements, risk controls, conformity, market surveillance, warnings, or liability for goods/services placed on the market.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Product Safety\"?",
+      "yes_when": [
+        "The regulated object is product safety, defects, safety standards, toys, cosmetics, food safety, machinery/product risks, or market surveillance.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates product labeling, chemical registration, or consumer rights without safety-risk controls.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "product safety",
+        "defective products",
+        "toy safety",
+        "safe products",
+        "market surveillance",
+        "risk to consumers"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Product Safety.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"a product is defective when it does not provide the safety which a person is entitled to expect\". Should the LLM tag SpecificTopic = \"Product Safety\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The regulated object is product safety, defects, safety standards, toys, cosmetics, food safety, machinery/product risks, or market surveillance.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Product Safety.negative_incidental_keyword",
+          "question": "A source mentions \"product safety\" once in background, but its operative duties regulate a different subject and no duty matches \"The regulated object is product safety, defects, safety standards, toys, cosmetics, food safety, machinery/product risks, or market surveillance.\". Should the LLM tag SpecificTopic = \"Product Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Product Safety.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates product labeling, chemical registration, or consumer rights without safety-risk controls.\". Should the LLM tag SpecificTopic = \"Product Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Product Safety.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"market surveillance means the activities carried out and measures taken by public authorities to ensure that EEE complies with the requirements set out in this Directive and does not endanger health, safety or other issues of public interest protection\". Standing alone, should the LLM tag SpecificTopic = \"Product Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Compliance and Certification",
+      "binary_answer": "Yes|No",
+      "definition": "Conformity assessment, certification, licensing, accreditation, or compliance marks demonstrating that products or organizations meet requirements.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Compliance and Certification\"?",
+      "yes_when": [
+        "The source centrally requires certificates, conformity assessment, accreditation, certification bodies, compliance marks, or similar formal verification.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source creates legal duties but no certification/conformity process; do not tag solely for general compliance.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "certification",
+        "conformity assessment",
+        "CE marking",
+        "accreditation",
+        "compliance certificate"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Compliance and Certification.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"From the Fourth Year of Reporting onwards the auditor shall conduct an audit over all disclosures in the sustainability report.\". Should the LLM tag SpecificTopic = \"Compliance and Certification\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally requires certificates, conformity assessment, accreditation, certification bodies, compliance marks, or similar formal verification.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Compliance and Certification.negative_incidental_keyword",
+          "question": "A source mentions \"certification\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally requires certificates, conformity assessment, accreditation, certification bodies, compliance marks, or similar formal verification.\". Should the LLM tag SpecificTopic = \"Compliance and Certification\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Compliance and Certification.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source creates legal duties but no certification/conformity process; do not tag solely for general compliance.\". Should the LLM tag SpecificTopic = \"Compliance and Certification\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Product Labeling",
+      "binary_answer": "Yes|No",
+      "definition": "Mandatory labels, markings, information, warnings, claims, traceability information, or presentation requirements for products.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Product Labeling\"?",
+      "yes_when": [
+        "The source regulates product labels, packaging information, food information, energy labels, textile labels, hazard labels, or consumer information duties on products.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates product safety, design, or advertising without label/marking/information requirements.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "labelling",
+        "labeling",
+        "marking",
+        "food information",
+        "energy label",
+        "textile label",
+        "claims"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Product Labeling.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Packaging shall bear the appropriate marking either on the packaging itself or on the label. It shall be clearly visible and easily legible.\". Should the LLM tag SpecificTopic = \"Product Labeling\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates product labels, packaging information, food information, energy labels, textile labels, hazard labels, or consumer information duties on products.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Product Labeling.negative_incidental_keyword",
+          "question": "A source mentions \"labelling\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates product labels, packaging information, food information, energy labels, textile labels, hazard labels, or consumer information duties on products.\". Should the LLM tag SpecificTopic = \"Product Labeling\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Product Labeling.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates product safety, design, or advertising without label/marking/information requirements.\". Should the LLM tag SpecificTopic = \"Product Labeling\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Consumer Protection Laws",
+      "binary_answer": "Yes|No",
+      "definition": "Central rules protecting consumers in transactions, marketing, contracts, products, services, information asymmetry, financial services, or unfair trader practices.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Consumer Protection Laws\"?",
+      "yes_when": [
+        "The source centrally protects consumers/end-users through rights, remedies, unfair commercial-practice rules, misleading-advertising controls, contract safeguards, product/service information, or consumer transaction protections.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Do not tag where consumers are only indirectly affected by environmental, labor, industrial, product-stewardship, or reporting rules. For downstream ESRS mapping, distinguish market/trader conduct from direct end-user safety or information impacts.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "consumer protection",
+        "consumer rights",
+        "unfair commercial practices",
+        "misleading advertising",
+        "contractual consumer rights",
+        "consumer remedies",
+        "financial services consumer"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Consumer Protection Laws.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the protection of the consumer requires that all producers involved in the production process should be made liable\". Should the LLM tag SpecificTopic = \"Consumer Protection Laws\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally protects consumers/end-users through rights, remedies, unfair commercial-practice rules, misleading-advertising controls, contract safeguards, product/service information, or consumer transaction protections.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Consumer Protection Laws.negative_incidental_keyword",
+          "question": "A source mentions \"consumer protection\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally protects consumers/end-users through rights, remedies, unfair commercial-practice rules, misleading-advertising controls, contract safeguards, product/service information, or con…\". Should the LLM tag SpecificTopic = \"Consumer Protection Laws\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Consumer Protection Laws.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Do not tag where consumers are only indirectly affected by environmental, labor, industrial, product-stewardship, or reporting rules. For downstream ESRS mapping, distinguish market/trader conduct from direct end-user safety or information impacts.\". Should the LLM tag SpecificTopic = \"Consumer Protection Laws\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Consumer Protection Laws.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"anyone — be they an individual, including consumers and undertakings, or a public authority — can claim compensation before national courts for the harm caused to them by an infringement of those provisions.\". Standing alone, should the LLM tag SpecificTopic = \"Consumer Protection Laws\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Product Design and Manufacturing",
+      "binary_answer": "Yes|No",
+      "definition": "Requirements for product design, manufacture, composition, durability, repairability, safety-by-design, or production specifications.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Product Design and Manufacturing\"?",
+      "yes_when": [
+        "The source directly regulates how products are designed or manufactured, including ecodesign, construction/design requirements, or material composition.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source is only about labeling, recall, waste disposal, or consumer rights after sale.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "product design",
+        "manufacturing",
+        "ecodesign",
+        "design requirements",
+        "technical specifications"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Product Design and Manufacturing.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly regulates how products are designed or manufactured, including ecodesign, construction/design requirements, or material composition.\". Should the LLM tag SpecificTopic = \"Product Design and Manufacturing\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates how products are designed or manufactured, including ecodesign, construction/design requirements, or material composition.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Product Design and Manufacturing.negative_incidental_keyword",
+          "question": "A source mentions \"product design\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates how products are designed or manufactured, including ecodesign, construction/design requirements, or material composition.\". Should the LLM tag SpecificTopic = \"Product Design and Manufacturing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Product Design and Manufacturing.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is only about labeling, recall, waste disposal, or consumer rights after sale.\". Should the LLM tag SpecificTopic = \"Product Design and Manufacturing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Product Recall",
+      "binary_answer": "Yes|No",
+      "definition": "Withdrawal, recall, corrective action, notification, or market-removal procedures for unsafe or non-compliant products.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Product Recall\"?",
+      "yes_when": [
+        "The source regulates product recall, withdrawal from market, corrective actions, safety notifications, or recall obligations.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source only sets general product safety standards without recall/withdrawal mechanisms.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "recall",
+        "withdrawal",
+        "corrective action",
+        "market removal",
+        "unsafe products"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Product Recall.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source regulates product recall, withdrawal from market, corrective actions, safety notifications, or recall obligations.\". Should the LLM tag SpecificTopic = \"Product Recall\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates product recall, withdrawal from market, corrective actions, safety notifications, or recall obligations.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Product Recall.negative_incidental_keyword",
+          "question": "A source mentions \"recall\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates product recall, withdrawal from market, corrective actions, safety notifications, or recall obligations.\". Should the LLM tag SpecificTopic = \"Product Recall\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Product Recall.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only sets general product safety standards without recall/withdrawal mechanisms.\". Should the LLM tag SpecificTopic = \"Product Recall\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Data Privacy (GDPR)",
+      "binary_answer": "Yes|No",
+      "definition": "Protection of personal data and privacy, including GDPR-style processing principles, rights, controllers/processors, and enforcement.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Data Privacy (GDPR)\"?",
+      "yes_when": [
+        "The source regulates personal data, data protection, privacy rights, GDPR implementation, processing, controllers, processors, or data-subject rights.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source concerns cybersecurity, financial reporting, or non-financial reporting without personal-data/privacy duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "GDPR",
+        "personal data",
+        "data protection",
+        "privacy",
+        "processing of personal data",
+        "gegevensbescherming"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Data Privacy (GDPR).positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"on the protection of natural persons with regard to the processing of personal data\". Should the LLM tag SpecificTopic = \"Data Privacy (GDPR)\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates personal data, data protection, privacy rights, GDPR implementation, processing, controllers, processors, or data-subject rights.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Data Privacy (GDPR).negative_incidental_keyword",
+          "question": "A source mentions \"GDPR\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates personal data, data protection, privacy rights, GDPR implementation, processing, controllers, processors, or data-subject rights.\". Should the LLM tag SpecificTopic = \"Data Privacy (GDPR)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Data Privacy (GDPR).boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source concerns cybersecurity, financial reporting, or non-financial reporting without personal-data/privacy duties.\". Should the LLM tag SpecificTopic = \"Data Privacy (GDPR)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Data Privacy (GDPR).master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"TITLE II FREEDOMS\". Standing alone, should the LLM tag SpecificTopic = \"Data Privacy (GDPR)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Data Privacy and Non-Financial Reporting",
+      "binary_answer": "Yes|No",
+      "definition": "Combined data privacy and non-financial/ESG disclosure obligations, especially where privacy-related information is part of sustainability or non-financial reporting.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Data Privacy and Non-Financial Reporting\"?",
+      "yes_when": [
+        "The source explicitly connects personal data/privacy with non-financial or sustainability reporting obligations.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source is only privacy/GDPR or only non-financial reporting; tag those separately instead.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "data privacy and non-financial reporting",
+        "personal data in non-financial reporting",
+        "privacy disclosures"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Data Privacy and Non-Financial Reporting.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source explicitly connects personal data/privacy with non-financial or sustainability reporting obligations.\". Should the LLM tag SpecificTopic = \"Data Privacy and Non-Financial Reporting\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source explicitly connects personal data/privacy with non-financial or sustainability reporting obligations.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Data Privacy and Non-Financial Reporting.negative_incidental_keyword",
+          "question": "A source mentions \"data privacy and non-financial reporting\" once in background, but its operative duties regulate a different subject and no duty matches \"The source explicitly connects personal data/privacy with non-financial or sustainability reporting obligations.\". Should the LLM tag SpecificTopic = \"Data Privacy and Non-Financial Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Data Privacy and Non-Financial Reporting.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is only privacy/GDPR or only non-financial reporting; tag those separately instead.\". Should the LLM tag SpecificTopic = \"Data Privacy and Non-Financial Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Information-Related Impacts on Consumers and End-Users",
+      "binary_answer": "Yes|No",
+      "definition": "Consumer/end-user impacts from information, privacy, data, content, transparency, accessibility of information, or misleading/insufficient information.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Information-Related Impacts on Consumers and End-Users\"?",
+      "yes_when": [
+        "The source directly regulates information-related consumer/end-user impacts, privacy notices, data impacts, product information, digital information, or transparency to users.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is generic data protection with no consumer/end-user framing, or product labeling without wider information-impact context.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "information-related impacts",
+        "consumer information",
+        "privacy notice",
+        "end-user information",
+        "misleading information"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Information-Related Impacts on Consumers and End-Users.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"betreffende de bescherming van natuurlijke personen in verband met de verwerking van persoonsgegevens\". Should the LLM tag SpecificTopic = \"Information-Related Impacts on Consumers and End-Users\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates information-related consumer/end-user impacts, privacy notices, data impacts, product information, digital information, or transparency to users.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Information-Related Impacts on Consumers and End-Users.negative_incidental_keyword",
+          "question": "A source mentions \"information-related impacts\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates information-related consumer/end-user impacts, privacy notices, data impacts, product information, digital information, or transparency to users.\". Should the LLM tag SpecificTopic = \"Information-Related Impacts on Consumers and End-Users\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Information-Related Impacts on Consumers and End-Users.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is generic data protection with no consumer/end-user framing, or product labeling without wider information-impact context.\". Should the LLM tag SpecificTopic = \"Information-Related Impacts on Consumers and End-Users\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Personal Safety of Non-Consumers and End-Users",
+      "binary_answer": "Yes|No",
+      "definition": "Physical safety of consumers or end-users from product, service, facility, or operational risks; keep this canonical label even though the wording says 'Non-Consumers'.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Personal Safety of Non-Consumers and End-Users\"?",
+      "yes_when": [
+        "The source directly addresses physical safety, injury risk, health harm, dangerous products/services, or safety of users/end-users.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source is about privacy, social inclusion, or general consumer rights without personal safety risk.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "personal safety",
+        "consumer safety",
+        "end-user safety",
+        "risk of injury",
+        "dangerous product"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Personal Safety of Non-Consumers and End-Users.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly addresses physical safety, injury risk, health harm, dangerous products/services, or safety of users/end-users.\". Should the LLM tag SpecificTopic = \"Personal Safety of Non-Consumers and End-Users\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly addresses physical safety, injury risk, health harm, dangerous products/services, or safety of users/end-users.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Personal Safety of Non-Consumers and End-Users.negative_incidental_keyword",
+          "question": "A source mentions \"personal safety\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly addresses physical safety, injury risk, health harm, dangerous products/services, or safety of users/end-users.\". Should the LLM tag SpecificTopic = \"Personal Safety of Non-Consumers and End-Users\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Personal Safety of Non-Consumers and End-Users.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is about privacy, social inclusion, or general consumer rights without personal safety risk.\". Should the LLM tag SpecificTopic = \"Personal Safety of Non-Consumers and End-Users\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Social Inclusion of Consumers and End-Users",
+      "binary_answer": "Yes|No",
+      "definition": "Fair access, non-discrimination, accessibility, inclusion, affordability, or equitable treatment of consumers/end-users.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Social Inclusion of Consumers and End-Users\"?",
+      "yes_when": [
+        "The source protects access or inclusion of consumers/end-users, including vulnerable groups, accessibility, affordability, non-discrimination in services, or universal access.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source concerns worker inclusion or general consumer protection without inclusion/accessibility focus.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "social inclusion",
+        "accessibility",
+        "vulnerable consumers",
+        "universal service",
+        "consumer inclusion"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Social Inclusion of Consumers and End-Users.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source protects access or inclusion of consumers/end-users, including vulnerable groups, accessibility, affordability, non-discrimination in services, or universal access.\". Should the LLM tag SpecificTopic = \"Social Inclusion of Consumers and End-Users\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source protects access or inclusion of consumers/end-users, including vulnerable groups, accessibility, affordability, non-discrimination in services, or universal access.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Social Inclusion of Consumers and End-Users.negative_incidental_keyword",
+          "question": "A source mentions \"social inclusion\" once in background, but its operative duties regulate a different subject and no duty matches \"The source protects access or inclusion of consumers/end-users, including vulnerable groups, accessibility, affordability, non-discrimination in services, or universal access.\". Should the LLM tag SpecificTopic = \"Social Inclusion of Consumers and End-Users\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Social Inclusion of Consumers and End-Users.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source concerns worker inclusion or general consumer protection without inclusion/accessibility focus.\". Should the LLM tag SpecificTopic = \"Social Inclusion of Consumers and End-Users\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    }
+  ]
+}

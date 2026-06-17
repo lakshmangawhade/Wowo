@@ -1,0 +1,1294 @@
+{
+  "km_id": "KM_FINAL_03_ESRS_MAPPING",
+  "km_name": "ClosestESRSTopics Binary KM",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "ClosestESRSTopics",
+  "purpose": "Binary Yes/No decisions for each canonical ESRS topic, using final SpecificTopic Yes tags and source evidence to choose the closest ESRS topics.",
+  "esrs_reconciliation": {
+    "reconciled_output_key": "final_closest_esrs_topics",
+    "rules": [
+      "Answer every ESRS label as Yes or No.",
+      "Emit only ESRS labels answered Yes in final_closest_esrs_topics.",
+      "ESRS is downstream of final SpecificTopic decisions; do not independently invent ESRS labels from raw keyword hits.",
+      "ESRS 1 and ESRS 2 require actual sustainability-reporting/disclosure architecture, not generic ESG relevance.",
+      "ESRS G1 requires business conduct, corruption/bribery, whistleblowing, lobbying, supplier payment practices, corporate culture, or central compliance architecture; ordinary legal compliance is not enough.",
+      "Choose closest ESRS topics. Do not map every plausible environmental/social domain when the source evidence is narrower."
+    ],
+    "weak_or_not_observed_tags_in_this_field": [
+      "ESRS 1: General Requirements"
+    ]
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical ClosestESRSTopics value",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional ESRS label that better fits the evidence"
+      }
+    ],
+    "final_closest_esrs_topics": [
+      "all ESRS topics from tag_decisions with answer=Yes, after closest-topic pruning"
+    ]
+  },
+  "topic_to_esrs_crosswalk": {
+    "instruction": "Use as a controlled projection from final SpecificTopic values. Then verify against source text and ESRS definitions.",
+    "mapping": {
+      "Acidification Reduction": [
+        "ESRS E2: Pollution"
+      ],
+      "Adequate Housing": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Adequate Wages": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Agricultural Pollution": [
+        "ESRS E2: Pollution",
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Air Quality": [
+        "ESRS E2: Pollution"
+      ],
+      "Ambient Air Quality Standards": [
+        "ESRS E2: Pollution"
+      ],
+      "Animal Welfare": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Anti-Bribery": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Anti-Corruption": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Biodiversity Conservation": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Building Performance Standards": [
+        "ESRS E1: Climate Change"
+      ],
+      "Carbon Capture and Storage (CCS) Regulations": [
+        "ESRS E1: Climate Change"
+      ],
+      "Carbon Pricing": [
+        "ESRS E1: Climate Change"
+      ],
+      "Carbon Trading and Emissions Trading Schemes": [
+        "ESRS E1: Climate Change"
+      ],
+      "Chemical Regulation": [
+        "ESRS E2: Pollution"
+      ],
+      "Chemical Safety": [
+        "ESRS E2: Pollution"
+      ],
+      "Child Labor": [
+        "ESRS S2: Workers in the Value Chain"
+      ],
+      "Circular Economy": [
+        "ESRS E5: Resource Use and Circular Economy"
+      ],
+      "Climate Change Adaptation": [
+        "ESRS E1: Climate Change"
+      ],
+      "Climate Change Mitigation": [
+        "ESRS E1: Climate Change"
+      ],
+      "Coastal Zone Management": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Collective Bargaining": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Communities' Civil and Political Rights": [
+        "ESRS S3: Affected Communities"
+      ],
+      "Communities' Economic, Social, and Cultural Rights": [
+        "ESRS S3: Affected Communities"
+      ],
+      "Compliance and Certification": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Compliance with Laws and Regulations": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Consumer Protection Laws": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Contaminated Land Remediation": [
+        "ESRS E2: Pollution"
+      ],
+      "Corporate Culture": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Corporate Social Responsibility": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Corruption and Bribery Incidents": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Data Privacy (GDPR)": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Data Privacy and Non-Financial Reporting": [
+        "ESRS S4: Consumers and End-users",
+        "ESRS 2: General Disclosures"
+      ],
+      "Direct Impact Drivers of Biodiversity Loss": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Diversity": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Drought Management": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "ESG Due Diligence": [
+        "ESRS G1: Business Conduct"
+      ],
+      "ESG Reporting": [
+        "ESRS 2: General Disclosures"
+      ],
+      "Ecosystem Restoration": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Electrical Equipment": [
+        "ESRS E5: Resource Use and Circular Economy"
+      ],
+      "Elimination of Persistent Organic Pollutants": [
+        "ESRS E2: Pollution"
+      ],
+      "Emergency Preparedness": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Emission Reduction Obligations": [
+        "ESRS E1: Climate Change"
+      ],
+      "Emission Thresholds for Construction Products": [
+        "ESRS E2: Pollution"
+      ],
+      "Employment Contracts": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Endangered Species Protection": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Energy Efficiency Standards": [
+        "ESRS E1: Climate Change"
+      ],
+      "Energy Efficiency in Building Construction": [
+        "ESRS E1: Climate Change"
+      ],
+      "Ergonomics": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Extended Producer Responsibility (EPR)": [
+        "ESRS E5: Resource Use and Circular Economy"
+      ],
+      "Fair Labor Practices": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Financial Reporting": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Fisheries Management": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Forced Labor and Human Trafficking": [
+        "ESRS S2: Workers in the Value Chain"
+      ],
+      "Freedom of Association": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Gender Equality and Equal Pay": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Green Public Procurement": [
+        "ESRS E1: Climate Change"
+      ],
+      "Greenhouse Gas Emissions Trading": [
+        "ESRS E1: Climate Change"
+      ],
+      "Habitat Restoration": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Hazardous Substances": [
+        "ESRS E2: Pollution"
+      ],
+      "Health and Safety": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Impacts on and Dependencies on Ecosystem Services": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Impacts on the Extent and Conditions of Ecosystems": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Impacts on the State of Species": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Inclusion of Persons with Disabilities": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Indoor Air Quality": [
+        "ESRS E2: Pollution"
+      ],
+      "Industrial Emissions": [
+        "ESRS E2: Pollution"
+      ],
+      "Industrial Energy Efficiency and Audits": [
+        "ESRS E1: Climate Change"
+      ],
+      "Information-Related Impacts on Consumers and End-Users": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Invasive Species Control": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Marine Environment Protection": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Marine Pollution": [
+        "ESRS E2: Pollution",
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Marine Protected Areas": [
+        "ESRS E3: Water and Marine Resources",
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Measures Against Violence and Harassment in the Workplace": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Mental Health": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Minimum Wage": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Nationally Determined Contributions (NDCs)": [
+        "ESRS E1: Climate Change"
+      ],
+      "Non-Discrimination": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Non-Financial Reporting": [
+        "ESRS 2: General Disclosures"
+      ],
+      "Occupational Health and Safety": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Personal Safety of Non-Consumers and End-Users": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Political Engagement and Lobbying Activities": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Pollinator Protection": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Product Design and Manufacturing": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Product Labeling": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Product Recall": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Product Safety": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Protected Area Designation": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Protection of Whistleblowers": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Registration of Biocidal Products": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Relationships with Suppliers, Including Payment Practices": [
+        "ESRS G1: Business Conduct"
+      ],
+      "Renewable Energy Integration": [
+        "ESRS E1: Climate Change"
+      ],
+      "Renewable Energy Targets": [
+        "ESRS E1: Climate Change"
+      ],
+      "Restriction of Hazardous Substances": [
+        "ESRS E2: Pollution"
+      ],
+      "Rights of Indigenous Peoples": [
+        "ESRS S3: Affected Communities"
+      ],
+      "Secure Employment": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Social Dialogue": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Social Inclusion of Consumers and End-Users": [
+        "ESRS S4: Consumers and End-users"
+      ],
+      "Soil Conservation": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Soil Quality Standards": [
+        "ESRS E2: Pollution"
+      ],
+      "Stormwater Management": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Sustainability Reporting": [
+        "ESRS 2: General Disclosures"
+      ],
+      "Training and Skills Development": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Transboundary Air Pollution Control": [
+        "ESRS E2: Pollution"
+      ],
+      "Transboundary Water Management": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Voluntary Carbon Markets": [
+        "ESRS E1: Climate Change"
+      ],
+      "Waste Reduction and Recycling": [
+        "ESRS E5: Resource Use and Circular Economy"
+      ],
+      "Wastewater Treatment": [
+        "ESRS E3: Water and Marine Resources",
+        "ESRS E2: Pollution"
+      ],
+      "Water Allocation": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Water Conservation": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Water Infrastructure": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Water Pricing": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Water Quality Standards": [
+        "ESRS E3: Water and Marine Resources",
+        "ESRS E2: Pollution"
+      ],
+      "Water Resource Management": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Water Use Efficiency": [
+        "ESRS E3: Water and Marine Resources"
+      ],
+      "Whistleblower Protection": [
+        "ESRS S1: Own Workforce",
+        "ESRS G1: Business Conduct"
+      ],
+      "Wildlife Trade Regulation": [
+        "ESRS E4: Biodiversity and Ecosystems"
+      ],
+      "Work Environment": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Work-Life Balance": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Workforce Practices": [
+        "ESRS S1: Own Workforce"
+      ],
+      "Working Time": [
+        "ESRS S1: Own Workforce"
+      ]
+    }
+  },
+  "tags": [
+    {
+      "tag": "ESRS 1: General Requirements",
+      "binary_answer": "Yes|No",
+      "definition": "Cross-cutting requirements for sustainability statements, including reporting principles, double materiality, value-chain coverage, time horizons, presentation, and preparation basis.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS 1: General Requirements\"?",
+      "yes_when": [
+        "The source centrally establishes general sustainability-reporting architecture, reporting principles, materiality assessment, value-chain coverage, or basis of preparation rather than a topical ESG matter.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source is merely a topical environmental/social/governance law or a disclosure rule that maps more directly to ESRS 2 or a topical ESRS.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "general requirements",
+        "double materiality",
+        "basis of preparation",
+        "sustainability statement",
+        "value chain information"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS 1: General Requirements.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source centrally establishes general sustainability-reporting architecture, reporting principles, materiality assessment, value-chain coverage, or basis of preparation rather than a topical ESG matter.\". Should the LLM tag ClosestESRSTopics = \"ESRS 1: General Requirements\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally establishes general sustainability-reporting architecture, reporting principles, materiality assessment, value-chain coverage, or basis of preparation rather than a topical ESG matter.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS 1: General Requirements.negative_incidental_keyword",
+          "question": "A source mentions \"general requirements\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally establishes general sustainability-reporting architecture, reporting principles, materiality assessment, value-chain coverage, or basis of preparation rather than a topical ESG m…\". Should the LLM tag ClosestESRSTopics = \"ESRS 1: General Requirements\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS 1: General Requirements.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is merely a topical environmental/social/governance law or a disclosure rule that maps more directly to ESRS 2 or a topical ESRS.\". Should the LLM tag ClosestESRSTopics = \"ESRS 1: General Requirements\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS 2: General Disclosures",
+      "binary_answer": "Yes|No",
+      "definition": "Cross-cutting disclosure requirements on governance, strategy, impact/risk/opportunity management, metrics, targets, policies, actions, and entity-wide sustainability information.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS 2: General Disclosures\"?",
+      "yes_when": [
+        "The source centrally requires general sustainability or non-financial disclosures, governance/strategy disclosures, IRO-process disclosures, policies/actions/targets disclosure, or reporting architecture not limited to one topic.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is operational regulation with reporting to regulators only, or a topic-specific law without public sustainability/general disclosure architecture.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "general disclosures",
+        "non-financial reporting",
+        "sustainability reporting",
+        "management report",
+        "governance disclosure",
+        "metrics and targets"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS 2: General Disclosures.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"De toezichthouder brengt jaarlijks over zijn werkzaamheden en bevindingen ingevolge deze wet aan Onze Minister verslag uit.\". Should the LLM tag ClosestESRSTopics = \"ESRS 2: General Disclosures\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally requires general sustainability or non-financial disclosures, governance/strategy disclosures, IRO-process disclosures, policies/actions/targets disclosure, or reporting architecture not limited to one topic.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS 2: General Disclosures.negative_incidental_keyword",
+          "question": "A source mentions \"general disclosures\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally requires general sustainability or non-financial disclosures, governance/strategy disclosures, IRO-process disclosures, policies/actions/targets disclosure, or reporting architec…\". Should the LLM tag ClosestESRSTopics = \"ESRS 2: General Disclosures\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS 2: General Disclosures.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is operational regulation with reporting to regulators only, or a topic-specific law without public sustainability/general disclosure architecture.\". Should the LLM tag ClosestESRSTopics = \"ESRS 2: General Disclosures\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS E1: Climate Change",
+      "binary_answer": "Yes|No",
+      "definition": "Climate-change mitigation, adaptation, transition planning, greenhouse-gas emissions, energy consumption/mix, carbon pricing, emissions trading, renewables, and CCS.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS E1: Climate Change\"?",
+      "yes_when": [
+        "The final topics/source mechanisms concern GHG emissions, climate targets, transition, carbon markets/pricing, energy efficiency for climate, renewable energy, climate adaptation, or CCS.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is about non-GHG air pollutants, water, waste, biodiversity, or generic environmental management without climate/GHG mechanisms.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "greenhouse gas",
+        "climate change",
+        "net zero",
+        "carbon pricing",
+        "emissions trading",
+        "renewable energy",
+        "energy efficiency",
+        "CCS"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS E1: Climate Change.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"relating to the availability of consumer information on fuel economy and CO2 emissions in respect of the marketing of new passenger cars\". Should the LLM tag ClosestESRSTopics = \"ESRS E1: Climate Change\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms concern GHG emissions, climate targets, transition, carbon markets/pricing, energy efficiency for climate, renewable energy, climate adaptation, or CCS.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E1: Climate Change.negative_incidental_keyword",
+          "question": "A source mentions \"greenhouse gas\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms concern GHG emissions, climate targets, transition, carbon markets/pricing, energy efficiency for climate, renewable energy, climate adaptation, or CCS.\". Should the LLM tag ClosestESRSTopics = \"ESRS E1: Climate Change\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E1: Climate Change.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is about non-GHG air pollutants, water, waste, biodiversity, or generic environmental management without climate/GHG mechanisms.\". Should the LLM tag ClosestESRSTopics = \"ESRS E1: Climate Change\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E1: Climate Change.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"‘emission’ means the release in the environment, as a result of human activities, of substances, preparations, organisms or micro-organisms\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS E1: Climate Change\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS E2: Pollution",
+      "binary_answer": "Yes|No",
+      "definition": "Pollution of air, water, and soil; pollutants; hazardous substances; substances of concern; chemicals; industrial emissions; persistent organic pollutants; and pollution prevention/control.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS E2: Pollution\"?",
+      "yes_when": [
+        "The final topics/source mechanisms involve pollutant emissions, air/water/soil contamination, hazardous substances, chemicals, industrial emissions, POPs, waste pollution, or remediation.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is about water resource quantity, marine resource use, circular economy, or climate emissions without pollutant-control content.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "pollution",
+        "air pollutants",
+        "water contamination",
+        "soil contamination",
+        "hazardous substances",
+        "industrial emissions",
+        "chemical safety"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS E2: Pollution.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Whereas pollution due to insufficient treatment of waste water in one Member State often influences other Member States' waters;\". Should the LLM tag ClosestESRSTopics = \"ESRS E2: Pollution\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms involve pollutant emissions, air/water/soil contamination, hazardous substances, chemicals, industrial emissions, POPs, waste pollution, or remediation.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E2: Pollution.negative_incidental_keyword",
+          "question": "A source mentions \"pollution\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms involve pollutant emissions, air/water/soil contamination, hazardous substances, chemicals, industrial emissions, POPs, waste pollution, or remediation.\". Should the LLM tag ClosestESRSTopics = \"ESRS E2: Pollution\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E2: Pollution.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is about water resource quantity, marine resource use, circular economy, or climate emissions without pollutant-control content.\". Should the LLM tag ClosestESRSTopics = \"ESRS E2: Pollution\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E2: Pollution.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"the measures envisaged to prevent, reduce and as fully as possible offset any significant adverse effects on the environment of implementing the plan or programme\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS E2: Pollution\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS E3: Water and Marine Resources",
+      "binary_answer": "Yes|No",
+      "definition": "Water withdrawal, consumption, discharge, quality, treatment, efficiency, allocation, conservation, drought, river basins, marine resources, fisheries, and marine environmental protection.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS E3: Water and Marine Resources\"?",
+      "yes_when": [
+        "The final topics/source mechanisms concern water quality, water management, wastewater, water use/efficiency, water scarcity, drought, transboundary water, marine environment, fisheries, or marine resources.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source concerns marine pollution only with no marine-resource/water-management dimension, or circular-resource use with no water/marine focus.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "water",
+        "wastewater",
+        "water quality",
+        "river basin",
+        "marine resources",
+        "fisheries",
+        "marine environment",
+        "drought"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS E3: Water and Marine Resources.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The objective of the Directive is to protect the environment from the adverse effects of the abovementioned waste water discharges.\". Should the LLM tag ClosestESRSTopics = \"ESRS E3: Water and Marine Resources\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms concern water quality, water management, wastewater, water use/efficiency, water scarcity, drought, transboundary water, marine environment, fisheries, or marine resources.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E3: Water and Marine Resources.negative_incidental_keyword",
+          "question": "A source mentions \"water\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms concern water quality, water management, wastewater, water use/efficiency, water scarcity, drought, transboundary water, marine environment, fisheries, or marine re…\". Should the LLM tag ClosestESRSTopics = \"ESRS E3: Water and Marine Resources\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E3: Water and Marine Resources.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source concerns marine pollution only with no marine-resource/water-management dimension, or circular-resource use with no water/marine focus.\". Should the LLM tag ClosestESRSTopics = \"ESRS E3: Water and Marine Resources\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E3: Water and Marine Resources.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"Convention on access to information, public participation in decision-making and access to justice in environmental matters\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS E3: Water and Marine Resources\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS E4: Biodiversity and Ecosystems",
+      "binary_answer": "Yes|No",
+      "definition": "Biodiversity, species, habitats, protected areas, ecosystems, restoration, invasive species, pollinators, wildlife, ecosystem services, and nature-related impacts/dependencies.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS E4: Biodiversity and Ecosystems\"?",
+      "yes_when": [
+        "The final topics/source mechanisms concern biodiversity conservation, habitat/species protection, ecosystem restoration, protected areas, invasive species, wildlife trade, or ecosystem services.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only regulates land use, agriculture, water, pollution, or climate without biodiversity/ecosystem mechanisms.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "biodiversity",
+        "ecosystems",
+        "habitats",
+        "species",
+        "protected areas",
+        "Natura 2000",
+        "invasive species",
+        "ecosystem services"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS E4: Biodiversity and Ecosystems.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The aim of this Directive shall be to contribute towards ensuring bio-diversity through the conservation of natural habitats and of wild fauna and flora\". Should the LLM tag ClosestESRSTopics = \"ESRS E4: Biodiversity and Ecosystems\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms concern biodiversity conservation, habitat/species protection, ecosystem restoration, protected areas, invasive species, wildlife trade, or ecosystem services.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E4: Biodiversity and Ecosystems.negative_incidental_keyword",
+          "question": "A source mentions \"biodiversity\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms concern biodiversity conservation, habitat/species protection, ecosystem restoration, protected areas, invasive species, wildlife trade, or ecosystem services.\". Should the LLM tag ClosestESRSTopics = \"ESRS E4: Biodiversity and Ecosystems\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E4: Biodiversity and Ecosystems.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only regulates land use, agriculture, water, pollution, or climate without biodiversity/ecosystem mechanisms.\". Should the LLM tag ClosestESRSTopics = \"ESRS E4: Biodiversity and Ecosystems\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E4: Biodiversity and Ecosystems.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"environmental protection policies\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS E4: Biodiversity and Ecosystems\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS E5: Resource Use and Circular Economy",
+      "binary_answer": "Yes|No",
+      "definition": "Resource inflows, material use, product circularity, waste, recycling, reuse, repair, circular design, WEEE, batteries, packaging, and extended producer responsibility.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS E5: Resource Use and Circular Economy\"?",
+      "yes_when": [
+        "The final topics/source mechanisms involve waste prevention, recycling, circular economy, resource efficiency, product stewardship, EPR, packaging, batteries, WEEE, or ecodesign/resource-efficiency.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is primarily pollution control, climate/energy, product safety, or chemical restriction without resource-use/circularity or waste-management duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "waste",
+        "recycling",
+        "circular economy",
+        "resource use",
+        "reuse",
+        "EPR",
+        "packaging",
+        "batteries",
+        "WEEE"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS E5: Resource Use and Circular Economy.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"prevention of packaging waste, reuse of packaging, recycling and other forms of recovering packaging waste\". Should the LLM tag ClosestESRSTopics = \"ESRS E5: Resource Use and Circular Economy\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms involve waste prevention, recycling, circular economy, resource efficiency, product stewardship, EPR, packaging, batteries, WEEE, or ecodesign/resource-efficiency.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E5: Resource Use and Circular Economy.negative_incidental_keyword",
+          "question": "A source mentions \"waste\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms involve waste prevention, recycling, circular economy, resource efficiency, product stewardship, EPR, packaging, batteries, WEEE, or ecodesign/resource-efficiency.\". Should the LLM tag ClosestESRSTopics = \"ESRS E5: Resource Use and Circular Economy\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E5: Resource Use and Circular Economy.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is primarily pollution control, climate/energy, product safety, or chemical restriction without resource-use/circularity or waste-management duties.\". Should the LLM tag ClosestESRSTopics = \"ESRS E5: Resource Use and Circular Economy\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS E5: Resource Use and Circular Economy.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"This Regulation provides a framework for the traceability of products consisting of or containing genetically modified organisms (GMOs)\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS E5: Resource Use and Circular Economy\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS S1: Own Workforce",
+      "binary_answer": "Yes|No",
+      "definition": "Workers in the entity's own workforce, including employees and non-employee workers: working conditions, wages, contracts, equality, training, health and safety, collective rights, and work-life balance.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS S1: Own Workforce\"?",
+      "yes_when": [
+        "The final topics/source mechanisms regulate employers' duties to their own workforce, employment terms, worker health/safety, equality, wages, working time, unions, training, or workforce protections.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The labor issue concerns suppliers/value-chain workers rather than the entity's own workforce; use S2 where directly supported.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "workers",
+        "employees",
+        "employment",
+        "working time",
+        "wages",
+        "occupational health and safety",
+        "equal treatment",
+        "collective bargaining"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS S1: Own Workforce.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"workers within the meaning of Article 2 are entitled to a continuous period of maternity leave\". Should the LLM tag ClosestESRSTopics = \"ESRS S1: Own Workforce\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms regulate employers' duties to their own workforce, employment terms, worker health/safety, equality, wages, working time, unions, training, or workforce protections.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S1: Own Workforce.negative_incidental_keyword",
+          "question": "A source mentions \"workers\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms regulate employers' duties to their own workforce, employment terms, worker health/safety, equality, wages, working time, unions, training, or workforce protections.\". Should the LLM tag ClosestESRSTopics = \"ESRS S1: Own Workforce\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S1: Own Workforce.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The labor issue concerns suppliers/value-chain workers rather than the entity's own workforce; use S2 where directly supported.\". Should the LLM tag ClosestESRSTopics = \"ESRS S1: Own Workforce\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S1: Own Workforce.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"conditions for access to employment... employment and working conditions, including dismissals and pay;\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS S1: Own Workforce\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS S3: Affected Communities",
+      "binary_answer": "Yes|No",
+      "definition": "Communities affected by an undertaking's operations or value chain, including economic/social/cultural rights, civil/political rights, Indigenous peoples, land, livelihoods, health, consultation, and access to remedy.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS S3: Affected Communities\"?",
+      "yes_when": [
+        "The final topics/source mechanisms directly address affected communities, community rights, Indigenous peoples, public participation/community consultation, land/cultural rights, or community impacts.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The public is affected generally by environmental regulation but no affected-community rights or mechanisms are present.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "affected communities",
+        "Indigenous peoples",
+        "community consultation",
+        "land rights",
+        "cultural rights",
+        "public participation"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS S3: Affected Communities.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Als gevolgen voor de fysieke leefomgeving worden ook aangemerkt gevolgen voor de mens, voor zover deze wordt of kan worden beïnvloed door of via onderdelen van de fysieke leefomgeving.\". Should the LLM tag ClosestESRSTopics = \"ESRS S3: Affected Communities\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms directly address affected communities, community rights, Indigenous peoples, public participation/community consultation, land/cultural rights, or community impacts.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S3: Affected Communities.negative_incidental_keyword",
+          "question": "A source mentions \"affected communities\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms directly address affected communities, community rights, Indigenous peoples, public participation/community consultation, land/cultural rights, or community impacts.\". Should the LLM tag ClosestESRSTopics = \"ESRS S3: Affected Communities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S3: Affected Communities.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The public is affected generally by environmental regulation but no affected-community rights or mechanisms are present.\". Should the LLM tag ClosestESRSTopics = \"ESRS S3: Affected Communities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S3: Affected Communities.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"TITLE V CITIZENS' RIGHTS\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS S3: Affected Communities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS S4: Consumers and End-users",
+      "binary_answer": "Yes|No",
+      "definition": "Consumers and end-users of products/services, including product safety, personal safety, privacy, information impacts, labeling, consumer protection, accessibility, and social inclusion.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS S4: Consumers and End-users\"?",
+      "yes_when": [
+        "The final topics/source mechanisms regulate product/service users, consumer rights, product labels, safety, recalls, privacy/data protection, accessibility, or end-user inclusion.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates product manufacturers, chemicals, or reporting without consumer/end-user impact or information/safety/privacy duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "consumers",
+        "end-users",
+        "product safety",
+        "product labeling",
+        "consumer protection",
+        "privacy",
+        "data protection",
+        "recall"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS S4: Consumers and End-users.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the protection of the consumer requires that all producers involved in the production process should be made liable\". Should the LLM tag ClosestESRSTopics = \"ESRS S4: Consumers and End-users\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms regulate product/service users, consumer rights, product labels, safety, recalls, privacy/data protection, accessibility, or end-user inclusion.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S4: Consumers and End-users.negative_incidental_keyword",
+          "question": "A source mentions \"consumers\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms regulate product/service users, consumer rights, product labels, safety, recalls, privacy/data protection, accessibility, or end-user inclusion.\". Should the LLM tag ClosestESRSTopics = \"ESRS S4: Consumers and End-users\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S4: Consumers and End-users.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates product manufacturers, chemicals, or reporting without consumer/end-user impact or information/safety/privacy duties.\". Should the LLM tag ClosestESRSTopics = \"ESRS S4: Consumers and End-users\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S4: Consumers and End-users.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"in the access to and supply of goods and services\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS S4: Consumers and End-users\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS G1: Business Conduct",
+      "binary_answer": "Yes|No",
+      "definition": "Corporate culture, business ethics, anti-corruption, anti-bribery, whistleblower protection, political engagement/lobbying, supplier relationships, payment practices, and conduct incidents.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS G1: Business Conduct\"?",
+      "yes_when": [
+        "The final topics/source mechanisms concern anti-corruption/bribery, business conduct, corporate culture, whistleblowing, lobbying, supplier payment practices, or compliance/corporate-governance conduct.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is only environmental/social/product regulation with ordinary compliance obligations and no business-conduct mechanism.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "anti-corruption",
+        "bribery",
+        "whistleblower",
+        "corporate culture",
+        "lobbying",
+        "supplier payment",
+        "business conduct"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS G1: Business Conduct.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Article 5 Penalties 1. Each Member State shall take the necessary measures to ensure that the conduct referred to in Articles 2 and 3, and participating in and instigating the conduct in question, is punishable by effective, proportionate and dissuasive criminal penalties\". Should the LLM tag ClosestESRSTopics = \"ESRS G1: Business Conduct\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms concern anti-corruption/bribery, business conduct, corporate culture, whistleblowing, lobbying, supplier payment practices, or compliance/corporate-governance conduct.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS G1: Business Conduct.negative_incidental_keyword",
+          "question": "A source mentions \"anti-corruption\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms concern anti-corruption/bribery, business conduct, corporate culture, whistleblowing, lobbying, supplier payment practices, or compliance/corporate-governance condu…\". Should the LLM tag ClosestESRSTopics = \"ESRS G1: Business Conduct\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS G1: Business Conduct.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is only environmental/social/product regulation with ordinary compliance obligations and no business-conduct mechanism.\". Should the LLM tag ClosestESRSTopics = \"ESRS G1: Business Conduct\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS G1: Business Conduct.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"All economic operators are expected to act responsibly and in full accordance with the legal requirements applicable when placing or making products available on the market.\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS G1: Business Conduct\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS S2: Workers in the Value Chain",
+      "binary_answer": "Yes|No",
+      "definition": "Workers outside the entity's own workforce in upstream or downstream value chains, including supplier, contractor, platform, migrant, forced-labor, child-labor, and trafficking-related worker impacts.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS S2: Workers in the Value Chain\"?",
+      "yes_when": [
+        "The final topics/source mechanisms explicitly concern value-chain/supply-chain workers, supplier labor due diligence, forced labor, child labor, trafficking, or labor conditions outside own workforce.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The law applies to employers and their own employees generally; use S1 unless value-chain worker scope is explicit.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "value chain workers",
+        "supply chain",
+        "forced labor",
+        "child labor",
+        "human trafficking",
+        "supplier due diligence"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS S2: Workers in the Value Chain.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"describe the risks of modern slavery practices in the operations and supply chains of the reporting entity\". Should the LLM tag ClosestESRSTopics = \"ESRS S2: Workers in the Value Chain\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The final topics/source mechanisms explicitly concern value-chain/supply-chain workers, supplier labor due diligence, forced labor, child labor, trafficking, or labor conditions outside own workforce.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S2: Workers in the Value Chain.negative_incidental_keyword",
+          "question": "A source mentions \"value chain workers\" once in background, but its operative duties regulate a different subject and no duty matches \"The final topics/source mechanisms explicitly concern value-chain/supply-chain workers, supplier labor due diligence, forced labor, child labor, trafficking, or labor conditions outside own workforce.\". Should the LLM tag ClosestESRSTopics = \"ESRS S2: Workers in the Value Chain\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S2: Workers in the Value Chain.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The law applies to employers and their own employees generally; use S1 unless value-chain worker scope is explicit.\". Should the LLM tag ClosestESRSTopics = \"ESRS S2: Workers in the Value Chain\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS S2: Workers in the Value Chain.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"TITLE III EQUALITY\". Standing alone, should the LLM tag ClosestESRSTopics = \"ESRS S2: Workers in the Value Chain\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESRS T1: Technological Innovation",
+      "binary_answer": "Yes|No",
+      "definition": "Internal/custom ESRS-like label for sustainability matters where technological innovation itself is the central regulated or disclosed topic.",
+      "decision_question": "Should this source be tagged ClosestESRSTopics = \"ESRS T1: Technological Innovation\"?",
+      "yes_when": [
+        "The source centrally regulates or requires disclosure of technological innovation, clean-tech innovation, R&D innovation, digital innovation, or innovation incentives as the main sustainability mechanism.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Technology is merely a tool used to comply with climate, pollution, privacy, energy, or reporting rules; map to the topical ESRS instead.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "technological innovation",
+        "clean technology",
+        "innovation",
+        "R&D",
+        "digital innovation"
+      ],
+      "test_case": [
+        {
+          "id": "ClosestESRSTopics.ESRS T1: Technological Innovation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"research into renewable energy technologies, electrification technologies and energy efficiency technologies; or\". Should the LLM tag ClosestESRSTopics = \"ESRS T1: Technological Innovation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally regulates or requires disclosure of technological innovation, clean-tech innovation, R&D innovation, digital innovation, or innovation incentives as the main sustainability mechanism.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS T1: Technological Innovation.negative_incidental_keyword",
+          "question": "A source mentions \"technological innovation\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally regulates or requires disclosure of technological innovation, clean-tech innovation, R&D innovation, digital innovation, or innovation incentives as the main sustainability mecha…\". Should the LLM tag ClosestESRSTopics = \"ESRS T1: Technological Innovation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ClosestESRSTopics.ESRS T1: Technological Innovation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Technology is merely a tool used to comply with climate, pollution, privacy, energy, or reporting rules; map to the topical ESRS instead.\". Should the LLM tag ClosestESRSTopics = \"ESRS T1: Technological Innovation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1571 @@
+{
+  "km_id": "KM_FINAL_ST_06_WORKFORCE_LABOR_RIGHTS",
+  "km_name": "SpecificTopic Binary KM - Own Workforce, Labor Conditions and Worker Rights",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "SpecificTopic",
+  "purpose": "Binary Yes/No SpecificTopic decisions for the workforce_labor_rights family. This simplified KM owns its tag-level reconciliation and emits only final Yes tags for this family.",
+  "family_reconciliation": {
+    "standalone_specific_topic_reconciler_removed": true,
+    "reconciled_output_key": "final_specific_topics_from_this_family",
+    "rules": [
+      "Answer every tag in this KM independently as Yes or No before producing the family final list.",
+      "Emit only tags answered Yes in final_specific_topics_from_this_family.",
+      "Do not emit candidates, centrality labels, or nearby labels as final tags.",
+      "If two tags overlap, keep both only when the source has distinct operative evidence for both; otherwise answer Yes only for the more directly satisfied decision question.",
+      "Reject incidental, background, implementation-actor-only, and keyword-only evidence even when a semantic signal appears.",
+      "The standalone SpecificTopic reconciler has been removed; this family KM is responsible for suppressing weak/adjacent labels before code consolidation."
+    ],
+    "weak_evidence_policy": [
+      "Weak or not-observed tags remain in the enum, but need direct source evidence at runtime.",
+      "Do not use weak master examples as independent proof; use them only as cautionary boundary tests."
+    ],
+    "weak_or_not_observed_tags_in_this_family": [
+      "Health and Safety",
+      "Ergonomics",
+      "Mental Health",
+      "Freedom of Association",
+      "Collective Bargaining",
+      "Workforce Practices",
+      "Secure Employment",
+      "Working Time",
+      "Adequate Wages",
+      "Social Dialogue",
+      "Training and Skills Development",
+      "Measures Against Violence and Harassment in the Workplace"
+    ]
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical SpecificTopic value from this KM",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes; empty string allowed when No",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional canonical tag that better fits the evidence"
+      }
+    ],
+    "final_specific_topics_from_this_family": [
+      "all tags from tag_decisions with answer=Yes, already reconciled by this family KM"
+    ]
+  },
+  "tags": [
+    {
+      "tag": "Minimum Wage",
+      "binary_answer": "Yes|No",
+      "definition": "Statutory minimum wage rates, minimum remuneration floors, or wage-setting mechanisms.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Minimum Wage\"?",
+      "yes_when": [
+        "The source sets, implements, enforces, or adjusts minimum wage or statutory minimum remuneration.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text concerns pay equity, living wages, wage reporting, or labor contracts without minimum wage standards.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "minimum wage",
+        "minimumloon",
+        "statutory wage floor",
+        "minimum remuneration"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Minimum Wage.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"houdende regelen inzake een minimumloon en een minimumvakantiebijslag\". Should the LLM tag SpecificTopic = \"Minimum Wage\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets, implements, enforces, or adjusts minimum wage or statutory minimum remuneration.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Minimum Wage.negative_incidental_keyword",
+          "question": "A source mentions \"minimum wage\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets, implements, enforces, or adjusts minimum wage or statutory minimum remuneration.\". Should the LLM tag SpecificTopic = \"Minimum Wage\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Minimum Wage.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text concerns pay equity, living wages, wage reporting, or labor contracts without minimum wage standards.\". Should the LLM tag SpecificTopic = \"Minimum Wage\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Employment Contracts",
+      "binary_answer": "Yes|No",
+      "definition": "Formation, terms, transparency, information, rights, obligations, or termination of employment contracts/relationships.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Employment Contracts\"?",
+      "yes_when": [
+        "The source regulates written terms, employee information, employment relationship status, contract conditions, probation, termination, or employment terms.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates broad workforce rights without contract terms or employment relationship rules.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "employment contract",
+        "terms of employment",
+        "employee information",
+        "arbeidsovereenkomst",
+        "employment relationship"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Employment Contracts.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the employment rights relating to the employment contract, including the maintenance of a payment to, and/or entitlement to an adequate allowance for, workers within the meaning of Article 2, must be ensured\". Should the LLM tag SpecificTopic = \"Employment Contracts\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates written terms, employee information, employment relationship status, contract conditions, probation, termination, or employment terms.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Employment Contracts.negative_incidental_keyword",
+          "question": "A source mentions \"employment contract\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates written terms, employee information, employment relationship status, contract conditions, probation, termination, or employment terms.\". Should the LLM tag SpecificTopic = \"Employment Contracts\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Employment Contracts.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates broad workforce rights without contract terms or employment relationship rules.\". Should the LLM tag SpecificTopic = \"Employment Contracts\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Employment Contracts.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"provisions contrary to the principle of equal treatment in individual or collective contracts or agreements\". Standing alone, should the LLM tag SpecificTopic = \"Employment Contracts\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Non-Discrimination",
+      "binary_answer": "Yes|No",
+      "definition": "Equal treatment and prohibition of discrimination based on protected characteristics in employment or services.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Non-Discrimination\"?",
+      "yes_when": [
+        "The source prohibits discrimination or requires equal treatment based on gender, race, disability, age, religion, sexual orientation, or similar traits.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only promotes diversity or equal pay without legal anti-discrimination duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "non-discrimination",
+        "equal treatment",
+        "discrimination",
+        "racial equality",
+        "age discrimination",
+        "disability"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Non-Discrimination.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The purpose of this Directive is to lay down a framework for combating discrimination on the grounds of racial or ethnic origin, with a view to putting into effect in the Member States the principle of equal treatment.\". Should the LLM tag SpecificTopic = \"Non-Discrimination\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source prohibits discrimination or requires equal treatment based on gender, race, disability, age, religion, sexual orientation, or similar traits.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Non-Discrimination.negative_incidental_keyword",
+          "question": "A source mentions \"non-discrimination\" once in background, but its operative duties regulate a different subject and no duty matches \"The source prohibits discrimination or requires equal treatment based on gender, race, disability, age, religion, sexual orientation, or similar traits.\". Should the LLM tag SpecificTopic = \"Non-Discrimination\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Non-Discrimination.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only promotes diversity or equal pay without legal anti-discrimination duties.\". Should the LLM tag SpecificTopic = \"Non-Discrimination\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Non-Discrimination.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"Member States shall take the necessary measures to prohibit the dismissal of workers, within the meaning of Article 2, during the period from the beginning of their pregnancy to the end of the maternity leave\". Standing alone, should the LLM tag SpecificTopic = \"Non-Discrimination\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Health and Safety",
+      "binary_answer": "Yes|No",
+      "definition": "General health and safety protections for people, often in work or product contexts when the source does not fit a narrower safety label.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Health and Safety\"?",
+      "yes_when": [
+        "The source centrally protects health and safety but the regulated context is broader than occupational safety or consumer product safety.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "Use Occupational Health and Safety for workplace hazards and Product Safety for product risks when those are the central context.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "health and safety",
+        "safety",
+        "health protection",
+        "risk prevention"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Health and Safety.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source centrally protects health and safety but the regulated context is broader than occupational safety or consumer product safety.\". Should the LLM tag SpecificTopic = \"Health and Safety\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally protects health and safety but the regulated context is broader than occupational safety or consumer product safety.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Health and Safety.negative_incidental_keyword",
+          "question": "A source mentions \"health and safety\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally protects health and safety but the regulated context is broader than occupational safety or consumer product safety.\". Should the LLM tag SpecificTopic = \"Health and Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Health and Safety.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Use Occupational Health and Safety for workplace hazards and Product Safety for product risks when those are the central context.\". Should the LLM tag SpecificTopic = \"Health and Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Work Environment",
+      "binary_answer": "Yes|No",
+      "definition": "Quality, safety, conditions, and organization of the workplace environment beyond a single specific labor right.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Work Environment\"?",
+      "yes_when": [
+        "The source addresses working environment, physical/psychosocial conditions, workplace conditions, or rest/leave as workplace conditions.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source fits a narrower label such as Working Time, Mental Health, Ergonomics, or Occupational Health and Safety.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "work environment",
+        "working conditions",
+        "workplace conditions",
+        "rest periods"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Work Environment.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the Community is to support and complement the activities of the Member States with a view to improving the working environment to protect workers' health and safety.\". Should the LLM tag SpecificTopic = \"Work Environment\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source addresses working environment, physical/psychosocial conditions, workplace conditions, or rest/leave as workplace conditions.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Work Environment.negative_incidental_keyword",
+          "question": "A source mentions \"work environment\" once in background, but its operative duties regulate a different subject and no duty matches \"The source addresses working environment, physical/psychosocial conditions, workplace conditions, or rest/leave as workplace conditions.\". Should the LLM tag SpecificTopic = \"Work Environment\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Work Environment.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source fits a narrower label such as Working Time, Mental Health, Ergonomics, or Occupational Health and Safety.\". Should the LLM tag SpecificTopic = \"Work Environment\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Ergonomics",
+      "binary_answer": "Yes|No",
+      "definition": "Workplace design and practices that reduce musculoskeletal strain or adapt work to human physical capabilities.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Ergonomics\"?",
+      "yes_when": [
+        "The source directly regulates ergonomics, manual handling, workstation design, musculoskeletal risk, or repetitive-strain prevention.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source only refers generally to occupational safety or workplace health without ergonomic hazards.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "ergonomics",
+        "manual handling",
+        "workstation",
+        "musculoskeletal",
+        "repetitive strain"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Ergonomics.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly regulates ergonomics, manual handling, workstation design, musculoskeletal risk, or repetitive-strain prevention.\". Should the LLM tag SpecificTopic = \"Ergonomics\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates ergonomics, manual handling, workstation design, musculoskeletal risk, or repetitive-strain prevention.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Ergonomics.negative_incidental_keyword",
+          "question": "A source mentions \"ergonomics\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates ergonomics, manual handling, workstation design, musculoskeletal risk, or repetitive-strain prevention.\". Should the LLM tag SpecificTopic = \"Ergonomics\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Ergonomics.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only refers generally to occupational safety or workplace health without ergonomic hazards.\". Should the LLM tag SpecificTopic = \"Ergonomics\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Mental Health",
+      "binary_answer": "Yes|No",
+      "definition": "Psychological health, stress, psychosocial risks, wellbeing, or mental-health protections connected to work or regulated services.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Mental Health\"?",
+      "yes_when": [
+        "The source regulates mental health, psychosocial risks, stress, burnout, harassment-related wellbeing, or support duties.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source regulates general occupational safety or harassment without mental-health or psychosocial-risk framing.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "mental health",
+        "psychosocial risk",
+        "stress",
+        "burnout",
+        "wellbeing"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Mental Health.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source regulates mental health, psychosocial risks, stress, burnout, harassment-related wellbeing, or support duties.\". Should the LLM tag SpecificTopic = \"Mental Health\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates mental health, psychosocial risks, stress, burnout, harassment-related wellbeing, or support duties.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Mental Health.negative_incidental_keyword",
+          "question": "A source mentions \"mental health\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates mental health, psychosocial risks, stress, burnout, harassment-related wellbeing, or support duties.\". Should the LLM tag SpecificTopic = \"Mental Health\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Mental Health.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates general occupational safety or harassment without mental-health or psychosocial-risk framing.\". Should the LLM tag SpecificTopic = \"Mental Health\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Freedom of Association",
+      "binary_answer": "Yes|No",
+      "definition": "Rights of workers to join, form, or participate in trade unions or worker organizations.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Freedom of Association\"?",
+      "yes_when": [
+        "The source protects union membership, organizing, worker representation, or association rights.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source only addresses collective bargaining outcomes or social dialogue without association rights.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "freedom of association",
+        "trade union",
+        "union membership",
+        "worker organization"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Freedom of Association.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source protects union membership, organizing, worker representation, or association rights.\". Should the LLM tag SpecificTopic = \"Freedom of Association\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source protects union membership, organizing, worker representation, or association rights.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Freedom of Association.negative_incidental_keyword",
+          "question": "A source mentions \"freedom of association\" once in background, but its operative duties regulate a different subject and no duty matches \"The source protects union membership, organizing, worker representation, or association rights.\". Should the LLM tag SpecificTopic = \"Freedom of Association\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Freedom of Association.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only addresses collective bargaining outcomes or social dialogue without association rights.\". Should the LLM tag SpecificTopic = \"Freedom of Association\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Collective Bargaining",
+      "binary_answer": "Yes|No",
+      "definition": "Negotiation and agreements between employers and worker representatives or trade unions over employment conditions.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Collective Bargaining\"?",
+      "yes_when": [
+        "The source regulates collective agreements, bargaining rights, coverage, negotiation procedures, or employer duties to bargain.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source only protects union association or consultation without bargaining or collective agreements.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "collective bargaining",
+        "collective agreement",
+        "bargaining rights",
+        "trade union negotiations"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Collective Bargaining.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source regulates collective agreements, bargaining rights, coverage, negotiation procedures, or employer duties to bargain.\". Should the LLM tag SpecificTopic = \"Collective Bargaining\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates collective agreements, bargaining rights, coverage, negotiation procedures, or employer duties to bargain.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Collective Bargaining.negative_incidental_keyword",
+          "question": "A source mentions \"collective bargaining\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates collective agreements, bargaining rights, coverage, negotiation procedures, or employer duties to bargain.\". Should the LLM tag SpecificTopic = \"Collective Bargaining\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Collective Bargaining.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only protects union association or consultation without bargaining or collective agreements.\". Should the LLM tag SpecificTopic = \"Collective Bargaining\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Occupational Health and Safety",
+      "binary_answer": "Yes|No",
+      "definition": "Workplace hazard prevention, exposure limits, protective measures, risk assessment, training, monitoring, and employer safety duties.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Occupational Health and Safety\"?",
+      "yes_when": [
+        "The source regulates workplace safety, occupational exposure, employer duties, risk assessment, work equipment, carcinogens at work, or worker protection.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is general public health, consumer product safety, or environmental emissions without workplace exposure duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "occupational health and safety",
+        "workers' safety",
+        "risk assessment at work",
+        "exposure at work",
+        "workplace hazards"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Occupational Health and Safety.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"measures to encourage improvements in the safety and health at work of pregnant workers and workers who have recently given birth or are breastfeeding\". Should the LLM tag SpecificTopic = \"Occupational Health and Safety\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates workplace safety, occupational exposure, employer duties, risk assessment, work equipment, carcinogens at work, or worker protection.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Occupational Health and Safety.negative_incidental_keyword",
+          "question": "A source mentions \"occupational health and safety\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates workplace safety, occupational exposure, employer duties, risk assessment, work equipment, carcinogens at work, or worker protection.\". Should the LLM tag SpecificTopic = \"Occupational Health and Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Occupational Health and Safety.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is general public health, consumer product safety, or environmental emissions without workplace exposure duties.\". Should the LLM tag SpecificTopic = \"Occupational Health and Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Occupational Health and Safety.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"the landfill shall be operated in such a manner that the necessary measures are taken to prevent accidents and limit their consequences;\". Standing alone, should the LLM tag SpecificTopic = \"Occupational Health and Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Emergency Preparedness",
+      "binary_answer": "Yes|No",
+      "definition": "Planning, training, response, evacuation, resilience, or emergency procedures for incidents affecting workers or operations.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Emergency Preparedness\"?",
+      "yes_when": [
+        "The source requires emergency plans, preparedness, response systems, drills, evacuation, or major-accident readiness.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only imposes general safety duties without emergency planning or incident-response mechanisms.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "emergency preparedness",
+        "emergency plan",
+        "incident response",
+        "evacuation",
+        "major accident"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Emergency Preparedness.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the preparedness for, the planning of response to and the management of emergency exposure situations\". Should the LLM tag SpecificTopic = \"Emergency Preparedness\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source requires emergency plans, preparedness, response systems, drills, evacuation, or major-accident readiness.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Emergency Preparedness.negative_incidental_keyword",
+          "question": "A source mentions \"emergency preparedness\" once in background, but its operative duties regulate a different subject and no duty matches \"The source requires emergency plans, preparedness, response systems, drills, evacuation, or major-accident readiness.\". Should the LLM tag SpecificTopic = \"Emergency Preparedness\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Emergency Preparedness.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only imposes general safety duties without emergency planning or incident-response mechanisms.\". Should the LLM tag SpecificTopic = \"Emergency Preparedness\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Emergency Preparedness.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"de kosten van preventieve maatregelen\". Standing alone, should the LLM tag SpecificTopic = \"Emergency Preparedness\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Workforce Practices",
+      "binary_answer": "Yes|No",
+      "definition": "General workforce management, employment practices, labor standards, worker treatment, or HR practices not captured by a narrower labor label.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Workforce Practices\"?",
+      "yes_when": [
+        "The source broadly regulates workforce practices and no more specific labor label captures the central duty.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "Use narrower labels such as Employment Contracts, Working Time, Minimum Wage, Non-Discrimination, OHS, or Collective Bargaining when those are central.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "workforce practices",
+        "employment practices",
+        "labor practices",
+        "worker treatment"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Workforce Practices.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source broadly regulates workforce practices and no more specific labor label captures the central duty.\". Should the LLM tag SpecificTopic = \"Workforce Practices\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source broadly regulates workforce practices and no more specific labor label captures the central duty.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Workforce Practices.negative_incidental_keyword",
+          "question": "A source mentions \"workforce practices\" once in background, but its operative duties regulate a different subject and no duty matches \"The source broadly regulates workforce practices and no more specific labor label captures the central duty.\". Should the LLM tag SpecificTopic = \"Workforce Practices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Workforce Practices.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Use narrower labels such as Employment Contracts, Working Time, Minimum Wage, Non-Discrimination, OHS, or Collective Bargaining when those are central.\". Should the LLM tag SpecificTopic = \"Workforce Practices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Fair Labor Practices",
+      "binary_answer": "Yes|No",
+      "definition": "Fair treatment of workers through labor standards, decent work, equitable conditions, and protection from exploitative labor practices.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Fair Labor Practices\"?",
+      "yes_when": [
+        "The source sets broad fair labor standards or labor-rights duties that are not limited to a single narrower topic.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is only about wages, discrimination, forced labor, child labor, or contracts; tag the specific topic instead.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "fair work",
+        "fair labor",
+        "labour standards",
+        "decent work",
+        "equal treatment at work"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Fair Labor Practices.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"informatie van de werknemer over zijn arbeidsovereenkomst of arbeidsverhouding\". Should the LLM tag SpecificTopic = \"Fair Labor Practices\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets broad fair labor standards or labor-rights duties that are not limited to a single narrower topic.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Fair Labor Practices.negative_incidental_keyword",
+          "question": "A source mentions \"fair work\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets broad fair labor standards or labor-rights duties that are not limited to a single narrower topic.\". Should the LLM tag SpecificTopic = \"Fair Labor Practices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Fair Labor Practices.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is only about wages, discrimination, forced labor, child labor, or contracts; tag the specific topic instead.\". Should the LLM tag SpecificTopic = \"Fair Labor Practices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Fair Labor Practices.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"Verdrag nr. 182 aangenomen door de Internationale Arbeidsconferentie\". Standing alone, should the LLM tag SpecificTopic = \"Fair Labor Practices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Forced Labor and Human Trafficking",
+      "binary_answer": "Yes|No",
+      "definition": "Prevention, prohibition, due diligence, remediation, or enforcement related to forced labor, modern slavery, trafficking, or servitude.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Forced Labor and Human Trafficking\"?",
+      "yes_when": [
+        "The source directly addresses forced labor, trafficking, modern slavery, supply-chain exploitation, or due diligence for those harms.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only addresses general labor standards or child labor without forced labor or trafficking.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "forced labor",
+        "forced labour",
+        "human trafficking",
+        "modern slavery",
+        "servitude"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Forced Labor and Human Trafficking.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"modern slavery means conduct which would constitute: (a) an offence under Division 270 or 271 of the Criminal Code ; or (b) an offence under either of those Divisions if the conduct took place in Australia; or (c) trafficking in persons, as defined in Article 3 of the Protocol to Prevent, Suppress and Punish Trafficki…\". Should the LLM tag SpecificTopic = \"Forced Labor and Human Trafficking\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly addresses forced labor, trafficking, modern slavery, supply-chain exploitation, or due diligence for those harms.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Forced Labor and Human Trafficking.negative_incidental_keyword",
+          "question": "A source mentions \"forced labor\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly addresses forced labor, trafficking, modern slavery, supply-chain exploitation, or due diligence for those harms.\". Should the LLM tag SpecificTopic = \"Forced Labor and Human Trafficking\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Forced Labor and Human Trafficking.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only addresses general labor standards or child labor without forced labor or trafficking.\". Should the LLM tag SpecificTopic = \"Forced Labor and Human Trafficking\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Child Labor",
+      "binary_answer": "Yes|No",
+      "definition": "Prohibition, prevention, due diligence, or restrictions concerning labor by children or young persons.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Child Labor\"?",
+      "yes_when": [
+        "The source regulates child labor, worst forms of child labor, minimum working age, youth labor protections, or supply-chain child labor.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is about education, child welfare, or general labor without child labor provisions.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "child labor",
+        "child labour",
+        "worst forms of child labour",
+        "minimum age",
+        "youth labour",
+        "kinderarbeid"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Child Labor.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"(kinderarbeid in de landbouw)\". Should the LLM tag SpecificTopic = \"Child Labor\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates child labor, worst forms of child labor, minimum working age, youth labor protections, or supply-chain child labor.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Child Labor.negative_incidental_keyword",
+          "question": "A source mentions \"child labor\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates child labor, worst forms of child labor, minimum working age, youth labor protections, or supply-chain child labor.\". Should the LLM tag SpecificTopic = \"Child Labor\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Child Labor.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is about education, child welfare, or general labor without child labor provisions.\". Should the LLM tag SpecificTopic = \"Child Labor\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Secure Employment",
+      "binary_answer": "Yes|No",
+      "definition": "Stability and security of employment, including protection against precarious work, arbitrary dismissal, or insecure contracts.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Secure Employment\"?",
+      "yes_when": [
+        "The source directly regulates job security, dismissal protections, permanent/temporary contracts, or precarious employment safeguards.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source addresses general employment contracts without security/precariousness as a central issue.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "secure employment",
+        "job security",
+        "precarious work",
+        "dismissal protection",
+        "temporary contracts"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Secure Employment.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly regulates job security, dismissal protections, permanent/temporary contracts, or precarious employment safeguards.\". Should the LLM tag SpecificTopic = \"Secure Employment\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates job security, dismissal protections, permanent/temporary contracts, or precarious employment safeguards.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Secure Employment.negative_incidental_keyword",
+          "question": "A source mentions \"secure employment\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates job security, dismissal protections, permanent/temporary contracts, or precarious employment safeguards.\". Should the LLM tag SpecificTopic = \"Secure Employment\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Secure Employment.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source addresses general employment contracts without security/precariousness as a central issue.\". Should the LLM tag SpecificTopic = \"Secure Employment\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Working Time",
+      "binary_answer": "Yes|No",
+      "definition": "Rules on working hours, rest periods, breaks, annual leave, night work, overtime, or maximum working time.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Working Time\"?",
+      "yes_when": [
+        "The source centrally regulates working-time limits, rest, annual leave, overtime, night work, or scheduling.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source mentions work-life balance or workplace conditions without time/rest/leave rules.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "working time",
+        "annual leave",
+        "rest periods",
+        "maximum hours",
+        "overtime",
+        "night work"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Working Time.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source centrally regulates working-time limits, rest, annual leave, overtime, night work, or scheduling.\". Should the LLM tag SpecificTopic = \"Working Time\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally regulates working-time limits, rest, annual leave, overtime, night work, or scheduling.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Working Time.negative_incidental_keyword",
+          "question": "A source mentions \"working time\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally regulates working-time limits, rest, annual leave, overtime, night work, or scheduling.\". Should the LLM tag SpecificTopic = \"Working Time\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Working Time.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source mentions work-life balance or workplace conditions without time/rest/leave rules.\". Should the LLM tag SpecificTopic = \"Working Time\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Adequate Wages",
+      "binary_answer": "Yes|No",
+      "definition": "Wage adequacy, living wage, fair remuneration, wage sufficiency, or income adequacy beyond statutory minimum wage mechanics.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Adequate Wages\"?",
+      "yes_when": [
+        "The source addresses adequate/living/fair wages, wage sufficiency, wage adequacy criteria, or wage-setting for decent living.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source only sets a statutory minimum wage rate; tag Minimum Wage instead unless adequacy is central.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "adequate wages",
+        "living wage",
+        "fair remuneration",
+        "wage adequacy",
+        "decent wages"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Adequate Wages.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source addresses adequate/living/fair wages, wage sufficiency, wage adequacy criteria, or wage-setting for decent living.\". Should the LLM tag SpecificTopic = \"Adequate Wages\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source addresses adequate/living/fair wages, wage sufficiency, wage adequacy criteria, or wage-setting for decent living.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Adequate Wages.negative_incidental_keyword",
+          "question": "A source mentions \"adequate wages\" once in background, but its operative duties regulate a different subject and no duty matches \"The source addresses adequate/living/fair wages, wage sufficiency, wage adequacy criteria, or wage-setting for decent living.\". Should the LLM tag SpecificTopic = \"Adequate Wages\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Adequate Wages.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only sets a statutory minimum wage rate; tag Minimum Wage instead unless adequacy is central.\". Should the LLM tag SpecificTopic = \"Adequate Wages\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Adequate Wages.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"houdende regelen inzake een minimumloon en een minimumvakantiebijslag\". Standing alone, should the LLM tag SpecificTopic = \"Adequate Wages\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Social Dialogue",
+      "binary_answer": "Yes|No",
+      "definition": "Consultation, information, participation, or dialogue between workers, worker representatives, employers, and public authorities.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Social Dialogue\"?",
+      "yes_when": [
+        "The source centrally regulates consultation, information, negotiation, participation, worker representatives, works councils, trade unions, or collective processes between employers and workers.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "Do not tag for ordinary employment information duties or general labor protections unless worker representation, consultation, or collective participation is a central mechanism.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "worker representatives",
+        "consultation",
+        "works council",
+        "trade unions",
+        "social dialogue",
+        "collective participation",
+        "information and consultation"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Social Dialogue.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source centrally regulates consultation, information, negotiation, participation, worker representatives, works councils, trade unions, or collective processes between employers and workers.\". Should the LLM tag SpecificTopic = \"Social Dialogue\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally regulates consultation, information, negotiation, participation, worker representatives, works councils, trade unions, or collective processes between employers and workers.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Social Dialogue.negative_incidental_keyword",
+          "question": "A source mentions \"worker representatives\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally regulates consultation, information, negotiation, participation, worker representatives, works councils, trade unions, or collective processes between employers and workers.\". Should the LLM tag SpecificTopic = \"Social Dialogue\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Social Dialogue.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Do not tag for ordinary employment information duties or general labor protections unless worker representation, consultation, or collective participation is a central mechanism.\". Should the LLM tag SpecificTopic = \"Social Dialogue\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Work-Life Balance",
+      "binary_answer": "Yes|No",
+      "definition": "Rights and policies supporting balance between work and family/private life, including parental, paternity, carers, flexible work, or leave entitlements.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Work-Life Balance\"?",
+      "yes_when": [
+        "The source regulates parental leave, carers' leave, flexible working, work-life balance directives, or maternity/paternity balancing rights.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only regulates annual leave or working hours without family/private-life balance objectives.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "work-life balance",
+        "parental leave",
+        "maternity leave",
+        "paternity leave",
+        "carers' leave",
+        "flexible working"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Work-Life Balance.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"work organisation, including flexible working arrangements\". Should the LLM tag SpecificTopic = \"Work-Life Balance\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates parental leave, carers' leave, flexible working, work-life balance directives, or maternity/paternity balancing rights.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Work-Life Balance.negative_incidental_keyword",
+          "question": "A source mentions \"work-life balance\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates parental leave, carers' leave, flexible working, work-life balance directives, or maternity/paternity balancing rights.\". Should the LLM tag SpecificTopic = \"Work-Life Balance\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Work-Life Balance.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only regulates annual leave or working hours without family/private-life balance objectives.\". Should the LLM tag SpecificTopic = \"Work-Life Balance\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Gender Equality and Equal Pay",
+      "binary_answer": "Yes|No",
+      "definition": "Equal pay, gender equality, pay transparency, equal treatment between men and women, or gender-based employment equality.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Gender Equality and Equal Pay\"?",
+      "yes_when": [
+        "The source addresses equal pay, gender discrimination, gender equality, pay transparency, or equal treatment of men and women.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source addresses non-discrimination generally without a gender/pay focus.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "equal pay",
+        "gender equality",
+        "men and women",
+        "pay transparency",
+        "gender discrimination"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Gender Equality and Equal Pay.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"to promote and improve gender equality (including equal remuneration between women and men) in employment and in the workplace\". Should the LLM tag SpecificTopic = \"Gender Equality and Equal Pay\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source addresses equal pay, gender discrimination, gender equality, pay transparency, or equal treatment of men and women.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Gender Equality and Equal Pay.negative_incidental_keyword",
+          "question": "A source mentions \"equal pay\" once in background, but its operative duties regulate a different subject and no duty matches \"The source addresses equal pay, gender discrimination, gender equality, pay transparency, or equal treatment of men and women.\". Should the LLM tag SpecificTopic = \"Gender Equality and Equal Pay\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Gender Equality and Equal Pay.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source addresses non-discrimination generally without a gender/pay focus.\". Should the LLM tag SpecificTopic = \"Gender Equality and Equal Pay\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Training and Skills Development",
+      "binary_answer": "Yes|No",
+      "definition": "Worker training, skills development, upskilling, professional development, or competence-building duties.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Training and Skills Development\"?",
+      "yes_when": [
+        "The source requires employee training, skills plans, qualifications, competence, retraining, or development opportunities.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The text mentions training only as incidental compliance instruction for safety or product use; tag the central topic instead.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "training",
+        "skills development",
+        "upskilling",
+        "competence",
+        "professional development"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Training and Skills Development.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source requires employee training, skills plans, qualifications, competence, retraining, or development opportunities.\". Should the LLM tag SpecificTopic = \"Training and Skills Development\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source requires employee training, skills plans, qualifications, competence, retraining, or development opportunities.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Training and Skills Development.negative_incidental_keyword",
+          "question": "A source mentions \"training\" once in background, but its operative duties regulate a different subject and no duty matches \"The source requires employee training, skills plans, qualifications, competence, retraining, or development opportunities.\". Should the LLM tag SpecificTopic = \"Training and Skills Development\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Training and Skills Development.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text mentions training only as incidental compliance instruction for safety or product use; tag the central topic instead.\". Should the LLM tag SpecificTopic = \"Training and Skills Development\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Inclusion of Persons with Disabilities",
+      "binary_answer": "Yes|No",
+      "definition": "Inclusion, accessibility, reasonable accommodation, equal treatment, or participation of persons with disabilities.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Inclusion of Persons with Disabilities\"?",
+      "yes_when": [
+        "The source specifically protects or supports persons with disabilities in employment, services, accessibility, or accommodations.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source has broad non-discrimination without disability-specific rules or inclusion measures.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "disability",
+        "persons with disabilities",
+        "reasonable accommodation",
+        "accessibility",
+        "chronic illness"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Inclusion of Persons with Disabilities.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"gehouden is naar gelang de behoefte doeltreffende aanpassingen te verrichten\". Should the LLM tag SpecificTopic = \"Inclusion of Persons with Disabilities\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source specifically protects or supports persons with disabilities in employment, services, accessibility, or accommodations.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Inclusion of Persons with Disabilities.negative_incidental_keyword",
+          "question": "A source mentions \"disability\" once in background, but its operative duties regulate a different subject and no duty matches \"The source specifically protects or supports persons with disabilities in employment, services, accessibility, or accommodations.\". Should the LLM tag SpecificTopic = \"Inclusion of Persons with Disabilities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Inclusion of Persons with Disabilities.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source has broad non-discrimination without disability-specific rules or inclusion measures.\". Should the LLM tag SpecificTopic = \"Inclusion of Persons with Disabilities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Measures Against Violence and Harassment in the Workplace",
+      "binary_answer": "Yes|No",
+      "definition": "Prevention, reporting, investigation, sanctions, or remedies for workplace violence, bullying, intimidation, harassment, or sexual harassment.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Measures Against Violence and Harassment in the Workplace\"?",
+      "yes_when": [
+        "The source directly regulates workplace harassment or violence, prevention plans, reporting channels, employer duties, or remedies.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source only addresses discrimination or mental health without harassment/violence mechanisms.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "workplace harassment",
+        "violence at work",
+        "sexual harassment",
+        "bullying",
+        "intimidation"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Measures Against Violence and Harassment in the Workplace.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly regulates workplace harassment or violence, prevention plans, reporting channels, employer duties, or remedies.\". Should the LLM tag SpecificTopic = \"Measures Against Violence and Harassment in the Workplace\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates workplace harassment or violence, prevention plans, reporting channels, employer duties, or remedies.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Measures Against Violence and Harassment in the Workplace.negative_incidental_keyword",
+          "question": "A source mentions \"workplace harassment\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates workplace harassment or violence, prevention plans, reporting channels, employer duties, or remedies.\". Should the LLM tag SpecificTopic = \"Measures Against Violence and Harassment in the Workplace\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Measures Against Violence and Harassment in the Workplace.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only addresses discrimination or mental health without harassment/violence mechanisms.\". Should the LLM tag SpecificTopic = \"Measures Against Violence and Harassment in the Workplace\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Diversity",
+      "binary_answer": "Yes|No",
+      "definition": "Diversity in workforce, leadership, boards, hiring, representation, or inclusion across demographic groups.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Diversity\"?",
+      "yes_when": [
+        "The source requires or encourages diversity policies, representation, quotas, diversity disclosures, or inclusive practices.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source addresses a specific equality right such as non-discrimination, disability inclusion, or gender equal pay; use the specific label.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "diversity",
+        "diverse representation",
+        "inclusion",
+        "board diversity",
+        "diversity policy"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Diversity.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"designated group means any of the following classes of persons: (a) members of the Aboriginal race of Australia or persons who are descendants of indigenous inhabitants of the Torres Strait Islands; (b) persons who have migrated to Australia and whose first language is not English, and the children of such persons; (c…\". Should the LLM tag SpecificTopic = \"Diversity\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source requires or encourages diversity policies, representation, quotas, diversity disclosures, or inclusive practices.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Diversity.negative_incidental_keyword",
+          "question": "A source mentions \"diversity\" once in background, but its operative duties regulate a different subject and no duty matches \"The source requires or encourages diversity policies, representation, quotas, diversity disclosures, or inclusive practices.\". Should the LLM tag SpecificTopic = \"Diversity\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Diversity.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source addresses a specific equality right such as non-discrimination, disability inclusion, or gender equal pay; use the specific label.\". Should the LLM tag SpecificTopic = \"Diversity\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    }
+  ]
+}

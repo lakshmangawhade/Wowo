@@ -1,0 +1,300 @@
+{
+  "km_id": "KM_FINAL_ST_04_WASTE_CIRCULAR_PRODUCTS",
+  "km_name": "SpecificTopic Binary KM - Waste, Circular Economy and Product Stewardship",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "SpecificTopic",
+  "purpose": "Binary Yes/No SpecificTopic decisions for the waste_circular_products family. This simplified KM owns its tag-level reconciliation and emits only final Yes tags for this family.",
+  "family_reconciliation": {
+    "standalone_specific_topic_reconciler_removed": true,
+    "reconciled_output_key": "final_specific_topics_from_this_family",
+    "rules": [
+      "Answer every tag in this KM independently as Yes or No before producing the family final list.",
+      "Emit only tags answered Yes in final_specific_topics_from_this_family.",
+      "Do not emit candidates, centrality labels, or nearby labels as final tags.",
+      "If two tags overlap, keep both only when the source has distinct operative evidence for both; otherwise answer Yes only for the more directly satisfied decision question.",
+      "Reject incidental, background, implementation-actor-only, and keyword-only evidence even when a semantic signal appears.",
+      "The standalone SpecificTopic reconciler has been removed; this family KM is responsible for suppressing weak/adjacent labels before code consolidation."
+    ],
+    "weak_evidence_policy": [
+      "Weak or not-observed tags remain in the enum, but need direct source evidence at runtime.",
+      "Do not use weak master examples as independent proof; use them only as cautionary boundary tests."
+    ],
+    "weak_or_not_observed_tags_in_this_family": []
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical SpecificTopic value from this KM",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes; empty string allowed when No",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional canonical tag that better fits the evidence"
+      }
+    ],
+    "final_specific_topics_from_this_family": [
+      "all tags from tag_decisions with answer=Yes, already reconciled by this family KM"
+    ]
+  },
+  "tags": [
+    {
+      "tag": "Waste Reduction and Recycling",
+      "binary_answer": "Yes|No",
+      "definition": "Waste prevention, collection, recycling, recovery, disposal hierarchy, landfill diversion, or waste management obligations.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Waste Reduction and Recycling\"?",
+      "yes_when": [
+        "The instrument centrally regulates waste generation, separate collection, recycling targets, recovery operations, landfill, waste shipment, or waste classification.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only mentions waste incidentally as a by-product of another regime without waste-management duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "waste",
+        "recycling",
+        "recovery",
+        "landfill",
+        "waste shipments",
+        "waste framework"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Waste Reduction and Recycling.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the management of packaging and packaging waste should include as a first priority, prevention of packaging waste and, as additional fundamental principles, reuse of packaging, recycling and other forms of recovering packaging waste and, hence, reduction of the final disposal of such waste\". Should the LLM tag SpecificTopic = \"Waste Reduction and Recycling\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The instrument centrally regulates waste generation, separate collection, recycling targets, recovery operations, landfill, waste shipment, or waste classification.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Waste Reduction and Recycling.negative_incidental_keyword",
+          "question": "A source mentions \"waste\" once in background, but its operative duties regulate a different subject and no duty matches \"The instrument centrally regulates waste generation, separate collection, recycling targets, recovery operations, landfill, waste shipment, or waste classification.\". Should the LLM tag SpecificTopic = \"Waste Reduction and Recycling\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Waste Reduction and Recycling.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only mentions waste incidentally as a by-product of another regime without waste-management duties.\". Should the LLM tag SpecificTopic = \"Waste Reduction and Recycling\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Circular Economy",
+      "binary_answer": "Yes|No",
+      "definition": "Central resource-circularity transition measures: reuse, repair, durability, remanufacturing, circular design, material loops, resource productivity, or explicit circular-economy strategy.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Circular Economy\"?",
+      "yes_when": [
+        "The source centrally frames circularity, reuse/repair/durability, circular design, circular economy transition, product life extension, material loops, or resource productivity.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Do not tag solely because waste, recycling, packaging waste, WEEE, batteries, EPR, or end-of-life treatment appears. Prefer the more specific waste/EPR/product labels unless circularity itself is a central legal mechanism.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "circular economy",
+        "reuse",
+        "repair",
+        "durability",
+        "remanufacturing",
+        "resource productivity",
+        "material loop",
+        "circular design",
+        "life extension"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Circular Economy.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"to introduce an approach that takes into account the whole life-cycle of products and materials and not only the waste phase\". Should the LLM tag SpecificTopic = \"Circular Economy\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally frames circularity, reuse/repair/durability, circular design, circular economy transition, product life extension, material loops, or resource productivity.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Circular Economy.negative_incidental_keyword",
+          "question": "A source mentions \"circular economy\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally frames circularity, reuse/repair/durability, circular design, circular economy transition, product life extension, material loops, or resource productivity.\". Should the LLM tag SpecificTopic = \"Circular Economy\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Circular Economy.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Do not tag solely because waste, recycling, packaging waste, WEEE, batteries, EPR, or end-of-life treatment appears. Prefer the more specific waste/EPR/product labels unless circularity itself is a central legal mechanism.\". Should the LLM tag SpecificTopic = \"Circular Economy\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Extended Producer Responsibility (EPR)",
+      "binary_answer": "Yes|No",
+      "definition": "Schemes placing financial, organizational, take-back, collection, recycling, or end-of-life responsibility on producers.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Extended Producer Responsibility (EPR)\"?",
+      "yes_when": [
+        "The law assigns producers/importers brand owners duties for collection, recycling, reporting, fees, or take-back of products/packaging.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates waste generally but does not allocate end-of-life responsibility to producers.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "producer responsibility",
+        "product stewardship",
+        "take-back",
+        "packaging waste",
+        "WEEE",
+        "batteries"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Extended Producer Responsibility (EPR).positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Member States shall take the necessary measures to ensure that producers meet all, or a significant part of, the costs of the implementation of this measure and/or take back end-of life vehicles under the same conditions\". Should the LLM tag SpecificTopic = \"Extended Producer Responsibility (EPR)\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The law assigns producers/importers brand owners duties for collection, recycling, reporting, fees, or take-back of products/packaging.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Extended Producer Responsibility (EPR).negative_incidental_keyword",
+          "question": "A source mentions \"producer responsibility\" once in background, but its operative duties regulate a different subject and no duty matches \"The law assigns producers/importers brand owners duties for collection, recycling, reporting, fees, or take-back of products/packaging.\". Should the LLM tag SpecificTopic = \"Extended Producer Responsibility (EPR)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Extended Producer Responsibility (EPR).boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates waste generally but does not allocate end-of-life responsibility to producers.\". Should the LLM tag SpecificTopic = \"Extended Producer Responsibility (EPR)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Extended Producer Responsibility (EPR).master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"all those involved in the production, use, import and distribution of packaging and packaged products become more aware of the extent to which packaging becomes waste, and that in accordance with the polluter-pays principle they accept responsibility for such waste\". Standing alone, should the LLM tag SpecificTopic = \"Extended Producer Responsibility (EPR)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Electrical Equipment",
+      "binary_answer": "Yes|No",
+      "definition": "Rules for electrical or electronic equipment, including safety, waste, hazardous substances, energy performance, or product requirements.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Electrical Equipment\"?",
+      "yes_when": [
+        "The regulated object is electrical/electronic equipment, WEEE, RoHS goods, appliances, batteries in equipment, or electronic product standards.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates chemicals, waste, or energy efficiency generally without electrical/electronic equipment as the product class.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "electrical equipment",
+        "electronic equipment",
+        "WEEE",
+        "RoHS",
+        "appliances",
+        "electronics"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Electrical Equipment.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"This Act is about promoting the development and adoption of products to reduce energy use and greenhouse gas production\". Should the LLM tag SpecificTopic = \"Electrical Equipment\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The regulated object is electrical/electronic equipment, WEEE, RoHS goods, appliances, batteries in equipment, or electronic product standards.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Electrical Equipment.negative_incidental_keyword",
+          "question": "A source mentions \"electrical equipment\" once in background, but its operative duties regulate a different subject and no duty matches \"The regulated object is electrical/electronic equipment, WEEE, RoHS goods, appliances, batteries in equipment, or electronic product standards.\". Should the LLM tag SpecificTopic = \"Electrical Equipment\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Electrical Equipment.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates chemicals, waste, or energy efficiency generally without electrical/electronic equipment as the product class.\". Should the LLM tag SpecificTopic = \"Electrical Equipment\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Electrical Equipment.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"A company has the legal capacity and powers of an individual both in and outside this jurisdiction.\". Standing alone, should the LLM tag SpecificTopic = \"Electrical Equipment\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    }
+  ]
+}

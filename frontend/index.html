@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TagForge</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/css/main.css"/>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-name">TagForge</div>
+      <div class="brand-sub">tagging optimisation engine</div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Pipeline</div>
+      <div class="sidebar-step active" id="snav-0" onclick="Nav.go(0)">
+        <div class="step-num">1</div><div class="step-label">Upload &amp; Ingest</div>
+      </div>
+      <div class="sidebar-step locked" id="snav-1" onclick="Nav.go(1)">
+        <div class="step-num">2</div><div class="step-label">Select KM Stage</div>
+      </div>
+      <div class="sidebar-step locked" id="snav-2" onclick="Nav.go(2)">
+        <div class="step-num">3</div><div class="step-label">Set Targets</div>
+      </div>
+      <div class="sidebar-step locked" id="snav-3" onclick="Nav.go(3)">
+        <div class="step-num">4</div><div class="step-label">Data Split</div>
+      </div>
+      <div class="sidebar-step locked" id="snav-4" onclick="Nav.go(4)">
+        <div class="step-num">5</div><div class="step-label">Run Loops</div>
+      </div>
+      <div class="sidebar-step locked" id="snav-5" onclick="Nav.go(5)">
+        <div class="step-num">6</div><div class="step-label">Final Results</div>
+      </div>
+    </div>
+
+    <div class="sidebar-history">
+      <div class="sidebar-history-title" onclick="HistoryPanel.toggle()">▸ Run History</div>
+      <div id="history-panel" style="display:none"></div>
+    </div>
+
+    <div class="sidebar-foot">
+      <span class="pulse-dot"></span><span id="sysStatus">system ready</span>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topTitle">Upload &amp; Ingest</div>
+        <div class="topbar-sub"   id="topSub">Step 1 of 6 — load input documents and ground-truth CSV</div>
+      </div>
+      <div class="spacer"></div>
+      <div id="topbar-badge"></div>
+    </div>
+
+    <div class="step-bar" id="stepBar">
+      <div class="sbar-step active" id="nav-0" onclick="Nav.go(0)">
+        <span class="sbar-num">1</span>
+        <div class="sbar-label-wrap"><span class="sbar-label">Upload &amp; Ingest</span><span class="sbar-sub">Docs + GT CSV</span></div>
+      </div>
+      <div class="sbar-connector"></div>
+      <div class="sbar-step locked" id="nav-1" onclick="Nav.go(1)">
+        <span class="sbar-num">2</span>
+        <div class="sbar-label-wrap"><span class="sbar-label">Select KM Stage</span><span class="sbar-sub">Choose pipeline stage</span></div>
+      </div>
+      <div class="sbar-connector"></div>
+      <div class="sbar-step locked" id="nav-2" onclick="Nav.go(2)">
+        <span class="sbar-num">3</span>
+        <div class="sbar-label-wrap"><span class="sbar-label">Set Targets</span><span class="sbar-sub">Score &amp; loops</span></div>
+      </div>
+      <div class="sbar-connector"></div>
+      <div class="sbar-step locked" id="nav-3" onclick="Nav.go(3)">
+        <span class="sbar-num">4</span>
+        <div class="sbar-label-wrap"><span class="sbar-label">Data Split</span><span class="sbar-sub">50 / 20 / 30</span></div>
+      </div>
+      <div class="sbar-connector"></div>
+      <div class="sbar-step locked" id="nav-4" onclick="Nav.go(4)">
+        <span class="sbar-num">5</span>
+        <div class="sbar-label-wrap"><span class="sbar-label">Run Loops</span><span class="sbar-sub">Iterative optimise</span></div>
+      </div>
+      <div class="sbar-connector"></div>
+      <div class="sbar-step locked" id="nav-5" onclick="Nav.go(5)">
+        <span class="sbar-num">6</span>
+        <div class="sbar-label-wrap"><span class="sbar-label">Final Results</span><span class="sbar-sub">Unseen eval</span></div>
+      </div>
+    </div>
+
+    <div id="pages-container"></div>
+  </div>
+
+</div>
+
+<script src="/static/js/state.js"></script>
+<script src="/static/js/api.js"></script>
+<script src="/static/js/nav.js"></script>
+<script src="/static/js/pages/step1-upload.js"></script>
+<script src="/static/js/pages/step2-km.js"></script>
+<script src="/static/js/pages/step3-targets.js"></script>
+<script src="/static/js/pages/step4-split.js"></script>
+<script src="/static/js/pages/step5-loops.js"></script>
+<script src="/static/js/pages/step6-results.js"></script>
+<script src="/static/js/history-panel.js"></script>
+<script src="/static/js/main.js"></script>
+</body>
+</html>

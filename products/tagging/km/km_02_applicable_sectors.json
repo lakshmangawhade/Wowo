@@ -1,0 +1,1506 @@
+{
+  "km_id": "KM_FINAL_02_APPLICABLE_SECTORS",
+  "km_name": "ApplicableSectors Binary KM",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "ApplicableSectors",
+  "purpose": "Binary Yes/No decisions for each canonical sector based on direct regulated addressees, products, facilities, installations, or unmistakably sector-bound activities.",
+  "sector_reconciliation": {
+    "reconciled_output_key": "final_applicable_sectors",
+    "rules": [
+      "Answer every sector as Yes or No.",
+      "Emit only sectors answered Yes in final_applicable_sectors.",
+      "All Industries is not a default; answer Yes only for truly cross-sector duties and when no specific sector dominates.",
+      "Public Sector requires public bodies to be substantive regulated actors, not mere implementers, regulators, transposers, or enforcers.",
+      "Specific sectors override broad Manufacturing, Construction, Energy, Public Sector, or All Industries unless those broad sectors have separate direct evidence.",
+      "Do not infer sectors from indirect economic impact or from final SpecificTopic labels alone."
+    ],
+    "weak_or_not_observed_tags_in_this_field": [
+      "Airports",
+      "Healthcare, Medical Devices",
+      "Road Transport"
+    ]
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical ApplicableSectors value",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional sector that better fits the evidence"
+      }
+    ],
+    "final_applicable_sectors": [
+      "all sectors from tag_decisions with answer=Yes, after sector reconciliation"
+    ]
+  },
+  "tags": [
+    {
+      "tag": "All Industries (Sector-Agnostic)",
+      "binary_answer": "Yes|No",
+      "definition": "Broad cross-sector obligations applying to undertakings, employers, operators, producers, traders, controllers, entities, or organizations regardless of industry.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"All Industries (Sector-Agnostic)\"?",
+      "yes_when": [
+        "The source applies generally across sectors or to broad actor classes and no direct sector-bound product, operator, facility, or activity dominates.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Do not use merely because Member States or authorities implement the law. Do not use when one or more specific sectors are the clear regulated addressees.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "all undertakings",
+        "all employers",
+        "all companies",
+        "any operator",
+        "traders",
+        "producers generally",
+        "controllers",
+        "broadly applicable obligations"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.All Industries (Sector-Agnostic).positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The producer shall be liable for damage caused by a defect in his product.\". Should the LLM tag ApplicableSectors = \"All Industries (Sector-Agnostic)\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source applies generally across sectors or to broad actor classes and no direct sector-bound product, operator, facility, or activity dominates.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.All Industries (Sector-Agnostic).negative_incidental_keyword",
+          "question": "A source mentions \"all undertakings\" once in background, but its operative duties regulate a different subject and no duty matches \"The source applies generally across sectors or to broad actor classes and no direct sector-bound product, operator, facility, or activity dominates.\". Should the LLM tag ApplicableSectors = \"All Industries (Sector-Agnostic)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.All Industries (Sector-Agnostic).boundary_exclusion",
+          "question": "A source fits this exclusion: \"Do not use merely because Member States or authorities implement the law. Do not use when one or more specific sectors are the clear regulated addressees.\". Should the LLM tag ApplicableSectors = \"All Industries (Sector-Agnostic)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.All Industries (Sector-Agnostic).master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"This Directive concerns the collection, treatment and discharge of urban waste water and the treatment and discharge of waste water from certain industrial sectors.\". Standing alone, should the LLM tag ApplicableSectors = \"All Industries (Sector-Agnostic)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Energy Production and Utilities",
+      "binary_answer": "Yes|No",
+      "definition": "Electricity, gas, heat, renewable energy, fuel supply, water/wastewater utilities, energy networks, power plants, and utility operators.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Energy Production and Utilities\"?",
+      "yes_when": [
+        "The direct addressee or regulated object is energy generation/supply, utility infrastructure, power plants, energy markets, grids, fuels, or water/wastewater utility systems.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Energy or utility impacts are incidental and another product/sector is directly regulated, such as vehicles, buildings, electronics, or finance.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "power plants",
+        "electricity generation",
+        "energy market",
+        "grid",
+        "utilities",
+        "renewable energy",
+        "combustion plants"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Energy Production and Utilities.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"In the case of power capacitors, the threshold of 5 dm³ shall be understood as including all the separate elements of a combined set.\". Should the LLM tag ApplicableSectors = \"Energy Production and Utilities\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The direct addressee or regulated object is energy generation/supply, utility infrastructure, power plants, energy markets, grids, fuels, or water/wastewater utility systems.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Energy Production and Utilities.negative_incidental_keyword",
+          "question": "A source mentions \"power plants\" once in background, but its operative duties regulate a different subject and no duty matches \"The direct addressee or regulated object is energy generation/supply, utility infrastructure, power plants, energy markets, grids, fuels, or water/wastewater utility systems.\". Should the LLM tag ApplicableSectors = \"Energy Production and Utilities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Energy Production and Utilities.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Energy or utility impacts are incidental and another product/sector is directly regulated, such as vehicles, buildings, electronics, or finance.\". Should the LLM tag ApplicableSectors = \"Energy Production and Utilities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Energy Production and Utilities.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"Member States shall ensure that all agglomerations are provided with collecting systems for urban waste water,\". Standing alone, should the LLM tag ApplicableSectors = \"Energy Production and Utilities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Construction",
+      "binary_answer": "Yes|No",
+      "definition": "Building construction, renovation, infrastructure works, construction products/materials, building owners/developers, and built-environment performance.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Construction\"?",
+      "yes_when": [
+        "The source directly regulates buildings, construction works, building energy performance, construction materials, construction projects, or land-development approvals.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source affects property or land broadly but has no construction/building/project duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "buildings",
+        "construction",
+        "renovation",
+        "construction products",
+        "building performance",
+        "development projects"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Construction.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"This Directive shall apply to emissions from the activities listed in Annex I and greenhouse gases listed in Annex II.\". Should the LLM tag ApplicableSectors = \"Construction\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates buildings, construction works, building energy performance, construction materials, construction projects, or land-development approvals.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Construction.negative_incidental_keyword",
+          "question": "A source mentions \"buildings\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates buildings, construction works, building energy performance, construction materials, construction projects, or land-development approvals.\". Should the LLM tag ApplicableSectors = \"Construction\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Construction.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source affects property or land broadly but has no construction/building/project duties.\". Should the LLM tag ApplicableSectors = \"Construction\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Construction.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"the urban waste water treatment plants built to comply with the requirements of Articles 4, 5, 6 and 7 are designed, constructed, operated and maintained\". Standing alone, should the LLM tag ApplicableSectors = \"Construction\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Agriculture, Farming, and Fishing",
+      "binary_answer": "Yes|No",
+      "definition": "Crop farming, livestock, aquaculture, fisheries, fishing vessels/activity, manure/fertilizer use, forestry-adjacent rural production, and food primary production.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Agriculture, Farming, and Fishing\"?",
+      "yes_when": [
+        "The direct activity is farming, livestock, fertilizer/manure management, fishing, fisheries resources, aquaculture, or agricultural land use.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Agriculture/fishing is only indirectly affected by general environmental rules or food labeling rules focused on downstream products.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "agriculture",
+        "farming",
+        "fishing",
+        "fisheries",
+        "livestock",
+        "manure",
+        "fertilizer",
+        "aquaculture"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Agriculture, Farming, and Fishing.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"measures concerning the storage and the application on land of all nitrogen compounds and concerning certain land management practices\". Should the LLM tag ApplicableSectors = \"Agriculture, Farming, and Fishing\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The direct activity is farming, livestock, fertilizer/manure management, fishing, fisheries resources, aquaculture, or agricultural land use.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Agriculture, Farming, and Fishing.negative_incidental_keyword",
+          "question": "A source mentions \"agriculture\" once in background, but its operative duties regulate a different subject and no duty matches \"The direct activity is farming, livestock, fertilizer/manure management, fishing, fisheries resources, aquaculture, or agricultural land use.\". Should the LLM tag ApplicableSectors = \"Agriculture, Farming, and Fishing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Agriculture, Farming, and Fishing.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Agriculture/fishing is only indirectly affected by general environmental rules or food labeling rules focused on downstream products.\". Should the LLM tag ApplicableSectors = \"Agriculture, Farming, and Fishing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Agriculture, Farming, and Fishing.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"to prevent serious damage to crops, livestock, forests, fisheries and water,\". Standing alone, should the LLM tag ApplicableSectors = \"Agriculture, Farming, and Fishing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Motor Vehicles",
+      "binary_answer": "Yes|No",
+      "definition": "Cars, vans, trucks, buses, vehicle type approval, engines, non-road mobile machinery, vehicle emissions, fuel economy, and vehicle product standards.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Motor Vehicles\"?",
+      "yes_when": [
+        "The source directly regulates vehicles, engines, vehicle emissions standards, type approvals, fuel economy, Euro standards, or non-road mobile machinery.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates transport infrastructure, fuel production, road operators, or air pollution generally without vehicle-specific standards.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "vehicles",
+        "cars",
+        "Euro 5",
+        "Euro 6",
+        "vehicle emissions",
+        "fuel economy",
+        "non-road mobile machinery"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Motor Vehicles.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"‘passenger car’ means any motor vehicle of category M1\". Should the LLM tag ApplicableSectors = \"Motor Vehicles\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates vehicles, engines, vehicle emissions standards, type approvals, fuel economy, Euro standards, or non-road mobile machinery.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Motor Vehicles.negative_incidental_keyword",
+          "question": "A source mentions \"vehicles\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates vehicles, engines, vehicle emissions standards, type approvals, fuel economy, Euro standards, or non-road mobile machinery.\". Should the LLM tag ApplicableSectors = \"Motor Vehicles\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Motor Vehicles.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates transport infrastructure, fuel production, road operators, or air pollution generally without vehicle-specific standards.\". Should the LLM tag ApplicableSectors = \"Motor Vehicles\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Motor Vehicles.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"This Regulation does not apply to engines for: (a) the propulsion of vehicles referred to in Article 2(1) of Directive 2007/46/EC of the European Parliament and of the Council\". Standing alone, should the LLM tag ApplicableSectors = \"Motor Vehicles\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Food and Beverage",
+      "binary_answer": "Yes|No",
+      "definition": "Food, drinks, food information, nutrition, health claims, novel foods, GM food/feed, food safety, and food supply-chain product rules.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Food and Beverage\"?",
+      "yes_when": [
+        "The regulated object is food or beverage products, food labels, food claims, novel foods, GM food/feed, or food safety.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Agricultural production or consumer protection is broad and not food/beverage-specific.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "food",
+        "beverage",
+        "nutrition",
+        "health claims",
+        "novel foods",
+        "food information",
+        "GMO food"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Food and Beverage.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"This Regulation shall apply to all stages of production, processing and distribution of food and feed.\". Should the LLM tag ApplicableSectors = \"Food and Beverage\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The regulated object is food or beverage products, food labels, food claims, novel foods, GM food/feed, or food safety.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Food and Beverage.negative_incidental_keyword",
+          "question": "A source mentions \"food\" once in background, but its operative duties regulate a different subject and no duty matches \"The regulated object is food or beverage products, food labels, food claims, novel foods, GM food/feed, or food safety.\". Should the LLM tag ApplicableSectors = \"Food and Beverage\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Food and Beverage.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Agricultural production or consumer protection is broad and not food/beverage-specific.\". Should the LLM tag ApplicableSectors = \"Food and Beverage\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Maritime Transport",
+      "binary_answer": "Yes|No",
+      "definition": "Transport by sea and maritime operations, including vessel operation, port-state/flag-state duties, ship-source pollution, bunker oil, and maritime safety/environmental rules.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Maritime Transport\"?",
+      "yes_when": [
+        "The source directly regulates ships as transport operators, maritime routes, ship-source pollution, marine transport operations, or maritime liability.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source protects marine ecosystems or fisheries without regulating maritime transport activity or vessels.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "ships",
+        "maritime transport",
+        "ship-source pollution",
+        "vessels",
+        "bunker oil",
+        "oil tanker"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Maritime Transport.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"all parties involved in the transport of goods by sea have a responsibility\". Should the LLM tag ApplicableSectors = \"Maritime Transport\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates ships as transport operators, maritime routes, ship-source pollution, marine transport operations, or maritime liability.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Maritime Transport.negative_incidental_keyword",
+          "question": "A source mentions \"ships\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates ships as transport operators, maritime routes, ship-source pollution, marine transport operations, or maritime liability.\". Should the LLM tag ApplicableSectors = \"Maritime Transport\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Maritime Transport.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source protects marine ecosystems or fisheries without regulating maritime transport activity or vessels.\". Should the LLM tag ApplicableSectors = \"Maritime Transport\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Maritime Transport.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"the transport sector makes a substantial contribution to the Community and its Member States meeting their climate change obligations under the Kyoto Protocol.\". Standing alone, should the LLM tag ApplicableSectors = \"Maritime Transport\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Mining, Quarrying, and Coal Mining",
+      "binary_answer": "Yes|No",
+      "definition": "Extraction of minerals, coal, oil/gas where extractive, quarrying, mining waste, extractive industries, and mine/quarry operations.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Mining, Quarrying, and Coal Mining\"?",
+      "yes_when": [
+        "The source directly regulates mining/quarrying operators, extractive waste, coal mining, mine permits, tailings, or mineral extraction.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source addresses generic industrial emissions, land remediation, or hazardous substances without extractive-sector focus.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "mining",
+        "quarrying",
+        "coal mining",
+        "extractive waste",
+        "tailings",
+        "mineral extraction"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Mining, Quarrying, and Coal Mining.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the management of waste from extractive industries\". Should the LLM tag ApplicableSectors = \"Mining, Quarrying, and Coal Mining\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates mining/quarrying operators, extractive waste, coal mining, mine permits, tailings, or mineral extraction.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Mining, Quarrying, and Coal Mining.negative_incidental_keyword",
+          "question": "A source mentions \"mining\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates mining/quarrying operators, extractive waste, coal mining, mine permits, tailings, or mineral extraction.\". Should the LLM tag ApplicableSectors = \"Mining, Quarrying, and Coal Mining\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Mining, Quarrying, and Coal Mining.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source addresses generic industrial emissions, land remediation, or hazardous substances without extractive-sector focus.\". Should the LLM tag ApplicableSectors = \"Mining, Quarrying, and Coal Mining\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Mining, Quarrying, and Coal Mining.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"what activities are attributable to particular industry sectors.\". Standing alone, should the LLM tag ApplicableSectors = \"Mining, Quarrying, and Coal Mining\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Chemicals",
+      "binary_answer": "Yes|No",
+      "definition": "Chemical substances, mixtures, chemical manufacturers/importers/users, chemical registration, classification, restrictions, hazardous substances, biocides, and industrial chemicals.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Chemicals\"?",
+      "yes_when": [
+        "The source directly regulates chemical substances/mixtures, REACH, CLP, PIC, chemical hazards, nonylphenol, biocides, or chemical market access.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Chemicals are only incidental pollutants in a broader industrial or waste regime; use Manufacturing or All Industries if that is the direct addressee.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "chemicals",
+        "REACH",
+        "CLP",
+        "PIC",
+        "hazardous substances",
+        "biocides",
+        "chemical register"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Chemicals.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"concerning the Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH), establishing a European Chemicals Agency\". Should the LLM tag ApplicableSectors = \"Chemicals\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates chemical substances/mixtures, REACH, CLP, PIC, chemical hazards, nonylphenol, biocides, or chemical market access.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Chemicals.negative_incidental_keyword",
+          "question": "A source mentions \"chemicals\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates chemical substances/mixtures, REACH, CLP, PIC, chemical hazards, nonylphenol, biocides, or chemical market access.\". Should the LLM tag ApplicableSectors = \"Chemicals\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Chemicals.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Chemicals are only incidental pollutants in a broader industrial or waste regime; use Manufacturing or All Industries if that is the direct addressee.\". Should the LLM tag ApplicableSectors = \"Chemicals\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Chemicals.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"the review and amendment of the list of restricted substances in Annex II shall be coherent with other legislation related to chemicals\". Standing alone, should the LLM tag ApplicableSectors = \"Chemicals\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Financial Institutions",
+      "binary_answer": "Yes|No",
+      "definition": "Banks, insurers, investment firms, financial market participants, securities issuers, asset managers, lenders, and financial supervisors/markets.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Financial Institutions\"?",
+      "yes_when": [
+        "The source directly regulates financial entities, financial products/services, securities, disclosures by financial institutions, prudential/supervisory duties, or markets such as MiFIR.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source has economy-wide reporting or business conduct obligations and only indirectly affects financial institutions.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "financial institutions",
+        "banks",
+        "insurance",
+        "securities",
+        "investment firms",
+        "financial services",
+        "MiFIR"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Financial Institutions.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"credit institutions and investment firms\". Should the LLM tag ApplicableSectors = \"Financial Institutions\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates financial entities, financial products/services, securities, disclosures by financial institutions, prudential/supervisory duties, or markets such as MiFIR.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Financial Institutions.negative_incidental_keyword",
+          "question": "A source mentions \"financial institutions\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates financial entities, financial products/services, securities, disclosures by financial institutions, prudential/supervisory duties, or markets such as MiFIR.\". Should the LLM tag ApplicableSectors = \"Financial Institutions\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Financial Institutions.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source has economy-wide reporting or business conduct obligations and only indirectly affects financial institutions.\". Should the LLM tag ApplicableSectors = \"Financial Institutions\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Textiles, Accessories, Footwear, and Jewellery",
+      "binary_answer": "Yes|No",
+      "definition": "Textile products, clothing, footwear, jewellery, accessories, cosmetics-like consumer goods where listed, and associated product labeling/safety rules.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Textiles, Accessories, Footwear, and Jewellery\"?",
+      "yes_when": [
+        "The direct regulated product class is textiles, clothing, footwear, jewellery, accessories, or textile labeling/composition.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Manufacturing or consumer goods are broad and not tied to this specific product class.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "textiles",
+        "textile labelling",
+        "footwear",
+        "jewellery",
+        "clothing",
+        "accessories"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Textiles, Accessories, Footwear, and Jewellery.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"on textile fibre names and related labelling and marking of the fibre composition of textile products\". Should the LLM tag ApplicableSectors = \"Textiles, Accessories, Footwear, and Jewellery\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The direct regulated product class is textiles, clothing, footwear, jewellery, accessories, or textile labeling/composition.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Textiles, Accessories, Footwear, and Jewellery.negative_incidental_keyword",
+          "question": "A source mentions \"textiles\" once in background, but its operative duties regulate a different subject and no duty matches \"The direct regulated product class is textiles, clothing, footwear, jewellery, accessories, or textile labeling/composition.\". Should the LLM tag ApplicableSectors = \"Textiles, Accessories, Footwear, and Jewellery\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Textiles, Accessories, Footwear, and Jewellery.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Manufacturing or consumer goods are broad and not tied to this specific product class.\". Should the LLM tag ApplicableSectors = \"Textiles, Accessories, Footwear, and Jewellery\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Textiles, Accessories, Footwear, and Jewellery.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"on the Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH)\". Standing alone, should the LLM tag ApplicableSectors = \"Textiles, Accessories, Footwear, and Jewellery\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Pharmaceuticals, Research and Development",
+      "binary_answer": "Yes|No",
+      "definition": "Medicines, pharmaceutical products, clinical trials, laboratories, research organizations, development activities, and biomedical R&D.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Pharmaceuticals, Research and Development\"?",
+      "yes_when": [
+        "The source directly regulates pharmaceuticals, medicinal products, clinical research, R&D activities, laboratories, or pharmaceutical safety/authorization.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source mentions chemicals, health, or medical devices but does not regulate pharma/R&D activities.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "pharmaceuticals",
+        "medicinal products",
+        "clinical trials",
+        "research and development",
+        "laboratory"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Pharmaceuticals, Research and Development.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the development, manufacture or testing of the quality, effectiveness and safety of drugs\". Should the LLM tag ApplicableSectors = \"Pharmaceuticals, Research and Development\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates pharmaceuticals, medicinal products, clinical research, R&D activities, laboratories, or pharmaceutical safety/authorization.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Pharmaceuticals, Research and Development.negative_incidental_keyword",
+          "question": "A source mentions \"pharmaceuticals\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates pharmaceuticals, medicinal products, clinical research, R&D activities, laboratories, or pharmaceutical safety/authorization.\". Should the LLM tag ApplicableSectors = \"Pharmaceuticals, Research and Development\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Pharmaceuticals, Research and Development.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source mentions chemicals, health, or medical devices but does not regulate pharma/R&D activities.\". Should the LLM tag ApplicableSectors = \"Pharmaceuticals, Research and Development\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Electronics",
+      "binary_answer": "Yes|No",
+      "definition": "Electrical and electronic equipment, appliances, electronic devices, batteries in electronics, WEEE, RoHS, and electronics ecodesign/energy labeling.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Electronics\"?",
+      "yes_when": [
+        "The direct regulated product is electrical/electronic equipment, appliances, WEEE, RoHS goods, batteries in devices, or electronic equipment design/waste.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates waste, chemicals, or manufacturing generally without electronics as the product class.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "electrical and electronic equipment",
+        "WEEE",
+        "RoHS",
+        "appliances",
+        "electronics",
+        "batteries"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Electronics.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"This Directive lays down rules on the restriction of the use of hazardous substances in electrical and electronic equipment (EEE)\". Should the LLM tag ApplicableSectors = \"Electronics\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The direct regulated product is electrical/electronic equipment, appliances, WEEE, RoHS goods, batteries in devices, or electronic equipment design/waste.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Electronics.negative_incidental_keyword",
+          "question": "A source mentions \"electrical and electronic equipment\" once in background, but its operative duties regulate a different subject and no duty matches \"The direct regulated product is electrical/electronic equipment, appliances, WEEE, RoHS goods, batteries in devices, or electronic equipment design/waste.\". Should the LLM tag ApplicableSectors = \"Electronics\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Electronics.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates waste, chemicals, or manufacturing generally without electronics as the product class.\". Should the LLM tag ApplicableSectors = \"Electronics\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Electronics.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"the implementation of Directive 2009/125/EC ... establishing a framework for the setting of ecodesign requirements for energy-related products\". Standing alone, should the LLM tag ApplicableSectors = \"Electronics\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Shipping",
+      "binary_answer": "Yes|No",
+      "definition": "Ship ownership, ship operation, ship recycling, tanker/bunker oil regimes, shipping companies, and maritime carriage as an industry.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Shipping\"?",
+      "yes_when": [
+        "The source directly regulates ship operators/owners, ship recycling, oil tankers, bunker oil liability, pollution from ships, or shipping-industry duties.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source addresses marine environment or port/public authority duties without regulating shipping actors.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "shipping",
+        "ship recycling",
+        "oil tankers",
+        "bunker oil",
+        "shipowners",
+        "pollution from ships"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Shipping.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The mechanisms for monitoring the application of, and enforcing the current Union and international law are not adapted to the specificities of ships and international shipping.\". Should the LLM tag ApplicableSectors = \"Shipping\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates ship operators/owners, ship recycling, oil tankers, bunker oil liability, pollution from ships, or shipping-industry duties.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Shipping.negative_incidental_keyword",
+          "question": "A source mentions \"shipping\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates ship operators/owners, ship recycling, oil tankers, bunker oil liability, pollution from ships, or shipping-industry duties.\". Should the LLM tag ApplicableSectors = \"Shipping\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Shipping.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source addresses marine environment or port/public authority duties without regulating shipping actors.\". Should the LLM tag ApplicableSectors = \"Shipping\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Airports",
+      "binary_answer": "Yes|No",
+      "definition": "Airport operators, airport infrastructure, ground operations, airport emissions/noise, terminals, and airport-related services.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Airports\"?",
+      "yes_when": [
+        "The direct regulated actor/object is an airport, airport operator, airport infrastructure, or airport environmental/safety operations.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source regulates aviation/aircraft generally without airport-specific duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "airports",
+        "airport operators",
+        "airport infrastructure",
+        "ground operations"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Airports.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The direct regulated actor/object is an airport, airport operator, airport infrastructure, or airport environmental/safety operations.\". Should the LLM tag ApplicableSectors = \"Airports\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The direct regulated actor/object is an airport, airport operator, airport infrastructure, or airport environmental/safety operations.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Airports.negative_incidental_keyword",
+          "question": "A source mentions \"airports\" once in background, but its operative duties regulate a different subject and no duty matches \"The direct regulated actor/object is an airport, airport operator, airport infrastructure, or airport environmental/safety operations.\". Should the LLM tag ApplicableSectors = \"Airports\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Airports.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates aviation/aircraft generally without airport-specific duties.\". Should the LLM tag ApplicableSectors = \"Airports\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Aviation",
+      "binary_answer": "Yes|No",
+      "definition": "Aircraft operators, airlines, aviation fuels, flights, aviation emissions, air navigation, and aviation safety/environmental rules.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Aviation\"?",
+      "yes_when": [
+        "The source directly regulates aircraft, airlines, flights, aviation emissions, aircraft fuels, aviation ETS, or air transport operators.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates airports only, general transport, or energy/fuel producers without aviation-specific rules.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "aviation",
+        "aircraft",
+        "airlines",
+        "flights",
+        "aviation emissions",
+        "air transport"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Aviation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"include aviation activities in the scheme for greenhouse gas emission allowance trading within the Community\". Should the LLM tag ApplicableSectors = \"Aviation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates aircraft, airlines, flights, aviation emissions, aircraft fuels, aviation ETS, or air transport operators.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Aviation.negative_incidental_keyword",
+          "question": "A source mentions \"aviation\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates aircraft, airlines, flights, aviation emissions, aircraft fuels, aviation ETS, or air transport operators.\". Should the LLM tag ApplicableSectors = \"Aviation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Aviation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates airports only, general transport, or energy/fuel producers without aviation-specific rules.\". Should the LLM tag ApplicableSectors = \"Aviation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Aviation.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"how and whether Annex I should be amended to include other relevant sectors, inter alia the chemicals, aluminium and transport sectors\". Standing alone, should the LLM tag ApplicableSectors = \"Aviation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Healthcare, Medical Devices",
+      "binary_answer": "Yes|No",
+      "definition": "Healthcare providers, hospitals, health services, medical devices, diagnostics, medical equipment, and patient-facing regulated products/services.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Healthcare, Medical Devices\"?",
+      "yes_when": [
+        "The source directly regulates healthcare delivery, hospitals, health products, medical devices, diagnostics, clinical safety, or healthcare data/product rules.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source mentions health impacts broadly but does not regulate healthcare or medical-device actors/products.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "healthcare",
+        "medical devices",
+        "hospitals",
+        "diagnostics",
+        "patients",
+        "clinical"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Healthcare, Medical Devices.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly regulates healthcare delivery, hospitals, health products, medical devices, diagnostics, clinical safety, or healthcare data/product rules.\". Should the LLM tag ApplicableSectors = \"Healthcare, Medical Devices\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates healthcare delivery, hospitals, health products, medical devices, diagnostics, clinical safety, or healthcare data/product rules.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Healthcare, Medical Devices.negative_incidental_keyword",
+          "question": "A source mentions \"healthcare\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates healthcare delivery, hospitals, health products, medical devices, diagnostics, clinical safety, or healthcare data/product rules.\". Should the LLM tag ApplicableSectors = \"Healthcare, Medical Devices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Healthcare, Medical Devices.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source mentions health impacts broadly but does not regulate healthcare or medical-device actors/products.\". Should the LLM tag ApplicableSectors = \"Healthcare, Medical Devices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Healthcare, Medical Devices.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"controlled material, radioactive material or dangerous goods\". Standing alone, should the LLM tag ApplicableSectors = \"Healthcare, Medical Devices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Manufacturing",
+      "binary_answer": "Yes|No",
+      "definition": "Industrial production, factories, producers, product manufacturers, manufacturing installations, production processes, and general industry.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Manufacturing\"?",
+      "yes_when": [
+        "The source directly regulates manufacturing processes, industrial producers, factories, product manufacturers, or general production-sector duties.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "A more specific product sector is directly regulated, such as chemicals, electronics, food, textiles, vehicles, or construction products.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "manufacturing",
+        "manufacturers",
+        "factories",
+        "industrial production",
+        "producers",
+        "installations"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Manufacturing.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Certain specific obligations for non-road mobile machinery manufacturers should therefore be laid down\". Should the LLM tag ApplicableSectors = \"Manufacturing\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates manufacturing processes, industrial producers, factories, product manufacturers, or general production-sector duties.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Manufacturing.negative_incidental_keyword",
+          "question": "A source mentions \"manufacturing\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates manufacturing processes, industrial producers, factories, product manufacturers, or general production-sector duties.\". Should the LLM tag ApplicableSectors = \"Manufacturing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Manufacturing.boundary_exclusion",
+          "question": "A source fits this exclusion: \"A more specific product sector is directly regulated, such as chemicals, electronics, food, textiles, vehicles, or construction products.\". Should the LLM tag ApplicableSectors = \"Manufacturing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Manufacturing.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"ter bescherming van de algemene veiligheid van personen tegen ernstige verontreinigingen van het milieu\". Standing alone, should the LLM tag ApplicableSectors = \"Manufacturing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Road Transport",
+      "binary_answer": "Yes|No",
+      "definition": "Road freight, buses, trucks as transport services, road carriers, logistics, road infrastructure operations, and road transport activity.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Road Transport\"?",
+      "yes_when": [
+        "The source directly regulates road transport operators, carriers, road freight/passenger transport, road-use duties, or transport service operations.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source regulates motor vehicle product standards rather than road transport services; use Motor Vehicles.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "road transport",
+        "road freight",
+        "carriers",
+        "buses",
+        "truck operators",
+        "transport services"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Road Transport.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly regulates road transport operators, carriers, road freight/passenger transport, road-use duties, or transport service operations.\". Should the LLM tag ApplicableSectors = \"Road Transport\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates road transport operators, carriers, road freight/passenger transport, road-use duties, or transport service operations.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Road Transport.negative_incidental_keyword",
+          "question": "A source mentions \"road transport\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates road transport operators, carriers, road freight/passenger transport, road-use duties, or transport service operations.\". Should the LLM tag ApplicableSectors = \"Road Transport\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Road Transport.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates motor vehicle product standards rather than road transport services; use Motor Vehicles.\". Should the LLM tag ApplicableSectors = \"Road Transport\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Road Transport.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"the route over which the waste is to be transported\". Standing alone, should the LLM tag ApplicableSectors = \"Road Transport\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Technology, Data Centers",
+      "binary_answer": "Yes|No",
+      "definition": "Digital technology companies, online services, data centers, cloud infrastructure, data processing services, platforms, and technology systems.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Technology, Data Centers\"?",
+      "yes_when": [
+        "The source directly regulates technology services, data centers, digital platforms, cloud infrastructure, data processing systems, or tech-sector operations.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is general privacy or reporting law that applies cross-sector and does not directly address technology/data-center actors.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "data centers",
+        "digital platforms",
+        "technology services",
+        "cloud",
+        "data processing",
+        "online services"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Technology, Data Centers.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"goederen of diensten aan Nederlandse eindgebruikers verkoopt of levert\". Should the LLM tag ApplicableSectors = \"Technology, Data Centers\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates technology services, data centers, digital platforms, cloud infrastructure, data processing systems, or tech-sector operations.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Technology, Data Centers.negative_incidental_keyword",
+          "question": "A source mentions \"data centers\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates technology services, data centers, digital platforms, cloud infrastructure, data processing systems, or tech-sector operations.\". Should the LLM tag ApplicableSectors = \"Technology, Data Centers\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Technology, Data Centers.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is general privacy or reporting law that applies cross-sector and does not directly address technology/data-center actors.\". Should the LLM tag ApplicableSectors = \"Technology, Data Centers\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Technology, Data Centers.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"products that use less energy\". Standing alone, should the LLM tag ApplicableSectors = \"Technology, Data Centers\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Forestry",
+      "binary_answer": "Yes|No",
+      "definition": "Forest management, logging, timber production/trade, forest conservation/restoration, and forest land operations.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Forestry\"?",
+      "yes_when": [
+        "The source directly regulates forests, forestry operations, logging, timber, forest restoration, or forest land management.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates biodiversity or land use generally without forest-specific obligations.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "forestry",
+        "forests",
+        "logging",
+        "timber",
+        "forest management",
+        "forest restoration"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Forestry.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"a project to remove carbon dioxide from the atmosphere by sequestering carbon in one or more of the following: (i) living biomass\". Should the LLM tag ApplicableSectors = \"Forestry\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates forests, forestry operations, logging, timber, forest restoration, or forest land management.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Forestry.negative_incidental_keyword",
+          "question": "A source mentions \"forestry\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates forests, forestry operations, logging, timber, forest restoration, or forest land management.\". Should the LLM tag ApplicableSectors = \"Forestry\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Forestry.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates biodiversity or land use generally without forest-specific obligations.\". Should the LLM tag ApplicableSectors = \"Forestry\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Forestry.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"The objects of this Act are:\". Standing alone, should the LLM tag ApplicableSectors = \"Forestry\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Public Sector",
+      "binary_answer": "Yes|No",
+      "definition": "Government bodies, public authorities, municipalities, public institutions, or state bodies when they are substantive regulated actors rather than merely implementers or enforcers.",
+      "decision_question": "Should this source be tagged ApplicableSectors = \"Public Sector\"?",
+      "yes_when": [
+        "Public bodies are direct duty-bearers or regulated service providers, such as procurement authorities, public employers, public administrations, public-service operators, planning authorities with substantive planning duties, or public officials/institutions subject to conduct duties.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Do not tag when Member States, ministries, agencies, competent authorities, or regulators only transpose, implement, authorize, monitor, supervise, enforce, receive reports, or administer a regime that regulates private actors.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "public procurement",
+        "public employer",
+        "public administration duties",
+        "municipal service provider",
+        "public bodies as regulated entities",
+        "public officials subject to duties"
+      ],
+      "test_case": [
+        {
+          "id": "ApplicableSectors.Public Sector.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"BE IT THEREFORE ENACTED by the Queen, and the Senate and the House of Representatives of the Commonwealth of Australia, as follows:\". Should the LLM tag ApplicableSectors = \"Public Sector\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: Public bodies are direct duty-bearers or regulated service providers, such as procurement authorities, public employers, public administrations, public-service operators, planning authorities with substantive planning duties, or public officials/institutions subject to conduct d…",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Public Sector.negative_incidental_keyword",
+          "question": "A source mentions \"public procurement\" once in background, but its operative duties regulate a different subject and no duty matches \"Public bodies are direct duty-bearers or regulated service providers, such as procurement authorities, public employers, public administrations, public-service operators, planning authorities with su…\". Should the LLM tag ApplicableSectors = \"Public Sector\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "ApplicableSectors.Public Sector.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Do not tag when Member States, ministries, agencies, competent authorities, or regulators only transpose, implement, authorize, monitor, supervise, enforce, receive reports, or administer a regime that regulates private actors.\". Should the LLM tag ApplicableSectors = \"Public Sector\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    }
+  ]
+}

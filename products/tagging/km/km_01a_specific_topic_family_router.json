@@ -1,0 +1,247 @@
+{
+  "km_id": "KM_FINAL_ST_00_TOPIC_FAMILY_ROUTER",
+  "km_name": "Optional SpecificTopic Family Router - Simplified",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "purpose": "Optionally route a source to relevant binary SpecificTopic family KMs. This router does not decide tags and there is no standalone SpecificTopic reconciler downstream.",
+  "routing_policy": [
+    "Routing is optional; the safest simplified mode is to run all nine family KMs and let each answer its owned tags Yes/No.",
+    "When using routing for efficiency, choose families from source-supported title/scope/definitions/operative provisions, not filenames, URLs, row IDs, or benchmark answers.",
+    "Default to 1-2 families for narrow sources; add more only for separate central legal pillars or rare-family rescue triggers.",
+    "The router must never output final SpecificTopic labels."
+  ],
+  "families": [
+    {
+      "family_id": "KM_FINAL_ST_01_CLIMATE_ENERGY",
+      "slug": "climate_energy",
+      "name": "SpecificTopic Binary KM - Climate, Carbon, Energy and Buildings",
+      "run_when": [
+        "The source mentions climate change, net zero, greenhouse gases, NDCs, emissions reductions, carbon pricing, carbon markets, ETS, allowances or credits.",
+        "The source regulates renewable energy, energy efficiency, energy labelling, building energy performance, CCS, or energy audits.",
+        "The source regulates vehicle, fuel, installation, building, or product emissions as climate/energy mechanisms."
+      ],
+      "owned_tags_after_deduplication": [
+        "Building Performance Standards",
+        "Climate Change Mitigation",
+        "Climate Change Adaptation",
+        "Renewable Energy Targets",
+        "Carbon Trading and Emissions Trading Schemes",
+        "Nationally Determined Contributions (NDCs)",
+        "Emission Reduction Obligations",
+        "Carbon Capture and Storage (CCS) Regulations",
+        "Carbon Pricing",
+        "Voluntary Carbon Markets",
+        "Renewable Energy Integration",
+        "Greenhouse Gas Emissions Trading",
+        "Industrial Energy Efficiency and Audits",
+        "Energy Efficiency Standards",
+        "Energy Efficiency in Building Construction",
+        "Green Public Procurement"
+      ]
+    },
+    {
+      "family_id": "KM_FINAL_ST_02_POLLUTION_CHEMICALS_AIR_SOIL",
+      "slug": "pollution_chemicals_air_soil",
+      "name": "SpecificTopic Binary KM - Pollution, Chemicals, Air and Soil",
+      "run_when": [
+        "The source mentions pollutants, air quality, ambient standards, industrial emissions, combustion plants, hazardous substances, chemicals, POPs, ozone-depleting substances, asbestos, silica, radioactive waste, soil contamination, or remediation.",
+        "The source regulates releases to air, water, soil, or land, especially through thresholds, permits, emission limits, substance restrictions, contamination cleanup, or classification duties."
+      ],
+      "owned_tags_after_deduplication": [
+        "Air Quality",
+        "Ambient Air Quality Standards",
+        "Indoor Air Quality",
+        "Industrial Emissions",
+        "Contaminated Land Remediation",
+        "Agricultural Pollution",
+        "Soil Quality Standards",
+        "Emission Thresholds for Construction Products",
+        "Acidification Reduction",
+        "Transboundary Air Pollution Control",
+        "Registration of Biocidal Products",
+        "Elimination of Persistent Organic Pollutants",
+        "Chemical Safety",
+        "Chemical Regulation",
+        "Hazardous Substances",
+        "Restriction of Hazardous Substances"
+      ]
+    },
+    {
+      "family_id": "KM_FINAL_ST_03_WATER_MARINE_FISHERIES",
+      "slug": "water_marine_fisheries",
+      "name": "SpecificTopic Binary KM - Water, Marine Resources and Fisheries",
+      "run_when": [
+        "The source mentions water quality, wastewater, sewage, surface water, groundwater, river basins, water allocation, drought, marine environment, coastal zones, protected marine areas, fisheries, marine living resources, or water infrastructure."
+      ],
+      "owned_tags_after_deduplication": [
+        "Marine Pollution",
+        "Stormwater Management",
+        "Wastewater Treatment",
+        "Water Quality Standards",
+        "Water Resource Management",
+        "Water Use Efficiency",
+        "Water Allocation",
+        "Water Conservation",
+        "Drought Management",
+        "Transboundary Water Management",
+        "Fisheries Management",
+        "Coastal Zone Management",
+        "Water Infrastructure",
+        "Water Pricing",
+        "Marine Environment Protection"
+      ]
+    },
+    {
+      "family_id": "KM_FINAL_ST_04_WASTE_CIRCULAR_PRODUCTS",
+      "slug": "waste_circular_products",
+      "name": "SpecificTopic Binary KM - Waste, Circular Economy and Product Stewardship",
+      "run_when": [
+        "The source mentions waste, recycling, reuse, recovery, packaging, WEEE, batteries, product stewardship, producer responsibility, circular economy, resource efficiency, end-of-life products, or electrical/electronic equipment."
+      ],
+      "owned_tags_after_deduplication": [
+        "Waste Reduction and Recycling",
+        "Circular Economy",
+        "Extended Producer Responsibility (EPR)",
+        "Electrical Equipment"
+      ]
+    },
+    {
+      "family_id": "KM_FINAL_ST_05_BIODIVERSITY_ECOSYSTEMS_LAND",
+      "slug": "biodiversity_ecosystems_land",
+      "name": "SpecificTopic Binary KM - Biodiversity, Ecosystems, Land and Animal Welfare",
+      "run_when": [
+        "The source centrally regulates biodiversity, habitats, species, Natura 2000/protected areas, ecosystem restoration, invasive species, wildlife trade, pollinators, forestry/nature protection, soil conservation, animal welfare, or land-use planning/EIA/SEA as the operative mechanism.",
+        "For EIA/SEA/planning laws, route here primarily for Land Use Planning; biodiversity/ecosystem labels require explicit biodiversity, species, habitats, protected-area, ecosystem, or nature-protection operative duties."
+      ],
+      "owned_tags_after_deduplication": [
+        "Soil Conservation",
+        "Marine Protected Areas",
+        "Land Use Planning",
+        "Biodiversity Conservation",
+        "Ecosystem Restoration",
+        "Protected Area Designation",
+        "Habitat Restoration",
+        "Endangered Species Protection",
+        "Invasive Species Control",
+        "Wildlife Trade Regulation",
+        "Pollinator Protection",
+        "Direct Impact Drivers of Biodiversity Loss",
+        "Impacts on the State of Species",
+        "Impacts on the Extent and Conditions of Ecosystems",
+        "Impacts on and Dependencies on Ecosystem Services",
+        "Animal Welfare"
+      ]
+    },
+    {
+      "family_id": "KM_FINAL_ST_06_WORKFORCE_LABOR_RIGHTS",
+      "slug": "workforce_labor_rights",
+      "name": "SpecificTopic Binary KM - Own Workforce, Labor Conditions and Worker Rights",
+      "run_when": [
+        "The source mentions employees, workers, employment contracts, working conditions, wages, minimum wage, working time, leave, workplace safety, discrimination, equal pay, collective bargaining, social dialogue, forced labor, child labor, trafficking, training, disability inclusion, or harassment."
+      ],
+      "owned_tags_after_deduplication": [
+        "Minimum Wage",
+        "Employment Contracts",
+        "Non-Discrimination",
+        "Health and Safety",
+        "Work Environment",
+        "Ergonomics",
+        "Mental Health",
+        "Freedom of Association",
+        "Collective Bargaining",
+        "Occupational Health and Safety",
+        "Emergency Preparedness",
+        "Workforce Practices",
+        "Fair Labor Practices",
+        "Forced Labor and Human Trafficking",
+        "Child Labor",
+        "Secure Employment",
+        "Working Time",
+        "Adequate Wages",
+        "Social Dialogue",
+        "Work-Life Balance",
+        "Gender Equality and Equal Pay",
+        "Training and Skills Development",
+        "Inclusion of Persons with Disabilities",
+        "Measures Against Violence and Harassment in the Workplace",
+        "Diversity"
+      ]
+    },
+    {
+      "family_id": "KM_FINAL_ST_07_COMMUNITIES_INDIGENOUS_RIGHTS",
+      "slug": "communities_indigenous_rights",
+      "name": "SpecificTopic Binary KM - Affected Communities and Indigenous Rights",
+      "run_when": [
+        "Run rarely, only when affected communities, Indigenous peoples, community rights, resettlement, housing rights, community consultation/consent, cultural/community rights, or explicit community-facing rights mechanisms are central.",
+        "Do not run for ordinary public participation, public notice, EIA/SEA consultation, land-use planning, biodiversity, or climate adaptation unless affected communities or community rights are explicit central objects."
+      ],
+      "owned_tags_after_deduplication": [
+        "Adequate Housing",
+        "Communities' Economic, Social, and Cultural Rights",
+        "Communities' Civil and Political Rights",
+        "Rights of Indigenous Peoples"
+      ]
+    },
+    {
+      "family_id": "KM_FINAL_ST_08_CONSUMERS_PRODUCTS_PRIVACY",
+      "slug": "consumers_products_privacy",
+      "name": "SpecificTopic Binary KM - Consumers, End-Users, Product Safety and Privacy",
+      "run_when": [
+        "The source mentions consumers, end-users, product safety, defective products, labels, product information, recalls, marketing practices, unfair commercial practices, data protection, GDPR, personal data, privacy, biocidal products, food information, toys, cosmetics, textiles, or product certification.",
+        "Also run for hybrid emissions/chemical/product laws when product safety, product information, consumer protection, privacy, market placement, safe use, data sharing, or product-risk controls are title/scope/operative objects."
+      ],
+      "owned_tags_after_deduplication": [
+        "Product Safety",
+        "Compliance and Certification",
+        "Product Labeling",
+        "Consumer Protection Laws",
+        "Product Design and Manufacturing",
+        "Product Recall",
+        "Data Privacy (GDPR)",
+        "Data Privacy and Non-Financial Reporting",
+        "Information-Related Impacts on Consumers and End-Users",
+        "Personal Safety of Non-Consumers and End-Users",
+        "Social Inclusion of Consumers and End-Users"
+      ]
+    },
+    {
+      "family_id": "KM_FINAL_ST_09_GOVERNANCE_REPORTING_CONDUCT",
+      "slug": "governance_reporting_conduct",
+      "name": "SpecificTopic Binary KM - Governance, Reporting, Due Diligence and Business Conduct",
+      "run_when": [
+        "The source centrally regulates anti-corruption, bribery, AML/terrorism financing, gifts/hospitality, lobbying, political engagement, whistleblowing/protected disclosures, corporate culture, business conduct, supplier payment practices, or CSR/responsible-business conduct.",
+        "The source centrally establishes ESG/sustainability/non-financial/financial reporting or disclosure architecture, not merely operational reporting to a regulator.",
+        "The source centrally regulates due diligence, supply-chain/value-chain adverse-impact processes, compliance-management systems, legal conformity programs, certification/compliance status, regulated registers, approval/ratification regimes, authorization/compliance regimes, or economic/criminal compliance offence frameworks.",
+        "Do not run for ordinary environmental/social/product legislation merely because it contains duties, permits, monitoring, competent authorities, penalties, sanctions, transposition, implementation, or enforcement language."
+      ],
+      "owned_tags_after_deduplication": [
+        "Whistleblower Protection",
+        "Anti-Corruption",
+        "Anti-Bribery",
+        "ESG Reporting",
+        "ESG Due Diligence",
+        "Sustainability Reporting",
+        "Non-Financial Reporting",
+        "Compliance with Laws and Regulations",
+        "Financial Reporting",
+        "Corporate Social Responsibility",
+        "Political Engagement and Lobbying Activities",
+        "Protection of Whistleblowers",
+        "Relationships with Suppliers, Including Payment Practices",
+        "Corruption and Bribery Incidents",
+        "Corporate Culture"
+      ]
+    }
+  ],
+  "output_contract": {
+    "topic_families_to_run": [
+      {
+        "family_id": "one of this KM families[].family_id",
+        "confidence": "0.0-1.0",
+        "reason": "source-supported routing reason",
+        "evidence_excerpt": "short excerpt"
+      }
+    ],
+    "safe_fallback": "run_all_families"
+  }
+}

@@ -1,0 +1,1011 @@
+{
+  "km_id": "KM_FINAL_ST_05_BIODIVERSITY_ECOSYSTEMS_LAND",
+  "km_name": "SpecificTopic Binary KM - Biodiversity, Ecosystems, Land and Animal Welfare",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "SpecificTopic",
+  "purpose": "Binary Yes/No SpecificTopic decisions for the biodiversity_ecosystems_land family. This simplified KM owns its tag-level reconciliation and emits only final Yes tags for this family.",
+  "family_reconciliation": {
+    "standalone_specific_topic_reconciler_removed": true,
+    "reconciled_output_key": "final_specific_topics_from_this_family",
+    "rules": [
+      "Answer every tag in this KM independently as Yes or No before producing the family final list.",
+      "Emit only tags answered Yes in final_specific_topics_from_this_family.",
+      "Do not emit candidates, centrality labels, or nearby labels as final tags.",
+      "If two tags overlap, keep both only when the source has distinct operative evidence for both; otherwise answer Yes only for the more directly satisfied decision question.",
+      "Reject incidental, background, implementation-actor-only, and keyword-only evidence even when a semantic signal appears.",
+      "The standalone SpecificTopic reconciler has been removed; this family KM is responsible for suppressing weak/adjacent labels before code consolidation."
+    ],
+    "weak_evidence_policy": [
+      "Weak or not-observed tags remain in the enum, but need direct source evidence at runtime.",
+      "Do not use weak master examples as independent proof; use them only as cautionary boundary tests."
+    ],
+    "weak_or_not_observed_tags_in_this_family": [
+      "Endangered Species Protection",
+      "Wildlife Trade Regulation",
+      "Pollinator Protection",
+      "Direct Impact Drivers of Biodiversity Loss",
+      "Impacts on the State of Species",
+      "Impacts on the Extent and Conditions of Ecosystems",
+      "Impacts on and Dependencies on Ecosystem Services"
+    ]
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical SpecificTopic value from this KM",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes; empty string allowed when No",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional canonical tag that better fits the evidence"
+      }
+    ],
+    "final_specific_topics_from_this_family": [
+      "all tags from tag_decisions with answer=Yes, already reconciled by this family KM"
+    ]
+  },
+  "tags": [
+    {
+      "tag": "Land Use Planning",
+      "binary_answer": "Yes|No",
+      "definition": "Spatial planning, zoning, environmental assessment of plans/projects, development control, or land-use decision-making.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Land Use Planning\"?",
+      "yes_when": [
+        "The instrument centrally regulates planning approvals, land-use plans, EIA/SEA, zoning, project consent, or spatial development impacts.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source merely affects land indirectly through environmental rules, biodiversity protection, or soil clean-up without a planning mechanism.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "land use",
+        "spatial planning",
+        "zoning",
+        "environmental impact assessment",
+        "strategic environmental assessment",
+        "planning law"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Land Use Planning.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The location of a landfill must take into consideration requirements relating to: (a) the distances from the boundary of the site to residential and recreation areas, waterways, water bodies and other agricultural or urban sites;\". Should the LLM tag SpecificTopic = \"Land Use Planning\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The instrument centrally regulates planning approvals, land-use plans, EIA/SEA, zoning, project consent, or spatial development impacts.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Land Use Planning.negative_incidental_keyword",
+          "question": "A source mentions \"land use\" once in background, but its operative duties regulate a different subject and no duty matches \"The instrument centrally regulates planning approvals, land-use plans, EIA/SEA, zoning, project consent, or spatial development impacts.\". Should the LLM tag SpecificTopic = \"Land Use Planning\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Land Use Planning.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source merely affects land indirectly through environmental rules, biodiversity protection, or soil clean-up without a planning mechanism.\". Should the LLM tag SpecificTopic = \"Land Use Planning\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Land Use Planning.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"Declaration may be subject to condition about obtaining regulatory approvals\". Standing alone, should the LLM tag SpecificTopic = \"Land Use Planning\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Biodiversity Conservation",
+      "binary_answer": "Yes|No",
+      "definition": "Protection, conservation, sustainable use, monitoring, or governance of biological diversity, habitats, species, or ecosystems.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Biodiversity Conservation\"?",
+      "yes_when": [
+        "The source centrally protects biodiversity, species, habitats, ecosystems, conservation status, Natura 2000, nature protection, or biodiversity impacts.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Do not tag merely because an environmental assessment or planning rule mentions flora, fauna, or environment in passing. Require biodiversity, species, habitats, ecosystems, or nature protection as a central protected interest.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "biodiversity",
+        "habitats",
+        "species",
+        "Natura 2000",
+        "conservation status",
+        "nature protection",
+        "ecosystems"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Biodiversity Conservation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the main aim of this Directive being to promote the maintenance of biodiversity\". Should the LLM tag SpecificTopic = \"Biodiversity Conservation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally protects biodiversity, species, habitats, ecosystems, conservation status, Natura 2000, nature protection, or biodiversity impacts.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Biodiversity Conservation.negative_incidental_keyword",
+          "question": "A source mentions \"biodiversity\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally protects biodiversity, species, habitats, ecosystems, conservation status, Natura 2000, nature protection, or biodiversity impacts.\". Should the LLM tag SpecificTopic = \"Biodiversity Conservation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Biodiversity Conservation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Do not tag merely because an environmental assessment or planning rule mentions flora, fauna, or environment in passing. Require biodiversity, species, habitats, ecosystems, or nature protection as a central protected interest.\". Should the LLM tag SpecificTopic = \"Biodiversity Conservation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Ecosystem Restoration",
+      "binary_answer": "Yes|No",
+      "definition": "Restoring degraded ecosystems, ecological functions, natural processes, or ecosystem condition.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Ecosystem Restoration\"?",
+      "yes_when": [
+        "The source mandates restoration plans, targets, repair of degraded ecosystems, nature restoration, or ecological recovery.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only protects existing areas/species or remediates pollution without ecosystem restoration.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "ecosystem restoration",
+        "nature restoration",
+        "restore degraded ecosystems",
+        "ecological recovery"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Ecosystem Restoration.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"proportionate restoration measures should be undertaken to strengthen the ecosystems' resilience towards invasions, to repair the damage caused\". Should the LLM tag SpecificTopic = \"Ecosystem Restoration\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source mandates restoration plans, targets, repair of degraded ecosystems, nature restoration, or ecological recovery.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Ecosystem Restoration.negative_incidental_keyword",
+          "question": "A source mentions \"ecosystem restoration\" once in background, but its operative duties regulate a different subject and no duty matches \"The source mandates restoration plans, targets, repair of degraded ecosystems, nature restoration, or ecological recovery.\". Should the LLM tag SpecificTopic = \"Ecosystem Restoration\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Ecosystem Restoration.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only protects existing areas/species or remediates pollution without ecosystem restoration.\". Should the LLM tag SpecificTopic = \"Ecosystem Restoration\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Ecosystem Restoration.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"Past and present waste disposal sites on land and abandoned work sites of Antarctic activities shall be cleaned up by the generator of such wastes and the user of such sites.\". Standing alone, should the LLM tag SpecificTopic = \"Ecosystem Restoration\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Protected Area Designation",
+      "binary_answer": "Yes|No",
+      "definition": "Creation, designation, classification, boundaries, management, or restrictions for protected terrestrial or freshwater areas.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Protected Area Designation\"?",
+      "yes_when": [
+        "The source designates protected areas, special conservation areas, reserves, national parks, or Natura 2000 sites.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source generally protects biodiversity or species without area designation or protected-area management.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "protected areas",
+        "designation",
+        "Natura 2000",
+        "special areas of conservation",
+        "nature reserve"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Protected Area Designation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"een natuurmonument ... aanwijzen als beschermd natuurmonument\". Should the LLM tag SpecificTopic = \"Protected Area Designation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source designates protected areas, special conservation areas, reserves, national parks, or Natura 2000 sites.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Protected Area Designation.negative_incidental_keyword",
+          "question": "A source mentions \"protected areas\" once in background, but its operative duties regulate a different subject and no duty matches \"The source designates protected areas, special conservation areas, reserves, national parks, or Natura 2000 sites.\". Should the LLM tag SpecificTopic = \"Protected Area Designation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Protected Area Designation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source generally protects biodiversity or species without area designation or protected-area management.\". Should the LLM tag SpecificTopic = \"Protected Area Designation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Habitat Restoration",
+      "binary_answer": "Yes|No",
+      "definition": "Restoration, maintenance, or improvement of natural habitats or habitat quality for species.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Habitat Restoration\"?",
+      "yes_when": [
+        "The source targets habitat restoration, habitat condition, ecological corridors, breeding/resting sites, or habitat conservation duties.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source protects species generally or designates areas without habitat restoration or habitat-condition duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "habitat restoration",
+        "natural habitats",
+        "habitat condition",
+        "breeding sites",
+        "favourable conservation status"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Habitat Restoration.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"to ensure the restoration or maintenance of natural habitats and species of Community interest at a favourable conservation status\". Should the LLM tag SpecificTopic = \"Habitat Restoration\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source targets habitat restoration, habitat condition, ecological corridors, breeding/resting sites, or habitat conservation duties.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Habitat Restoration.negative_incidental_keyword",
+          "question": "A source mentions \"habitat restoration\" once in background, but its operative duties regulate a different subject and no duty matches \"The source targets habitat restoration, habitat condition, ecological corridors, breeding/resting sites, or habitat conservation duties.\". Should the LLM tag SpecificTopic = \"Habitat Restoration\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Habitat Restoration.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source protects species generally or designates areas without habitat restoration or habitat-condition duties.\". Should the LLM tag SpecificTopic = \"Habitat Restoration\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Habitat Restoration.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"A biodiversity project is a project, carried out in a particular area, that is designed to enhance or protect biodiversity in native species\". Standing alone, should the LLM tag SpecificTopic = \"Habitat Restoration\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Endangered Species Protection",
+      "binary_answer": "Yes|No",
+      "definition": "Protection, recovery, trade restrictions, taking prohibitions, or conservation measures for threatened/endangered species.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Endangered Species Protection\"?",
+      "yes_when": [
+        "The source specifically protects endangered/threatened/protected species, wild birds, fauna/flora, or sets species recovery measures.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source concerns broad biodiversity or habitats without species-specific protection.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "endangered species",
+        "threatened species",
+        "protected species",
+        "wild birds",
+        "wild fauna and flora"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Endangered Species Protection.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source specifically protects endangered/threatened/protected species, wild birds, fauna/flora, or sets species recovery measures.\". Should the LLM tag SpecificTopic = \"Endangered Species Protection\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source specifically protects endangered/threatened/protected species, wild birds, fauna/flora, or sets species recovery measures.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Endangered Species Protection.negative_incidental_keyword",
+          "question": "A source mentions \"endangered species\" once in background, but its operative duties regulate a different subject and no duty matches \"The source specifically protects endangered/threatened/protected species, wild birds, fauna/flora, or sets species recovery measures.\". Should the LLM tag SpecificTopic = \"Endangered Species Protection\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Endangered Species Protection.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source concerns broad biodiversity or habitats without species-specific protection.\". Should the LLM tag SpecificTopic = \"Endangered Species Protection\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Invasive Species Control",
+      "binary_answer": "Yes|No",
+      "definition": "Prevention, early detection, eradication, containment, trade controls, or management of invasive alien species.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Invasive Species Control\"?",
+      "yes_when": [
+        "The source directly regulates invasive species lists, import/keeping bans, eradication, control plans, or pathway management.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only mentions species protection or biodiversity without invasive-species mechanisms.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "invasive alien species",
+        "invasive species",
+        "eradication",
+        "containment",
+        "pathway management"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Invasive Species Control.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"on the prevention and management of the introduction and spread of invasive alien species\". Should the LLM tag SpecificTopic = \"Invasive Species Control\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates invasive species lists, import/keeping bans, eradication, control plans, or pathway management.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Invasive Species Control.negative_incidental_keyword",
+          "question": "A source mentions \"invasive alien species\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates invasive species lists, import/keeping bans, eradication, control plans, or pathway management.\". Should the LLM tag SpecificTopic = \"Invasive Species Control\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Invasive Species Control.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only mentions species protection or biodiversity without invasive-species mechanisms.\". Should the LLM tag SpecificTopic = \"Invasive Species Control\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Wildlife Trade Regulation",
+      "binary_answer": "Yes|No",
+      "definition": "Regulation of trade, import, export, transport, possession, or commercialization of wildlife, species, specimens, or CITES-listed products.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Wildlife Trade Regulation\"?",
+      "yes_when": [
+        "The source controls wildlife trade, permits, certificates, CITES implementation, import/export of species, or trade in specimens.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source protects wildlife habitat or biodiversity without a trade/import/export mechanism.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "wildlife trade",
+        "CITES",
+        "import of specimens",
+        "export permits",
+        "trade in species"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Wildlife Trade Regulation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source controls wildlife trade, permits, certificates, CITES implementation, import/export of species, or trade in specimens.\". Should the LLM tag SpecificTopic = \"Wildlife Trade Regulation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source controls wildlife trade, permits, certificates, CITES implementation, import/export of species, or trade in specimens.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Wildlife Trade Regulation.negative_incidental_keyword",
+          "question": "A source mentions \"wildlife trade\" once in background, but its operative duties regulate a different subject and no duty matches \"The source controls wildlife trade, permits, certificates, CITES implementation, import/export of species, or trade in specimens.\". Should the LLM tag SpecificTopic = \"Wildlife Trade Regulation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Wildlife Trade Regulation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source protects wildlife habitat or biodiversity without a trade/import/export mechanism.\". Should the LLM tag SpecificTopic = \"Wildlife Trade Regulation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Pollinator Protection",
+      "binary_answer": "Yes|No",
+      "definition": "Protection of bees, pollinators, pollination services, or measures reducing harms to pollinator species.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Pollinator Protection\"?",
+      "yes_when": [
+        "The source specifically regulates pollinators, bee protection, pesticide impacts on pollinators, or pollinator habitat measures.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source addresses biodiversity, pesticides, or agriculture generally without pollinator-specific focus.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "pollinators",
+        "bees",
+        "pollination",
+        "pollinator habitat",
+        "bee protection"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Pollinator Protection.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source specifically regulates pollinators, bee protection, pesticide impacts on pollinators, or pollinator habitat measures.\". Should the LLM tag SpecificTopic = \"Pollinator Protection\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source specifically regulates pollinators, bee protection, pesticide impacts on pollinators, or pollinator habitat measures.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Pollinator Protection.negative_incidental_keyword",
+          "question": "A source mentions \"pollinators\" once in background, but its operative duties regulate a different subject and no duty matches \"The source specifically regulates pollinators, bee protection, pesticide impacts on pollinators, or pollinator habitat measures.\". Should the LLM tag SpecificTopic = \"Pollinator Protection\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Pollinator Protection.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source addresses biodiversity, pesticides, or agriculture generally without pollinator-specific focus.\". Should the LLM tag SpecificTopic = \"Pollinator Protection\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Direct Impact Drivers of Biodiversity Loss",
+      "binary_answer": "Yes|No",
+      "definition": "Drivers that directly cause biodiversity loss, including land-use change, exploitation, invasive species, pollution, climate change, and ecosystem disturbance.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Direct Impact Drivers of Biodiversity Loss\"?",
+      "yes_when": [
+        "The source identifies or regulates direct biodiversity-loss drivers as a substantive topic, not merely a generic environmental effect.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The law targets a single driver such as pollution or climate without linking it to biodiversity impacts.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "drivers of biodiversity loss",
+        "land-use change",
+        "overexploitation",
+        "invasive species",
+        "ecosystem degradation"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Direct Impact Drivers of Biodiversity Loss.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source identifies or regulates direct biodiversity-loss drivers as a substantive topic, not merely a generic environmental effect.\". Should the LLM tag SpecificTopic = \"Direct Impact Drivers of Biodiversity Loss\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source identifies or regulates direct biodiversity-loss drivers as a substantive topic, not merely a generic environmental effect.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Direct Impact Drivers of Biodiversity Loss.negative_incidental_keyword",
+          "question": "A source mentions \"drivers of biodiversity loss\" once in background, but its operative duties regulate a different subject and no duty matches \"The source identifies or regulates direct biodiversity-loss drivers as a substantive topic, not merely a generic environmental effect.\". Should the LLM tag SpecificTopic = \"Direct Impact Drivers of Biodiversity Loss\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Direct Impact Drivers of Biodiversity Loss.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The law targets a single driver such as pollution or climate without linking it to biodiversity impacts.\". Should the LLM tag SpecificTopic = \"Direct Impact Drivers of Biodiversity Loss\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Impacts on the State of Species",
+      "binary_answer": "Yes|No",
+      "definition": "Impacts on species populations, distribution, conservation status, extinction risk, or abundance.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Impacts on the State of Species\"?",
+      "yes_when": [
+        "The source requires assessment, prevention, disclosure, or mitigation of impacts on species state or conservation status.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source only protects habitat or broad biodiversity without species-state or population impact focus.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "state of species",
+        "species population",
+        "conservation status",
+        "extinction risk",
+        "species abundance"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Impacts on the State of Species.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source requires assessment, prevention, disclosure, or mitigation of impacts on species state or conservation status.\". Should the LLM tag SpecificTopic = \"Impacts on the State of Species\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source requires assessment, prevention, disclosure, or mitigation of impacts on species state or conservation status.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Impacts on the State of Species.negative_incidental_keyword",
+          "question": "A source mentions \"state of species\" once in background, but its operative duties regulate a different subject and no duty matches \"The source requires assessment, prevention, disclosure, or mitigation of impacts on species state or conservation status.\". Should the LLM tag SpecificTopic = \"Impacts on the State of Species\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Impacts on the State of Species.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only protects habitat or broad biodiversity without species-state or population impact focus.\". Should the LLM tag SpecificTopic = \"Impacts on the State of Species\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Impacts on the Extent and Conditions of Ecosystems",
+      "binary_answer": "Yes|No",
+      "definition": "Impacts on ecosystem area, distribution, fragmentation, degradation, ecological integrity, or condition.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Impacts on the Extent and Conditions of Ecosystems\"?",
+      "yes_when": [
+        "The source requires assessment, prevention, disclosure, or mitigation of impacts on ecosystem extent or condition.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source mentions ecosystems generally without an impact/condition/extent framework.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "ecosystem extent",
+        "ecosystem condition",
+        "degradation",
+        "fragmentation",
+        "ecological integrity"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Impacts on the Extent and Conditions of Ecosystems.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source requires assessment, prevention, disclosure, or mitigation of impacts on ecosystem extent or condition.\". Should the LLM tag SpecificTopic = \"Impacts on the Extent and Conditions of Ecosystems\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source requires assessment, prevention, disclosure, or mitigation of impacts on ecosystem extent or condition.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Impacts on the Extent and Conditions of Ecosystems.negative_incidental_keyword",
+          "question": "A source mentions \"ecosystem extent\" once in background, but its operative duties regulate a different subject and no duty matches \"The source requires assessment, prevention, disclosure, or mitigation of impacts on ecosystem extent or condition.\". Should the LLM tag SpecificTopic = \"Impacts on the Extent and Conditions of Ecosystems\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Impacts on the Extent and Conditions of Ecosystems.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source mentions ecosystems generally without an impact/condition/extent framework.\". Should the LLM tag SpecificTopic = \"Impacts on the Extent and Conditions of Ecosystems\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Impacts on and Dependencies on Ecosystem Services",
+      "binary_answer": "Yes|No",
+      "definition": "Impacts on, risks to, or dependencies on services that ecosystems provide to people and businesses.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Impacts on and Dependencies on Ecosystem Services\"?",
+      "yes_when": [
+        "The source directly references ecosystem services, dependencies, nature-related services, or impacts on the benefits provided by ecosystems.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source protects biodiversity generally without service/dependency concepts.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "ecosystem services",
+        "dependencies",
+        "services provided by ecosystems",
+        "nature-related dependencies"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Impacts on and Dependencies on Ecosystem Services.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly references ecosystem services, dependencies, nature-related services, or impacts on the benefits provided by ecosystems.\". Should the LLM tag SpecificTopic = \"Impacts on and Dependencies on Ecosystem Services\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly references ecosystem services, dependencies, nature-related services, or impacts on the benefits provided by ecosystems.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Impacts on and Dependencies on Ecosystem Services.negative_incidental_keyword",
+          "question": "A source mentions \"ecosystem services\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly references ecosystem services, dependencies, nature-related services, or impacts on the benefits provided by ecosystems.\". Should the LLM tag SpecificTopic = \"Impacts on and Dependencies on Ecosystem Services\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Impacts on and Dependencies on Ecosystem Services.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source protects biodiversity generally without service/dependency concepts.\". Should the LLM tag SpecificTopic = \"Impacts on and Dependencies on Ecosystem Services\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Soil Conservation",
+      "binary_answer": "Yes|No",
+      "definition": "Protection of soil as a natural resource from erosion, degradation, sealing, compaction, or loss of productive capacity.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Soil Conservation\"?",
+      "yes_when": [
+        "The source centrally addresses soil protection, conservation, land degradation, erosion control, or sustainable soil management.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The main concern is contaminated land clean-up or pollutant thresholds rather than soil conservation.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "soil conservation",
+        "soil protection",
+        "erosion",
+        "land degradation",
+        "soil sealing"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Soil Conservation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Wet bodembescherming\". Should the LLM tag SpecificTopic = \"Soil Conservation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally addresses soil protection, conservation, land degradation, erosion control, or sustainable soil management.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Soil Conservation.negative_incidental_keyword",
+          "question": "A source mentions \"soil conservation\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally addresses soil protection, conservation, land degradation, erosion control, or sustainable soil management.\". Should the LLM tag SpecificTopic = \"Soil Conservation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Soil Conservation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The main concern is contaminated land clean-up or pollutant thresholds rather than soil conservation.\". Should the LLM tag SpecificTopic = \"Soil Conservation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Animal Welfare",
+      "binary_answer": "Yes|No",
+      "definition": "Protection of animal health, humane treatment, husbandry, transport, slaughter, testing, or welfare conditions.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Animal Welfare\"?",
+      "yes_when": [
+        "The source directly regulates animal welfare, cruelty, livestock treatment, transport/slaughter conditions, animal testing, or welfare standards.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source protects wildlife biodiversity or endangered species without welfare/treatment of animals.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "animal welfare",
+        "humane treatment",
+        "animal transport",
+        "slaughter",
+        "animal testing",
+        "livestock welfare"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Animal Welfare.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"on the protection of animals used for scientific purposes\". Should the LLM tag SpecificTopic = \"Animal Welfare\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates animal welfare, cruelty, livestock treatment, transport/slaughter conditions, animal testing, or welfare standards.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Animal Welfare.negative_incidental_keyword",
+          "question": "A source mentions \"animal welfare\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates animal welfare, cruelty, livestock treatment, transport/slaughter conditions, animal testing, or welfare standards.\". Should the LLM tag SpecificTopic = \"Animal Welfare\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Animal Welfare.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source protects wildlife biodiversity or endangered species without welfare/treatment of animals.\". Should the LLM tag SpecificTopic = \"Animal Welfare\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Marine Protected Areas",
+      "binary_answer": "Yes|No",
+      "definition": "Designation, management, restrictions, or conservation objectives for protected areas in marine or coastal waters.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Marine Protected Areas\"?",
+      "yes_when": [
+        "The source creates or regulates marine protected areas, protected marine zones, special conservation areas at sea, or restrictions inside those areas.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The law addresses marine pollution, fisheries, or marine strategy without protected-area designation or management.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "marine protected area",
+        "protected marine zone",
+        "special area of conservation",
+        "MPA"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Marine Protected Areas.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the designation of protected species; (g) the designation of open and closed seasons for harvesting; (h) the designation of the opening and closing of areas, regions or sub-regions for purposes of scientific study or conservation, including special areas for protection and scientific study;\". Should the LLM tag SpecificTopic = \"Marine Protected Areas\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source creates or regulates marine protected areas, protected marine zones, special conservation areas at sea, or restrictions inside those areas.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Marine Protected Areas.negative_incidental_keyword",
+          "question": "A source mentions \"marine protected area\" once in background, but its operative duties regulate a different subject and no duty matches \"The source creates or regulates marine protected areas, protected marine zones, special conservation areas at sea, or restrictions inside those areas.\". Should the LLM tag SpecificTopic = \"Marine Protected Areas\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Marine Protected Areas.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The law addresses marine pollution, fisheries, or marine strategy without protected-area designation or management.\". Should the LLM tag SpecificTopic = \"Marine Protected Areas\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    }
+  ]
+}

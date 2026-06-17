@@ -1,0 +1,947 @@
+{
+  "km_id": "KM_FINAL_ST_03_WATER_MARINE_FISHERIES",
+  "km_name": "SpecificTopic Binary KM - Water, Marine Resources and Fisheries",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "SpecificTopic",
+  "purpose": "Binary Yes/No SpecificTopic decisions for the water_marine_fisheries family. This simplified KM owns its tag-level reconciliation and emits only final Yes tags for this family.",
+  "family_reconciliation": {
+    "standalone_specific_topic_reconciler_removed": true,
+    "reconciled_output_key": "final_specific_topics_from_this_family",
+    "rules": [
+      "Answer every tag in this KM independently as Yes or No before producing the family final list.",
+      "Emit only tags answered Yes in final_specific_topics_from_this_family.",
+      "Do not emit candidates, centrality labels, or nearby labels as final tags.",
+      "If two tags overlap, keep both only when the source has distinct operative evidence for both; otherwise answer Yes only for the more directly satisfied decision question.",
+      "Reject incidental, background, implementation-actor-only, and keyword-only evidence even when a semantic signal appears.",
+      "The standalone SpecificTopic reconciler has been removed; this family KM is responsible for suppressing weak/adjacent labels before code consolidation."
+    ],
+    "weak_evidence_policy": [
+      "Weak or not-observed tags remain in the enum, but need direct source evidence at runtime.",
+      "Do not use weak master examples as independent proof; use them only as cautionary boundary tests."
+    ],
+    "weak_or_not_observed_tags_in_this_family": [
+      "Stormwater Management",
+      "Drought Management",
+      "Coastal Zone Management",
+      "Water Infrastructure",
+      "Water Pricing"
+    ]
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical SpecificTopic value from this KM",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes; empty string allowed when No",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional canonical tag that better fits the evidence"
+      }
+    ],
+    "final_specific_topics_from_this_family": [
+      "all tags from tag_decisions with answer=Yes, already reconciled by this family KM"
+    ]
+  },
+  "tags": [
+    {
+      "tag": "Marine Pollution",
+      "binary_answer": "Yes|No",
+      "definition": "Prevention, control, liability, or remediation of pollution of seas, oceans, coastal waters, or marine waters.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Marine Pollution\"?",
+      "yes_when": [
+        "The instrument targets oil spills, ship-source pollution, dumping, hazardous discharges, marine contamination, or compensation for marine pollution damage.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The law is about marine biodiversity or fisheries management without pollutant contamination as a central concern.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "marine pollution",
+        "pollution from ships",
+        "ship-source pollution",
+        "oil pollution",
+        "bunker oil",
+        "sea pollution"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Marine Pollution.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"on ship-source pollution and on the introduction of penalties for infringements\". Should the LLM tag SpecificTopic = \"Marine Pollution\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The instrument targets oil spills, ship-source pollution, dumping, hazardous discharges, marine contamination, or compensation for marine pollution damage.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Marine Pollution.negative_incidental_keyword",
+          "question": "A source mentions \"marine pollution\" once in background, but its operative duties regulate a different subject and no duty matches \"The instrument targets oil spills, ship-source pollution, dumping, hazardous discharges, marine contamination, or compensation for marine pollution damage.\". Should the LLM tag SpecificTopic = \"Marine Pollution\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Marine Pollution.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The law is about marine biodiversity or fisheries management without pollutant contamination as a central concern.\". Should the LLM tag SpecificTopic = \"Marine Pollution\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Marine Pollution.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"RECOGNISING the importance of safeguarding the environment and protecting the integrity of the ecosystem of the seas surrounding Antarctica;\". Standing alone, should the LLM tag SpecificTopic = \"Marine Pollution\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Stormwater Management",
+      "binary_answer": "Yes|No",
+      "definition": "Management of rainwater runoff, drainage, urban runoff, or stormwater discharges.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Stormwater Management\"?",
+      "yes_when": [
+        "The law directly regulates stormwater systems, runoff capture, drainage permits, sewer overflow, or pollution from stormwater.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The text only refers to water management generally, flooding, or wastewater treatment without stormwater-specific duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "stormwater",
+        "runoff",
+        "urban runoff",
+        "drainage",
+        "combined sewer overflow"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Stormwater Management.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The law directly regulates stormwater systems, runoff capture, drainage permits, sewer overflow, or pollution from stormwater.\". Should the LLM tag SpecificTopic = \"Stormwater Management\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The law directly regulates stormwater systems, runoff capture, drainage permits, sewer overflow, or pollution from stormwater.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Stormwater Management.negative_incidental_keyword",
+          "question": "A source mentions \"stormwater\" once in background, but its operative duties regulate a different subject and no duty matches \"The law directly regulates stormwater systems, runoff capture, drainage permits, sewer overflow, or pollution from stormwater.\". Should the LLM tag SpecificTopic = \"Stormwater Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Stormwater Management.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only refers to water management generally, flooding, or wastewater treatment without stormwater-specific duties.\". Should the LLM tag SpecificTopic = \"Stormwater Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Wastewater Treatment",
+      "binary_answer": "Yes|No",
+      "definition": "Collection, treatment, discharge, reuse, permitting, or performance requirements for sewage, urban wastewater, or industrial wastewater.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Wastewater Treatment\"?",
+      "yes_when": [
+        "The source regulates wastewater systems, collecting systems, treatment plants, discharge permits, treatment standards, or effluent quality.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only concerns general water quality, water allocation, or stormwater without wastewater treatment duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "wastewater",
+        "waste-water",
+        "sewage",
+        "urban waste water",
+        "treatment plant",
+        "collecting systems"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Wastewater Treatment.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Council Directive 91/271/EEC of 21 May 1991 concerning urban waste-water treatment\". Should the LLM tag SpecificTopic = \"Wastewater Treatment\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates wastewater systems, collecting systems, treatment plants, discharge permits, treatment standards, or effluent quality.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Wastewater Treatment.negative_incidental_keyword",
+          "question": "A source mentions \"wastewater\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates wastewater systems, collecting systems, treatment plants, discharge permits, treatment standards, or effluent quality.\". Should the LLM tag SpecificTopic = \"Wastewater Treatment\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Wastewater Treatment.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only concerns general water quality, water allocation, or stormwater without wastewater treatment duties.\". Should the LLM tag SpecificTopic = \"Wastewater Treatment\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Water Quality Standards",
+      "binary_answer": "Yes|No",
+      "definition": "Legal standards, objectives, thresholds, monitoring, or classification for the quality of surface water, groundwater, drinking water, or marine/coastal waters.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Water Quality Standards\"?",
+      "yes_when": [
+        "The source sets or implements water-quality objectives, environmental quality standards, pollutant limits, monitoring, or status classifications.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source manages water quantity, allocation, pricing, or infrastructure without quality thresholds or pollution controls.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "water quality",
+        "environmental quality standards",
+        "surface water",
+        "groundwater",
+        "drinking water",
+        "water contamination"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Water Quality Standards.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"\"appropriate treatment\" means treatment of urban waste water by any process and/or disposal system which after discharge allows the receiving waters to meet the relevant quality objectives\". Should the LLM tag SpecificTopic = \"Water Quality Standards\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets or implements water-quality objectives, environmental quality standards, pollutant limits, monitoring, or status classifications.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Quality Standards.negative_incidental_keyword",
+          "question": "A source mentions \"water quality\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets or implements water-quality objectives, environmental quality standards, pollutant limits, monitoring, or status classifications.\". Should the LLM tag SpecificTopic = \"Water Quality Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Quality Standards.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source manages water quantity, allocation, pricing, or infrastructure without quality thresholds or pollution controls.\". Should the LLM tag SpecificTopic = \"Water Quality Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Quality Standards.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"Member States shall apply the EQS laid down in Part A of Annex I to this Directive for bodies of surface water.\". Standing alone, should the LLM tag SpecificTopic = \"Water Quality Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Water Resource Management",
+      "binary_answer": "Yes|No",
+      "definition": "Planning, governance, integrated management, permits, protection, or sustainable use of water resources.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Water Resource Management\"?",
+      "yes_when": [
+        "The source centrally manages water bodies, river basins, water resources, abstraction, planning, or resource status.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only sets a water-quality pollutant limit or wastewater treatment duty without broader resource management.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "water resource management",
+        "river basin",
+        "water framework",
+        "water resources",
+        "abstraction"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Water Resource Management.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"establishing a framework for Community action in the field of water policy\". Should the LLM tag SpecificTopic = \"Water Resource Management\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally manages water bodies, river basins, water resources, abstraction, planning, or resource status.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Resource Management.negative_incidental_keyword",
+          "question": "A source mentions \"water resource management\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally manages water bodies, river basins, water resources, abstraction, planning, or resource status.\". Should the LLM tag SpecificTopic = \"Water Resource Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Resource Management.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only sets a water-quality pollutant limit or wastewater treatment duty without broader resource management.\". Should the LLM tag SpecificTopic = \"Water Resource Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Water Use Efficiency",
+      "binary_answer": "Yes|No",
+      "definition": "Requirements to reduce water use per output, product, building, process, or service.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Water Use Efficiency\"?",
+      "yes_when": [
+        "The source mandates efficient water fixtures, water-efficiency labels, industrial water-efficiency practices, or water-use performance metrics.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The law addresses water conservation generally, water pricing, or water quality without efficiency metrics or product/process performance.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "water efficiency",
+        "water-efficient",
+        "efficiency labelling",
+        "water use performance"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Water Use Efficiency.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"to conserve water supplies by reducing water consumption; ... to promote the adoption of efficient and effective water-use and water-saving technologies.\". Should the LLM tag SpecificTopic = \"Water Use Efficiency\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source mandates efficient water fixtures, water-efficiency labels, industrial water-efficiency practices, or water-use performance metrics.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Use Efficiency.negative_incidental_keyword",
+          "question": "A source mentions \"water efficiency\" once in background, but its operative duties regulate a different subject and no duty matches \"The source mandates efficient water fixtures, water-efficiency labels, industrial water-efficiency practices, or water-use performance metrics.\". Should the LLM tag SpecificTopic = \"Water Use Efficiency\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Use Efficiency.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The law addresses water conservation generally, water pricing, or water quality without efficiency metrics or product/process performance.\". Should the LLM tag SpecificTopic = \"Water Use Efficiency\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Water Allocation",
+      "binary_answer": "Yes|No",
+      "definition": "Allocation of water rights, permits, quotas, priority uses, abstraction volumes, or scarcity-based distributions.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Water Allocation\"?",
+      "yes_when": [
+        "The source governs who may withdraw/use water, how quantities are allocated, or how competing water uses are prioritized.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only addresses quality, pollution, drought response, or infrastructure without allocation rights or quantities.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "water allocation",
+        "water rights",
+        "abstraction permit",
+        "withdrawal quota",
+        "allocation priority"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Water Allocation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"water allocation means the specific volume of water allocated to water access entitlements in a given water accounting period.\". Should the LLM tag SpecificTopic = \"Water Allocation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source governs who may withdraw/use water, how quantities are allocated, or how competing water uses are prioritized.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Allocation.negative_incidental_keyword",
+          "question": "A source mentions \"water allocation\" once in background, but its operative duties regulate a different subject and no duty matches \"The source governs who may withdraw/use water, how quantities are allocated, or how competing water uses are prioritized.\". Should the LLM tag SpecificTopic = \"Water Allocation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Allocation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only addresses quality, pollution, drought response, or infrastructure without allocation rights or quantities.\". Should the LLM tag SpecificTopic = \"Water Allocation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Water Conservation",
+      "binary_answer": "Yes|No",
+      "definition": "Reduction or protection of water consumption and preservation of water supplies.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Water Conservation\"?",
+      "yes_when": [
+        "The law requires conservation measures, demand reduction, water-saving practices, or restrictions to preserve water resources.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only regulates pollutant levels, wastewater treatment, or water tariffs without conservation objectives.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "water conservation",
+        "water saving",
+        "reduce water consumption",
+        "conserve water"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Water Conservation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"to conserve water supplies by reducing water consumption;\". Should the LLM tag SpecificTopic = \"Water Conservation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The law requires conservation measures, demand reduction, water-saving practices, or restrictions to preserve water resources.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Conservation.negative_incidental_keyword",
+          "question": "A source mentions \"water conservation\" once in background, but its operative duties regulate a different subject and no duty matches \"The law requires conservation measures, demand reduction, water-saving practices, or restrictions to preserve water resources.\". Should the LLM tag SpecificTopic = \"Water Conservation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Conservation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only regulates pollutant levels, wastewater treatment, or water tariffs without conservation objectives.\". Should the LLM tag SpecificTopic = \"Water Conservation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Conservation.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"fees for applying for registration of WELS products for the purposes of the WELS scheme\". Standing alone, should the LLM tag SpecificTopic = \"Water Conservation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Drought Management",
+      "binary_answer": "Yes|No",
+      "definition": "Preparedness, planning, emergency restrictions, risk management, or response measures for drought conditions.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Drought Management\"?",
+      "yes_when": [
+        "The source directly addresses drought plans, drought risk, scarcity emergencies, water restrictions, or resilience during drought.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The text discusses climate adaptation or water management generally without drought-specific mechanisms.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "drought",
+        "water scarcity",
+        "drought plan",
+        "drought management",
+        "scarcity restrictions"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Drought Management.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly addresses drought plans, drought risk, scarcity emergencies, water restrictions, or resilience during drought.\". Should the LLM tag SpecificTopic = \"Drought Management\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly addresses drought plans, drought risk, scarcity emergencies, water restrictions, or resilience during drought.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Drought Management.negative_incidental_keyword",
+          "question": "A source mentions \"drought\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly addresses drought plans, drought risk, scarcity emergencies, water restrictions, or resilience during drought.\". Should the LLM tag SpecificTopic = \"Drought Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Drought Management.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text discusses climate adaptation or water management generally without drought-specific mechanisms.\". Should the LLM tag SpecificTopic = \"Drought Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Transboundary Water Management",
+      "binary_answer": "Yes|No",
+      "definition": "Management of shared rivers, lakes, groundwater, basins, or watercourses crossing national or administrative borders.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Transboundary Water Management\"?",
+      "yes_when": [
+        "The source establishes obligations for international/transboundary waters, cross-border river basins, cooperation, information exchange, or shared water bodies.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The law is domestic water management with no cross-border resource, basin, or cooperation element.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "transboundary waters",
+        "international river basin",
+        "shared watercourse",
+        "cross-border water"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Transboundary Water Management.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Where a river basin district extends beyond the territory of the Community, the Member State or Member States concerned shall endeavour to establish appropriate coordination with the relevant non-Member States\". Should the LLM tag SpecificTopic = \"Transboundary Water Management\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source establishes obligations for international/transboundary waters, cross-border river basins, cooperation, information exchange, or shared water bodies.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Transboundary Water Management.negative_incidental_keyword",
+          "question": "A source mentions \"transboundary waters\" once in background, but its operative duties regulate a different subject and no duty matches \"The source establishes obligations for international/transboundary waters, cross-border river basins, cooperation, information exchange, or shared water bodies.\". Should the LLM tag SpecificTopic = \"Transboundary Water Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Transboundary Water Management.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The law is domestic water management with no cross-border resource, basin, or cooperation element.\". Should the LLM tag SpecificTopic = \"Transboundary Water Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Fisheries Management",
+      "binary_answer": "Yes|No",
+      "definition": "Management of fish stocks, fishing activity, catch limits, conservation of fisheries resources, aquaculture, or marine living resources as fisheries.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Fisheries Management\"?",
+      "yes_when": [
+        "The regulated object is fishing, fish stock conservation, catch quotas, fishing gear, fishing vessels, or fisheries licensing.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only protects marine ecosystems or biodiversity without regulating fishing activity or fishery resources.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "fisheries",
+        "fish stocks",
+        "catch limits",
+        "fishing vessels",
+        "marine living resources"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Fisheries Management.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"An Act relating to the conservation of marine living resources of the Antarctic and its surrounding seas\". Should the LLM tag SpecificTopic = \"Fisheries Management\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The regulated object is fishing, fish stock conservation, catch quotas, fishing gear, fishing vessels, or fisheries licensing.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Fisheries Management.negative_incidental_keyword",
+          "question": "A source mentions \"fisheries\" once in background, but its operative duties regulate a different subject and no duty matches \"The regulated object is fishing, fish stock conservation, catch quotas, fishing gear, fishing vessels, or fisheries licensing.\". Should the LLM tag SpecificTopic = \"Fisheries Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Fisheries Management.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only protects marine ecosystems or biodiversity without regulating fishing activity or fishery resources.\". Should the LLM tag SpecificTopic = \"Fisheries Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Coastal Zone Management",
+      "binary_answer": "Yes|No",
+      "definition": "Planning, protection, development control, restoration, or integrated management of coastal areas and shorelines.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Coastal Zone Management\"?",
+      "yes_when": [
+        "The source regulates coastal land/sea interfaces, shoreline development, coastal erosion, coastal ecosystem management, or coastal planning.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The text is about marine pollution, fisheries, or land-use planning without coastal-zone focus.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "coastal zone",
+        "shoreline",
+        "coastal management",
+        "coastal erosion",
+        "coastal planning"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Coastal Zone Management.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source regulates coastal land/sea interfaces, shoreline development, coastal erosion, coastal ecosystem management, or coastal planning.\". Should the LLM tag SpecificTopic = \"Coastal Zone Management\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates coastal land/sea interfaces, shoreline development, coastal erosion, coastal ecosystem management, or coastal planning.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Coastal Zone Management.negative_incidental_keyword",
+          "question": "A source mentions \"coastal zone\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates coastal land/sea interfaces, shoreline development, coastal erosion, coastal ecosystem management, or coastal planning.\". Should the LLM tag SpecificTopic = \"Coastal Zone Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Coastal Zone Management.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text is about marine pollution, fisheries, or land-use planning without coastal-zone focus.\". Should the LLM tag SpecificTopic = \"Coastal Zone Management\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Water Infrastructure",
+      "binary_answer": "Yes|No",
+      "definition": "Infrastructure for water supply, distribution, treatment, storage, flood/drainage systems, or wastewater networks.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Water Infrastructure\"?",
+      "yes_when": [
+        "The regulated object is physical water infrastructure, public water systems, treatment works, distribution networks, reservoirs, or related investment/standards.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The law addresses water rights or quality objectives without infrastructure requirements.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "water infrastructure",
+        "water supply network",
+        "treatment works",
+        "waterworks",
+        "sewerage infrastructure"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Water Infrastructure.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The regulated object is physical water infrastructure, public water systems, treatment works, distribution networks, reservoirs, or related investment/standards.\". Should the LLM tag SpecificTopic = \"Water Infrastructure\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The regulated object is physical water infrastructure, public water systems, treatment works, distribution networks, reservoirs, or related investment/standards.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Infrastructure.negative_incidental_keyword",
+          "question": "A source mentions \"water infrastructure\" once in background, but its operative duties regulate a different subject and no duty matches \"The regulated object is physical water infrastructure, public water systems, treatment works, distribution networks, reservoirs, or related investment/standards.\". Should the LLM tag SpecificTopic = \"Water Infrastructure\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Infrastructure.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The law addresses water rights or quality objectives without infrastructure requirements.\". Should the LLM tag SpecificTopic = \"Water Infrastructure\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Water Pricing",
+      "binary_answer": "Yes|No",
+      "definition": "Tariffs, charges, fees, cost recovery, taxes, or pricing incentives for water use, supply, discharge, or abstraction.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Water Pricing\"?",
+      "yes_when": [
+        "The source sets or requires water tariffs, abstraction fees, wastewater charges, cost-recovery principles, or pricing incentives.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The text only regulates allocation, conservation, or quality without pricing or economic instruments.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "water pricing",
+        "tariffs",
+        "water charges",
+        "cost recovery",
+        "abstraction fee"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Water Pricing.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source sets or requires water tariffs, abstraction fees, wastewater charges, cost-recovery principles, or pricing incentives.\". Should the LLM tag SpecificTopic = \"Water Pricing\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets or requires water tariffs, abstraction fees, wastewater charges, cost-recovery principles, or pricing incentives.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Pricing.negative_incidental_keyword",
+          "question": "A source mentions \"water pricing\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets or requires water tariffs, abstraction fees, wastewater charges, cost-recovery principles, or pricing incentives.\". Should the LLM tag SpecificTopic = \"Water Pricing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Water Pricing.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only regulates allocation, conservation, or quality without pricing or economic instruments.\". Should the LLM tag SpecificTopic = \"Water Pricing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Marine Environment Protection",
+      "binary_answer": "Yes|No",
+      "definition": "Protection of marine ecosystems, marine environmental status, marine biodiversity, or marine resources beyond pollutant control.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Marine Environment Protection\"?",
+      "yes_when": [
+        "The source targets marine environmental status, marine ecosystem protection, marine strategies, marine living resources, or sea-area conservation.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The central issue is oil spills/ship pollution only, which should be Marine Pollution; or fishing quotas only, which should be Fisheries Management.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "marine environment",
+        "marine strategy",
+        "good environmental status",
+        "marine ecosystem",
+        "marine living resources"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Marine Environment Protection.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"protect and preserve the marine environment, prevent its deterioration or, where practicable, restore marine ecosystems in areas where they have been adversely affected\". Should the LLM tag SpecificTopic = \"Marine Environment Protection\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source targets marine environmental status, marine ecosystem protection, marine strategies, marine living resources, or sea-area conservation.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Marine Environment Protection.negative_incidental_keyword",
+          "question": "A source mentions \"marine environment\" once in background, but its operative duties regulate a different subject and no duty matches \"The source targets marine environmental status, marine ecosystem protection, marine strategies, marine living resources, or sea-area conservation.\". Should the LLM tag SpecificTopic = \"Marine Environment Protection\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Marine Environment Protection.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The central issue is oil spills/ship pollution only, which should be Marine Pollution; or fishing quotas only, which should be Fisheries Management.\". Should the LLM tag SpecificTopic = \"Marine Environment Protection\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    }
+  ]
+}

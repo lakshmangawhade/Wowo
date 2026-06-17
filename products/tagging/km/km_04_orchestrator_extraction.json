@@ -1,0 +1,343 @@
+{
+  "km_id": "KM_FINAL_04_ORCHESTRATOR_EXTRACTION",
+  "km_name": "Non-Tag Extraction KM - Simplified",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "purpose": "Extract non-tag fields only. This KM must not classify SpecificTopic, ApplicableSectors, or ClosestESRSTopics.",
+  "fields": [
+    {
+      "field_name": "Date_LastChange",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "The most recent source-supported amendment, consolidation, update, or last-change date reflected by the instrument record.",
+      "extract_when": "A last modified, last amended, consolidated-through, updated-on, or latest-change date is explicit in metadata or text.",
+      "do_not_extract_when": "Only adoption, signature, publication, or entry-into-force dates are present; return null rather than guessing.",
+      "normalization": "Return YYYY-MM-DD when the exact date is available; preserve source-supported partial dates only if the downstream schema allows them.",
+      "test_case": [
+        {
+          "id": "Date_LastChange.positive_source_supported",
+          "question": "If the source explicitly supports Date_LastChange under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "Date_LastChange.negative_unsupported",
+          "question": "If the source lacks evidence for Date_LastChange or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "Topic1",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "Primary jurisdiction or source scope of the legislation record.",
+      "extract_when": "The document or metadata identifies the issuing jurisdiction, legal source scope, or official legal system.",
+      "do_not_extract_when": "Do not use ESG topic, policy area, sector, or subject matter as Topic1.",
+      "normalization": "Return English jurisdiction names such as European Union, Netherlands, Australia, United Kingdom, or a comparable jurisdiction label.",
+      "test_case": [
+        {
+          "id": "Topic1.positive_source_supported",
+          "question": "If the source explicitly supports Topic1 under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "Topic1.negative_unsupported",
+          "question": "If the source lacks evidence for Topic1 or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "Topic2",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "Secondary source-supported descriptor that narrows the legal/policy domain under the jurisdiction.",
+      "extract_when": "The title, metadata, or scope clearly identifies a domain such as Environment, Employment, Consumer Protection, Data Protection, Financial Markets, Energy, or Agriculture.",
+      "do_not_extract_when": "The domain is ambiguous or would require ESG inference from tag outputs; return null.",
+      "normalization": "Return concise English descriptors; translate non-English descriptors into English.",
+      "test_case": [
+        {
+          "id": "Topic2.positive_source_supported",
+          "question": "If the source explicitly supports Topic2 under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "Topic2.negative_unsupported",
+          "question": "If the source lacks evidence for Topic2 or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "Topic3",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "Tertiary source-supported descriptor that further refines Topic2.",
+      "extract_when": "The source clearly supports a narrower domain, instrument family, product class, affected activity, or implementation area.",
+      "do_not_extract_when": "A third-level topic would be speculative, redundant, or inferred only from benchmark/tag rules; return null.",
+      "normalization": "Return concise English descriptors grounded in the source.",
+      "test_case": [
+        {
+          "id": "Topic3.positive_source_supported",
+          "question": "If the source explicitly supports Topic3 under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "Topic3.negative_unsupported",
+          "question": "If the source lacks evidence for Topic3 or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "ShortTitle",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "Concise English display title derived from the official title and suitable for a spreadsheet or UI.",
+      "extract_when": "An official title or common short title is present.",
+      "do_not_extract_when": "Do not invent a title that adds legal effects or topics not in the source.",
+      "normalization": "Translate generic legal words and subject matter into English; preserve law numbers, CELEX numbers, act names, article numbers, and proper nouns.",
+      "test_case": [
+        {
+          "id": "ShortTitle.positive_source_supported",
+          "question": "If the source explicitly supports ShortTitle under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "ShortTitle.negative_unsupported",
+          "question": "If the source lacks evidence for ShortTitle or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "OriginalTitle",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "Official full title of the instrument exactly as stated in the source language or official metadata.",
+      "extract_when": "The source provides a formal title, full title, official name, or citation title.",
+      "do_not_extract_when": "Do not translate, summarize, or normalize unless the source itself gives an official English title.",
+      "normalization": "Preserve punctuation, legal identifiers, dates, and language as stated.",
+      "test_case": [
+        {
+          "id": "OriginalTitle.positive_source_supported",
+          "question": "If the source explicitly supports OriginalTitle under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "OriginalTitle.negative_unsupported",
+          "question": "If the source lacks evidence for OriginalTitle or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "ShortDescription",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "Brief English plain-language summary of what the instrument does and what subject matter it regulates.",
+      "extract_when": "The title, scope, purpose, recitals, summary, or operative provisions support a concise description.",
+      "do_not_extract_when": "Do not use generic ESG boilerplate or infer legal effects not supported by the source.",
+      "normalization": "Write one or two concise sentences in English; translate non-English source content by meaning, not word-for-word.",
+      "test_case": [
+        {
+          "id": "ShortDescription.positive_source_supported",
+          "question": "If the source explicitly supports ShortDescription under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "ShortDescription.negative_unsupported",
+          "question": "If the source lacks evidence for ShortDescription or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "TypeofRegulation",
+      "required": true,
+      "value_type": "controlled_single",
+      "allowed_values_ref": "taxonomy.vocabularies[id=TYPE_OF_REGULATION].values[]",
+      "definition": "Canonical legal instrument type assigned from the downstream controlled taxonomy.",
+      "extract_when": "The official title or metadata identifies the legal form, such as Regulation, Directive, Decision, Act, Decree, Order, Rule, Standard, Code, Convention, Treaty, or Guidance.",
+      "do_not_extract_when": "The legal form is not explicit and cannot be confidently inferred from citation style.",
+      "normalization": "Map non-English legal-form words to the canonical English enum used by the schema; e.g., Wet/Law -> Act, Verordening -> Regulation, Richtlijn -> Directive, Besluit/Koninklijk Besluit -> Decision or Decree depending on legal form.",
+      "test_case": [
+        {
+          "id": "TypeofRegulation.positive_source_supported",
+          "question": "If the source explicitly supports TypeofRegulation under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "TypeofRegulation.negative_unsupported",
+          "question": "If the source lacks evidence for TypeofRegulation or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "Source",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "Source URL or equivalent official source reference for the legislation record.",
+      "extract_when": "source_url, final_url, official URL, citation link, or source reference is present in the input metadata.",
+      "do_not_extract_when": "Do not infer or construct URLs from titles, domains, or identifiers if absent.",
+      "normalization": "Copy the source reference exactly from metadata.",
+      "test_case": [
+        {
+          "id": "Source.positive_source_supported",
+          "question": "If the source explicitly supports Source under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "Source.negative_unsupported",
+          "question": "If the source lacks evidence for Source or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "Amendedordevelopedbyifany",
+      "required": true,
+      "value_type": "array[string]",
+      "allowed_values_ref": null,
+      "definition": "Array of instruments, acts, regulations, protocols, or measures explicitly stated to amend, supplement, develop, implement, or modify the instrument.",
+      "extract_when": "The source explicitly lists amendments, corrigenda, implementing/delegated acts, protocols, development measures, or instruments that modify/develop the record.",
+      "do_not_extract_when": "Do not infer related instruments from citations, references, or subject similarity unless the relationship is explicit.",
+      "normalization": "Return an array of official identifiers/titles; translate only generic descriptors for readability while preserving citations and names.",
+      "test_case": [
+        {
+          "id": "Amendedordevelopedbyifany.positive_source_supported",
+          "question": "If the source explicitly supports Amendedordevelopedbyifany under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "Amendedordevelopedbyifany.negative_unsupported",
+          "question": "If the source lacks evidence for Amendedordevelopedbyifany or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "Dateofadoption",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "Date on which the instrument was originally adopted, signed, enacted, made, or issued.",
+      "extract_when": "The official title, metadata, signature block, adoption clause, or citation states the original adoption/signature date.",
+      "do_not_extract_when": "Do not use publication, entry-into-force, amendment, consolidation, last-change, or application dates.",
+      "normalization": "Return YYYY-MM-DD when exact date is available. For EU instruments, the date in the formal title 'of [date]' is often the adoption date.",
+      "test_case": [
+        {
+          "id": "Dateofadoption.positive_source_supported",
+          "question": "If the source explicitly supports Dateofadoption under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "Dateofadoption.negative_unsupported",
+          "question": "If the source lacks evidence for Dateofadoption or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "EntryIntoForceDate",
+      "required": true,
+      "value_type": "string|null",
+      "allowed_values_ref": null,
+      "definition": "Date on which the instrument first entered into force, became effective, or began applying.",
+      "extract_when": "The text states 'enters into force', 'comes into operation', 'shall apply from', 'effective date', or a comparable commencement clause.",
+      "do_not_extract_when": "Do not use adoption or publication date unless the source expressly states entry into force is tied to that date.",
+      "normalization": "Return YYYY-MM-DD when exact date is available; calculate from source text only when the rule is explicit and the publication date is known.",
+      "test_case": [
+        {
+          "id": "EntryIntoForceDate.positive_source_supported",
+          "question": "If the source explicitly supports EntryIntoForceDate under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "EntryIntoForceDate.negative_unsupported",
+          "question": "If the source lacks evidence for EntryIntoForceDate or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    },
+    {
+      "field_name": "Sanctions",
+      "required": true,
+      "value_type": "controlled_single",
+      "allowed_values_ref": "taxonomy.vocabularies[id=SANCTIONS_FLAG].values[]",
+      "definition": "Whether the instrument itself explicitly includes concrete sanctions, penalties, offences, fines, imprisonment, administrative penalties, liability consequences, suspension, withdrawal, seizure, or comparable punitive consequences.",
+      "extract_when": "The document has a penalties/sanctions/offences section or states fines, criminal penalties, imprisonment, administrative penalties, punitive consequences, or comparable enforcement consequences for breach.",
+      "do_not_extract_when": "The source only mentions monitoring, supervision, inspections, remedies, compliance orders, permits, or enforcement without punitive consequences.",
+      "normalization": "Emit exactly Yes or No from the controlled enum. Use No when uncertain.",
+      "test_case": [
+        {
+          "id": "Sanctions.positive_source_supported",
+          "question": "If the source explicitly supports Sanctions under its extract_when rule, should the extractor return the value instead of null/empty?",
+          "expected_answer": "Yes",
+          "reasoning_check": "Extract only source-supported values and normalize exactly as instructed."
+        },
+        {
+          "id": "Sanctions.negative_unsupported",
+          "question": "If the source lacks evidence for Sanctions or only supports an excluded proxy, should the extractor invent a value?",
+          "expected_answer": "No",
+          "reasoning_check": "Return null, [], or No as directed rather than guessing."
+        }
+      ]
+    }
+  ],
+  "output_contract": {
+    "non_tag_fields": [
+      "Date_LastChange",
+      "Topic1",
+      "Topic2",
+      "Topic3",
+      "ShortTitle",
+      "OriginalTitle",
+      "ShortDescription",
+      "TypeofRegulation",
+      "Source",
+      "Amendedordevelopedbyifany",
+      "Dateofadoption",
+      "EntryIntoForceDate",
+      "Sanctions"
+    ],
+    "do_not_output_tag_fields": [
+      "SpecificTopic",
+      "ApplicableSectors",
+      "ClosestESRSTopics"
+    ]
+  }
+}

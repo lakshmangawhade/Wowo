@@ -1,0 +1,129 @@
+{
+  "km_id": "KM_FINAL_00_PIPELINE_AND_FLOW",
+  "km_name": "Final Enrichment Pipeline Orchestrator",
+  "version": "3.1",
+  "created": "2026-04-28",
+  "purpose": "Define the source-to-final-enrichment data flow and the execution contract for the final KM stack.",
+  "execution_flow": [
+    {
+      "step": 1,
+      "name": "Source ingestion",
+      "input": "Raw source document JSON record(s), including title, source metadata, source_url/final_url, body text, extracted HTML/text when available.",
+      "output": "Raw source record with immutable trace IDs."
+    },
+    {
+      "step": 2,
+      "name": "Evidence packet normalization",
+      "input": "Raw source record.",
+      "process": [
+        "Normalize whitespace, preserve original language text, retain official title, jurisdiction/source metadata, dates, source_url/final_url, recitals/scope/purpose, definitions, operative provisions.",
+        "Create short evidence windows for title, scope, definitions, operative duties, sanctions, dates, and addressees.",
+        "Do not add benchmark labels, filenames, row answers, URL slugs as classification evidence."
+      ],
+      "output": "evidence_packet"
+    },
+    {
+      "step": 3,
+      "name": "Non-tag extraction",
+      "km": "KM_FINAL_04_ORCHESTRATOR_EXTRACTION",
+      "input": "evidence_packet",
+      "output": "Date_LastChange, Topic1, Topic2, Topic3, ShortTitle, OriginalTitle, ShortDescription, TypeofRegulation, Source, Amendedordevelopedbyifany, Dateofadoption, EntryIntoForceDate, Sanctions"
+    },
+    {
+      "step": 4,
+      "name": "SpecificTopic family routing",
+      "km": "KM_FINAL_ST_00_TOPIC_FAMILY_ROUTER",
+      "input": "evidence_packet plus non-tag extraction output",
+      "output": "Top 2 SpecificTopic family KM IDs by default, with a 3rd/4th family only when a separate central legal pillar is explicit in title, scope, definitions, or operative provisions.",
+      "process": [
+        "High-precision default: route one narrow source to 1-2 families; do not fan out to 3-4 families unless the source has independent central legal pillars.",
+        "Governance/reporting is not a fallback route; run it only for central business-conduct, reporting/disclosure, due-diligence, anti-corruption, whistleblowing, lobbying, payment-practices, or compliance-architecture regimes.",
+        "Do not route Governance for ordinary permits, penalties, competent authorities, transposition, monitoring, implementation reports, or generic enforcement language."
+      ]
+    },
+    {
+      "step": 5,
+      "name": "SpecificTopic candidate generation",
+      "km": "Routed KM_FINAL_ST_01..09 candidate KMs",
+      "input": "evidence_packet and router output",
+      "output": "candidate_specific_topics with label, confidence, centrality, evidence_role, evidence_excerpt, why_tag, why_not_nearby_labels.",
+      "process": [
+        "Each routed family KM normally emits at most 3 SpecificTopic candidates in high_precision_batch mode.",
+        "Candidates marked companion require a distinct central legal pillar; incidental/background/implementation-only candidates must be rejected or retained only in audit traces."
+      ]
+    },
+    {
+      "step": 6,
+      "name": "SpecificTopic reconciliation",
+      "km": "KM_FINAL_ST_99_TOPIC_RECONCILER",
+      "input": "All topic-family candidates plus evidence_packet.",
+      "output": "Final SpecificTopic[] with rejected candidates and evidence."
+    },
+    {
+      "step": 7,
+      "name": "ApplicableSectors classification and reconciliation",
+      "km": "KM_FINAL_02_APPLICABLE_SECTORS",
+      "input": "evidence_packet plus final SpecificTopic[] plus non-tag fields.",
+      "output": "Final ApplicableSectors[] with direct-addressee/product/facility evidence roles and rejected sector candidates."
+    },
+    {
+      "step": 8,
+      "name": "ESRS mapping",
+      "km": "KM_FINAL_03_ESRS_MAPPING",
+      "input": "Final SpecificTopic[], evidence_packet, selected source mechanisms.",
+      "output": "Final ESRS[] with mapping_trace and rejected ESRS candidates."
+    },
+    {
+      "step": 9,
+      "name": "Schema assembly",
+      "input": "Outputs from steps 3, 6, 7, and 8.",
+      "output": "One enriched final record matching the production schema."
+    },
+    {
+      "step": 10,
+      "name": "Validation and repair",
+      "process": [
+        "Validate all controlled values against canonical enums.",
+        "Remove duplicate labels.",
+        "Ensure max_items: SpecificTopic<=5, ApplicableSectors<=5, ESRS<=7.",
+        "Require evidence_excerpt and tag_reason for retained labels.",
+        "Reject labels produced only from blocked evidence.",
+        "Enforce family candidate budget in high_precision_batch: normally <=3 candidates per family and <=2 routed families unless separate central pillars justify more."
+      ],
+      "output": "Validated final enrichment record plus audit trace."
+    }
+  ],
+  "recommended_runtime_modes": {
+    "high_precision_batch": "Run router top 2 families by default; add a 3rd/4th only for separate central legal pillars. Run governance only when explicitly routed for business-conduct/reporting/due-diligence/compliance architecture. Each family normally emits <=3 SpecificTopic candidates, then strict reconciler.",
+    "high_recall_audit": "Run all nine SpecificTopic family KMs and keep rejected_candidates for evaluation.",
+    "low_latency": "Run router top 1-2 families. Do not run governance unless explicitly routed. Use strict family candidate budget and strict reconciler."
+  },
+  "final_output_shape": {
+    "Source": "string|null",
+    "OriginalTitle": "string|null",
+    "ShortTitle": "string|null",
+    "ShortDescription": "string|null",
+    "Topic1": "string|null",
+    "Topic2": "string|null",
+    "Topic3": "string|null",
+    "TypeofRegulation": "controlled_single",
+    "Dateofadoption": "YYYY-MM-DD|string|null",
+    "EntryIntoForceDate": "YYYY-MM-DD|string|null",
+    "Date_LastChange": "YYYY-MM-DD|string|null",
+    "Amendedordevelopedbyifany": "array[string]",
+    "Sanctions": "Yes|No",
+    "SpecificTopic": "array[canonical SpecificTopic]",
+    "ApplicableSectors": "array[canonical ApplicableSectors]",
+    "ClosestESRSTopics": "array[canonical ESRS]",
+    "audit": {
+      "evidence_packet_id": "string",
+      "topic_family_router": "object",
+      "topic_candidates": "array",
+      "rejected_topic_candidates": "array",
+      "sector_candidates": "array",
+      "rejected_sector_candidates": "array",
+      "esrs_mapping_trace": "array"
+    }
+  },
+  "revision_note": "v3.1 precision patch: reduces SpecificTopic candidate spray, tightens governance routing, adds per-family candidate budgets, strengthens label-specific reconciler gates, and makes sector/ESRS selection more downstream and evidence-role based."
+}

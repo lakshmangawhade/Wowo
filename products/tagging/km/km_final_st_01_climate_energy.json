@@ -1,0 +1,1050 @@
+{
+  "km_id": "KM_FINAL_ST_01_CLIMATE_ENERGY",
+  "km_name": "SpecificTopic Binary KM - Climate, Carbon, Energy and Buildings",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "SpecificTopic",
+  "purpose": "Binary Yes/No SpecificTopic decisions for the climate_energy family. This simplified KM owns its tag-level reconciliation and emits only final Yes tags for this family.",
+  "family_reconciliation": {
+    "standalone_specific_topic_reconciler_removed": true,
+    "reconciled_output_key": "final_specific_topics_from_this_family",
+    "rules": [
+      "Answer every tag in this KM independently as Yes or No before producing the family final list.",
+      "Emit only tags answered Yes in final_specific_topics_from_this_family.",
+      "Do not emit candidates, centrality labels, or nearby labels as final tags.",
+      "If two tags overlap, keep both only when the source has distinct operative evidence for both; otherwise answer Yes only for the more directly satisfied decision question.",
+      "Reject incidental, background, implementation-actor-only, and keyword-only evidence even when a semantic signal appears.",
+      "The standalone SpecificTopic reconciler has been removed; this family KM is responsible for suppressing weak/adjacent labels before code consolidation."
+    ],
+    "weak_evidence_policy": [
+      "Weak or not-observed tags remain in the enum, but need direct source evidence at runtime.",
+      "Do not use weak master examples as independent proof; use them only as cautionary boundary tests."
+    ],
+    "weak_or_not_observed_tags_in_this_family": [
+      "Climate Change Adaptation",
+      "Nationally Determined Contributions (NDCs)",
+      "Voluntary Carbon Markets",
+      "Greenhouse Gas Emissions Trading",
+      "Industrial Energy Efficiency and Audits",
+      "Green Public Procurement"
+    ]
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical SpecificTopic value from this KM",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes; empty string allowed when No",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional canonical tag that better fits the evidence"
+      }
+    ],
+    "final_specific_topics_from_this_family": [
+      "all tags from tag_decisions with answer=Yes, already reconciled by this family KM"
+    ]
+  },
+  "tags": [
+    {
+      "tag": "Building Performance Standards",
+      "binary_answer": "Yes|No",
+      "definition": "Performance requirements for buildings, commonly energy, emissions, environmental, or operational performance standards.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Building Performance Standards\"?",
+      "yes_when": [
+        "The source sets building-level performance requirements, ratings, thresholds, or compliance duties.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text concerns construction products, land-use planning, or energy equipment without building-level performance duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "building performance",
+        "performance of buildings",
+        "building standards",
+        "building rating"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Building Performance Standards.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"to promote the disclosure of information about the energy efficiency of buildings\". Should the LLM tag SpecificTopic = \"Building Performance Standards\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets building-level performance requirements, ratings, thresholds, or compliance duties.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Building Performance Standards.negative_incidental_keyword",
+          "question": "A source mentions \"building performance\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets building-level performance requirements, ratings, thresholds, or compliance duties.\". Should the LLM tag SpecificTopic = \"Building Performance Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Building Performance Standards.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text concerns construction products, land-use planning, or energy equipment without building-level performance duties.\". Should the LLM tag SpecificTopic = \"Building Performance Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Climate Change Mitigation",
+      "binary_answer": "Yes|No",
+      "definition": "Measures to reduce, avoid, price, limit, or remove greenhouse gas emissions or accelerate the low-carbon transition.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Climate Change Mitigation\"?",
+      "yes_when": [
+        "The source centrally targets greenhouse gas reductions, decarbonisation, net-zero, climate targets, carbon markets/pricing, renewable-energy expansion, energy efficiency, or mitigation planning.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Do not tag merely because a pollution, waste, transport, or environmental law has indirect climate benefits. Require an explicit climate, greenhouse gas, carbon, renewable-energy, or energy-efficiency mechanism.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "climate mitigation",
+        "greenhouse gas",
+        "decarbonisation",
+        "net zero",
+        "carbon",
+        "emission reduction",
+        "renewable energy",
+        "energy efficiency"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Climate Change Mitigation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"in order to promote reductions of greenhouse gas emissions in a cost-effective and economically efficient manner\". Should the LLM tag SpecificTopic = \"Climate Change Mitigation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally targets greenhouse gas reductions, decarbonisation, net-zero, climate targets, carbon markets/pricing, renewable-energy expansion, energy efficiency, or mitigation planning.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Climate Change Mitigation.negative_incidental_keyword",
+          "question": "A source mentions \"climate mitigation\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally targets greenhouse gas reductions, decarbonisation, net-zero, climate targets, carbon markets/pricing, renewable-energy expansion, energy efficiency, or mitigation planning.\". Should the LLM tag SpecificTopic = \"Climate Change Mitigation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Climate Change Mitigation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Do not tag merely because a pollution, waste, transport, or environmental law has indirect climate benefits. Require an explicit climate, greenhouse gas, carbon, renewable-energy, or energy-efficiency mechanism.\". Should the LLM tag SpecificTopic = \"Climate Change Mitigation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Climate Change Mitigation.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"imposes obligations on Australia to take action to reduce greenhouse gas emissions;\". Standing alone, should the LLM tag SpecificTopic = \"Climate Change Mitigation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Climate Change Adaptation",
+      "binary_answer": "Yes|No",
+      "definition": "Measures to prepare for, respond to, or build resilience against physical climate impacts.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Climate Change Adaptation\"?",
+      "yes_when": [
+        "The source addresses climate resilience, adaptation plans, physical climate risks, flood/heat/drought resilience, or adaptation duties.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source only reduces emissions, prices carbon, or supports renewables without adaptation or resilience mechanisms.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "climate adaptation",
+        "resilience",
+        "physical climate risk",
+        "adaptation plan"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Climate Change Adaptation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source addresses climate resilience, adaptation plans, physical climate risks, flood/heat/drought resilience, or adaptation duties.\". Should the LLM tag SpecificTopic = \"Climate Change Adaptation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source addresses climate resilience, adaptation plans, physical climate risks, flood/heat/drought resilience, or adaptation duties.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Climate Change Adaptation.negative_incidental_keyword",
+          "question": "A source mentions \"climate adaptation\" once in background, but its operative duties regulate a different subject and no duty matches \"The source addresses climate resilience, adaptation plans, physical climate risks, flood/heat/drought resilience, or adaptation duties.\". Should the LLM tag SpecificTopic = \"Climate Change Adaptation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Climate Change Adaptation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only reduces emissions, prices carbon, or supports renewables without adaptation or resilience mechanisms.\". Should the LLM tag SpecificTopic = \"Climate Change Adaptation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Climate Change Adaptation.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"The ultimate objective of the United Nations Framework Convention on Climate Change... is to stabilise greenhouse gas concentrations in the atmosphere\". Standing alone, should the LLM tag SpecificTopic = \"Climate Change Adaptation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Renewable Energy Targets",
+      "binary_answer": "Yes|No",
+      "definition": "Legally stated renewable energy share, capacity, production, procurement, or consumption targets.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Renewable Energy Targets\"?",
+      "yes_when": [
+        "The source sets numerical or programmatic renewable targets, mandates, trajectories, quota schemes, or national renewable commitments.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text simply supports renewable projects or grid access without a target or quota architecture.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "renewable energy target",
+        "renewable share",
+        "quota",
+        "trajectory",
+        "renewable electricity"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Renewable Energy Targets.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"facilitate the achievement of Australia’s greenhouse gas emissions reduction targets; and\". Should the LLM tag SpecificTopic = \"Renewable Energy Targets\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets numerical or programmatic renewable targets, mandates, trajectories, quota schemes, or national renewable commitments.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Renewable Energy Targets.negative_incidental_keyword",
+          "question": "A source mentions \"renewable energy target\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets numerical or programmatic renewable targets, mandates, trajectories, quota schemes, or national renewable commitments.\". Should the LLM tag SpecificTopic = \"Renewable Energy Targets\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Renewable Energy Targets.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text simply supports renewable projects or grid access without a target or quota architecture.\". Should the LLM tag SpecificTopic = \"Renewable Energy Targets\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Carbon Trading and Emissions Trading Schemes",
+      "binary_answer": "Yes|No",
+      "definition": "Cap-and-trade or allowance-based systems for regulated emissions, including allocation, surrender, monitoring, registries, and trading.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Carbon Trading and Emissions Trading Schemes\"?",
+      "yes_when": [
+        "The instrument establishes or modifies an emissions trading scheme, allowance market, cap, surrender duty, or trading registry.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only imposes a carbon tax, reporting duty, or voluntary credit program without compliance trading of allowances.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "emissions trading",
+        "emission allowances",
+        "cap and trade",
+        "EU ETS",
+        "carbon market",
+        "surrender allowances"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Carbon Trading and Emissions Trading Schemes.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"establishing a scheme for greenhouse gas emission allowance trading within the Community\". Should the LLM tag SpecificTopic = \"Carbon Trading and Emissions Trading Schemes\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The instrument establishes or modifies an emissions trading scheme, allowance market, cap, surrender duty, or trading registry.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Carbon Trading and Emissions Trading Schemes.negative_incidental_keyword",
+          "question": "A source mentions \"emissions trading\" once in background, but its operative duties regulate a different subject and no duty matches \"The instrument establishes or modifies an emissions trading scheme, allowance market, cap, surrender duty, or trading registry.\". Should the LLM tag SpecificTopic = \"Carbon Trading and Emissions Trading Schemes\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Carbon Trading and Emissions Trading Schemes.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only imposes a carbon tax, reporting duty, or voluntary credit program without compliance trading of allowances.\". Should the LLM tag SpecificTopic = \"Carbon Trading and Emissions Trading Schemes\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Carbon Trading and Emissions Trading Schemes.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"requiring certain purchasers (called liable entities) to surrender a specified number of certificates for the electricity that they acquire during a year. Where a liable entity does not have enough certificates to surrender, the liable entity will have to pay renewable energy shortfall charge.\". Standing alone, should the LLM tag SpecificTopic = \"Carbon Trading and Emissions Trading Schemes\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Nationally Determined Contributions (NDCs)",
+      "binary_answer": "Yes|No",
+      "definition": "National climate commitments, targets, or implementation duties tied to Paris Agreement nationally determined contributions.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Nationally Determined Contributions (NDCs)\"?",
+      "yes_when": [
+        "The source explicitly concerns NDC submission, implementation, updating, tracking, or achievement.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source has national climate targets but no NDC or Paris-commitment connection.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "NDC",
+        "nationally determined contribution",
+        "Paris Agreement contribution"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Nationally Determined Contributions (NDCs).positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source explicitly concerns NDC submission, implementation, updating, tracking, or achievement.\". Should the LLM tag SpecificTopic = \"Nationally Determined Contributions (NDCs)\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source explicitly concerns NDC submission, implementation, updating, tracking, or achievement.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Nationally Determined Contributions (NDCs).negative_incidental_keyword",
+          "question": "A source mentions \"NDC\" once in background, but its operative duties regulate a different subject and no duty matches \"The source explicitly concerns NDC submission, implementation, updating, tracking, or achievement.\". Should the LLM tag SpecificTopic = \"Nationally Determined Contributions (NDCs)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Nationally Determined Contributions (NDCs).boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source has national climate targets but no NDC or Paris-commitment connection.\". Should the LLM tag SpecificTopic = \"Nationally Determined Contributions (NDCs)\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Emission Reduction Obligations",
+      "binary_answer": "Yes|No",
+      "definition": "Mandatory duties to reduce emissions by a defined amount, rate, threshold, standard, or compliance mechanism.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Emission Reduction Obligations\"?",
+      "yes_when": [
+        "The source imposes enforceable emissions reduction duties on sectors, products, facilities, vehicles, fuels, or states.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only monitors emissions, creates reports, or sets aspirational goals without reduction obligations.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "emission reduction",
+        "reduce emissions",
+        "CO2 standard",
+        "vehicle emissions",
+        "fuel economy",
+        "reduction obligation"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Emission Reduction Obligations.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the Community has accepted the target of reducing its emissions during the period 2008 to 2012 in respect of a basket of greenhouse gases by 8 % relative to 1990 levels;\". Should the LLM tag SpecificTopic = \"Emission Reduction Obligations\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source imposes enforceable emissions reduction duties on sectors, products, facilities, vehicles, fuels, or states.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Emission Reduction Obligations.negative_incidental_keyword",
+          "question": "A source mentions \"emission reduction\" once in background, but its operative duties regulate a different subject and no duty matches \"The source imposes enforceable emissions reduction duties on sectors, products, facilities, vehicles, fuels, or states.\". Should the LLM tag SpecificTopic = \"Emission Reduction Obligations\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Emission Reduction Obligations.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only monitors emissions, creates reports, or sets aspirational goals without reduction obligations.\". Should the LLM tag SpecificTopic = \"Emission Reduction Obligations\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Emission Reduction Obligations.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"vehicle manufacturers, in liaison with material and equipment manufacturers, to limit the use of hazardous substances in vehicles and to reduce them as far as possible from the conception of the vehicle onwards, so as in particular to prevent their release into the environment\". Standing alone, should the LLM tag SpecificTopic = \"Emission Reduction Obligations\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Carbon Capture and Storage (CCS) Regulations",
+      "binary_answer": "Yes|No",
+      "definition": "Rules governing capture, transport, storage, permitting, monitoring, liability, or safety of carbon dioxide storage.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Carbon Capture and Storage (CCS) Regulations\"?",
+      "yes_when": [
+        "The source directly regulates geological CO2 storage, CCS projects, storage site permits, leakage, monitoring, or CCS liability.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only mentions removals, offsets, or climate mitigation generally without CCS infrastructure or CO2 storage.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "carbon capture",
+        "geological storage of CO2",
+        "CCS",
+        "carbon dioxide storage",
+        "storage permit"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Carbon Capture and Storage (CCS) Regulations.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"This Directive establishes a legal framework for the environmentally safe geological storage of carbon dioxide (CO2) to contribute to the fight against climate change.\". Should the LLM tag SpecificTopic = \"Carbon Capture and Storage (CCS) Regulations\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates geological CO2 storage, CCS projects, storage site permits, leakage, monitoring, or CCS liability.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Carbon Capture and Storage (CCS) Regulations.negative_incidental_keyword",
+          "question": "A source mentions \"carbon capture\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates geological CO2 storage, CCS projects, storage site permits, leakage, monitoring, or CCS liability.\". Should the LLM tag SpecificTopic = \"Carbon Capture and Storage (CCS) Regulations\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Carbon Capture and Storage (CCS) Regulations.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only mentions removals, offsets, or climate mitigation generally without CCS infrastructure or CO2 storage.\". Should the LLM tag SpecificTopic = \"Carbon Capture and Storage (CCS) Regulations\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Carbon Pricing",
+      "binary_answer": "Yes|No",
+      "definition": "Economic instruments that place a price on greenhouse gas emissions, including taxes, fees, levies, price floors, or allowance-price mechanisms.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Carbon Pricing\"?",
+      "yes_when": [
+        "The instrument sets a carbon tax, minimum CO2 price, emissions levy, auction price mechanism, or similar mandatory price on emissions.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source creates emissions reporting, voluntary credits, or renewable incentives without pricing emissions.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "carbon price",
+        "carbon tax",
+        "CO2 price",
+        "minimum CO2 price",
+        "emissions levy",
+        "environmental tax"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Carbon Pricing.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"the pricing of those emissions at a later stage\". Should the LLM tag SpecificTopic = \"Carbon Pricing\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The instrument sets a carbon tax, minimum CO2 price, emissions levy, auction price mechanism, or similar mandatory price on emissions.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Carbon Pricing.negative_incidental_keyword",
+          "question": "A source mentions \"carbon price\" once in background, but its operative duties regulate a different subject and no duty matches \"The instrument sets a carbon tax, minimum CO2 price, emissions levy, auction price mechanism, or similar mandatory price on emissions.\". Should the LLM tag SpecificTopic = \"Carbon Pricing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Carbon Pricing.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source creates emissions reporting, voluntary credits, or renewable incentives without pricing emissions.\". Should the LLM tag SpecificTopic = \"Carbon Pricing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Carbon Pricing.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"an efficient European market in greenhouse gas emission allowances\". Standing alone, should the LLM tag SpecificTopic = \"Carbon Pricing\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Voluntary Carbon Markets",
+      "binary_answer": "Yes|No",
+      "definition": "Non-compliance carbon crediting, offsetting, certification, trading, integrity, or claims regimes.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Voluntary Carbon Markets\"?",
+      "yes_when": [
+        "The source regulates voluntary carbon credits, offset claims, private carbon markets, certification, registries, or integrity standards.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source concerns compliance ETS allowances, carbon taxes, or public climate targets only.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "voluntary carbon market",
+        "carbon credits",
+        "offsets",
+        "carbon credit certification",
+        "voluntary offset"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Voluntary Carbon Markets.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source regulates voluntary carbon credits, offset claims, private carbon markets, certification, registries, or integrity standards.\". Should the LLM tag SpecificTopic = \"Voluntary Carbon Markets\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates voluntary carbon credits, offset claims, private carbon markets, certification, registries, or integrity standards.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Voluntary Carbon Markets.negative_incidental_keyword",
+          "question": "A source mentions \"voluntary carbon market\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates voluntary carbon credits, offset claims, private carbon markets, certification, registries, or integrity standards.\". Should the LLM tag SpecificTopic = \"Voluntary Carbon Markets\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Voluntary Carbon Markets.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source concerns compliance ETS allowances, carbon taxes, or public climate targets only.\". Should the LLM tag SpecificTopic = \"Voluntary Carbon Markets\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Renewable Energy Integration",
+      "binary_answer": "Yes|No",
+      "definition": "Integration of renewable energy into electricity grids, energy markets, storage, balancing, connection, permitting, or system operation.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Renewable Energy Integration\"?",
+      "yes_when": [
+        "The source addresses grid access, market rules, system balancing, storage, interconnection, dispatch, or operational integration for renewables.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only sets renewable targets or subsidies without integration into the energy system.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "renewable integration",
+        "grid access",
+        "renewable electricity",
+        "balancing",
+        "storage",
+        "system integration"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Renewable Energy Integration.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"to encourage the additional generation of electricity from renewable sources; and\". Should the LLM tag SpecificTopic = \"Renewable Energy Integration\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source addresses grid access, market rules, system balancing, storage, interconnection, dispatch, or operational integration for renewables.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Renewable Energy Integration.negative_incidental_keyword",
+          "question": "A source mentions \"renewable integration\" once in background, but its operative duties regulate a different subject and no duty matches \"The source addresses grid access, market rules, system balancing, storage, interconnection, dispatch, or operational integration for renewables.\". Should the LLM tag SpecificTopic = \"Renewable Energy Integration\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Renewable Energy Integration.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only sets renewable targets or subsidies without integration into the energy system.\". Should the LLM tag SpecificTopic = \"Renewable Energy Integration\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Greenhouse Gas Emissions Trading",
+      "binary_answer": "Yes|No",
+      "definition": "Emissions trading specifically for greenhouse gases, including GHG allowances, caps, monitoring, reporting, surrender, and registries.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Greenhouse Gas Emissions Trading\"?",
+      "yes_when": [
+        "The source clearly concerns greenhouse-gas allowance trading or an ETS focused on CO2/GHG emissions.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The trading regime is not emissions-related, or the source regulates a carbon tax or voluntary offsets rather than compliance GHG trading.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "greenhouse gas emissions trading",
+        "GHG allowances",
+        "EU ETS",
+        "emission units",
+        "allowance surrender"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Greenhouse Gas Emissions Trading.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source clearly concerns greenhouse-gas allowance trading or an ETS focused on CO2/GHG emissions.\". Should the LLM tag SpecificTopic = \"Greenhouse Gas Emissions Trading\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source clearly concerns greenhouse-gas allowance trading or an ETS focused on CO2/GHG emissions.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Greenhouse Gas Emissions Trading.negative_incidental_keyword",
+          "question": "A source mentions \"greenhouse gas emissions trading\" once in background, but its operative duties regulate a different subject and no duty matches \"The source clearly concerns greenhouse-gas allowance trading or an ETS focused on CO2/GHG emissions.\". Should the LLM tag SpecificTopic = \"Greenhouse Gas Emissions Trading\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Greenhouse Gas Emissions Trading.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The trading regime is not emissions-related, or the source regulates a carbon tax or voluntary offsets rather than compliance GHG trading.\". Should the LLM tag SpecificTopic = \"Greenhouse Gas Emissions Trading\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Industrial Energy Efficiency and Audits",
+      "binary_answer": "Yes|No",
+      "definition": "Energy audits, energy-management systems, or efficiency improvement duties for industrial or large-enterprise operations.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Industrial Energy Efficiency and Audits\"?",
+      "yes_when": [
+        "The source requires industrial energy audits, energy management, efficiency measures, audit reporting, or large-user efficiency programs.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source sets product energy labels or building energy performance without industrial audit duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "energy audit",
+        "industrial energy efficiency",
+        "energy management system",
+        "large enterprises"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Industrial Energy Efficiency and Audits.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source requires industrial energy audits, energy management, efficiency measures, audit reporting, or large-user efficiency programs.\". Should the LLM tag SpecificTopic = \"Industrial Energy Efficiency and Audits\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source requires industrial energy audits, energy management, efficiency measures, audit reporting, or large-user efficiency programs.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Industrial Energy Efficiency and Audits.negative_incidental_keyword",
+          "question": "A source mentions \"energy audit\" once in background, but its operative duties regulate a different subject and no duty matches \"The source requires industrial energy audits, energy management, efficiency measures, audit reporting, or large-user efficiency programs.\". Should the LLM tag SpecificTopic = \"Industrial Energy Efficiency and Audits\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Industrial Energy Efficiency and Audits.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source sets product energy labels or building energy performance without industrial audit duties.\". Should the LLM tag SpecificTopic = \"Industrial Energy Efficiency and Audits\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Industrial Energy Efficiency and Audits.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"In het kader van het beleid op het gebied van energiebesparing verzamelt, analyseert en bewerkt Onze Minister inlichtingen en gegevens met betrekking tot: a. energieverbruik; b. maatregelen ter verbetering van de energie-efficiëntie;\". Standing alone, should the LLM tag SpecificTopic = \"Industrial Energy Efficiency and Audits\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Energy Efficiency Standards",
+      "binary_answer": "Yes|No",
+      "definition": "Minimum energy-performance standards, labelling, ecodesign, or efficiency requirements for products, equipment, systems, or broad energy use.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Energy Efficiency Standards\"?",
+      "yes_when": [
+        "The source sets minimum energy efficiency levels, labels, ecodesign rules, energy performance requirements, or efficiency obligations.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The law is about renewable energy, carbon pricing, or building construction only without energy efficiency standards.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "energy efficiency",
+        "minimum energy performance",
+        "energy labelling",
+        "ecodesign",
+        "efficiency standards"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Energy Efficiency Standards.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"This Directive establishes a common framework of measures for the promotion of energy efficiency within the Union\". Should the LLM tag SpecificTopic = \"Energy Efficiency Standards\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets minimum energy efficiency levels, labels, ecodesign rules, energy performance requirements, or efficiency obligations.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Energy Efficiency Standards.negative_incidental_keyword",
+          "question": "A source mentions \"energy efficiency\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets minimum energy efficiency levels, labels, ecodesign rules, energy performance requirements, or efficiency obligations.\". Should the LLM tag SpecificTopic = \"Energy Efficiency Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Energy Efficiency Standards.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The law is about renewable energy, carbon pricing, or building construction only without energy efficiency standards.\". Should the LLM tag SpecificTopic = \"Energy Efficiency Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Energy Efficiency Standards.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"energy production; and (c) energy consumption;\". Standing alone, should the LLM tag SpecificTopic = \"Energy Efficiency Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Energy Efficiency in Building Construction",
+      "binary_answer": "Yes|No",
+      "definition": "Energy performance, efficiency, renovation, insulation, or construction requirements for buildings.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Energy Efficiency in Building Construction\"?",
+      "yes_when": [
+        "The source regulates energy performance of buildings, construction/renovation energy standards, building certificates, or nearly zero-energy buildings.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is product ecodesign or generic energy efficiency without a building-construction scope.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "energy performance of buildings",
+        "building construction",
+        "renovation",
+        "nearly zero-energy building"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Energy Efficiency in Building Construction.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"This Directive promotes the improvement of the energy performance of buildings within the Union\". Should the LLM tag SpecificTopic = \"Energy Efficiency in Building Construction\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates energy performance of buildings, construction/renovation energy standards, building certificates, or nearly zero-energy buildings.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Energy Efficiency in Building Construction.negative_incidental_keyword",
+          "question": "A source mentions \"energy performance of buildings\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates energy performance of buildings, construction/renovation energy standards, building certificates, or nearly zero-energy buildings.\". Should the LLM tag SpecificTopic = \"Energy Efficiency in Building Construction\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Energy Efficiency in Building Construction.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is product ecodesign or generic energy efficiency without a building-construction scope.\". Should the LLM tag SpecificTopic = \"Energy Efficiency in Building Construction\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Green Public Procurement",
+      "binary_answer": "Yes|No",
+      "definition": "Environmental or sustainability criteria required or encouraged in government procurement.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Green Public Procurement\"?",
+      "yes_when": [
+        "The instrument regulates how public authorities purchase goods, works, or services using environmental, climate, or sustainability criteria.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source concerns private procurement or product standards without a public-procurement mechanism.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "green public procurement",
+        "public procurement",
+        "environmental criteria in procurement"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Green Public Procurement.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The instrument regulates how public authorities purchase goods, works, or services using environmental, climate, or sustainability criteria.\". Should the LLM tag SpecificTopic = \"Green Public Procurement\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The instrument regulates how public authorities purchase goods, works, or services using environmental, climate, or sustainability criteria.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Green Public Procurement.negative_incidental_keyword",
+          "question": "A source mentions \"green public procurement\" once in background, but its operative duties regulate a different subject and no duty matches \"The instrument regulates how public authorities purchase goods, works, or services using environmental, climate, or sustainability criteria.\". Should the LLM tag SpecificTopic = \"Green Public Procurement\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Green Public Procurement.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source concerns private procurement or product standards without a public-procurement mechanism.\". Should the LLM tag SpecificTopic = \"Green Public Procurement\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1055 @@
+{
+  "km_id": "KM_FINAL_ST_02_POLLUTION_CHEMICALS_AIR_SOIL",
+  "km_name": "SpecificTopic Binary KM - Pollution, Chemicals, Air and Soil",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "SpecificTopic",
+  "purpose": "Binary Yes/No SpecificTopic decisions for the pollution_chemicals_air_soil family. This simplified KM owns its tag-level reconciliation and emits only final Yes tags for this family.",
+  "family_reconciliation": {
+    "standalone_specific_topic_reconciler_removed": true,
+    "reconciled_output_key": "final_specific_topics_from_this_family",
+    "rules": [
+      "Answer every tag in this KM independently as Yes or No before producing the family final list.",
+      "Emit only tags answered Yes in final_specific_topics_from_this_family.",
+      "Do not emit candidates, centrality labels, or nearby labels as final tags.",
+      "If two tags overlap, keep both only when the source has distinct operative evidence for both; otherwise answer Yes only for the more directly satisfied decision question.",
+      "Reject incidental, background, implementation-actor-only, and keyword-only evidence even when a semantic signal appears.",
+      "The standalone SpecificTopic reconciler has been removed; this family KM is responsible for suppressing weak/adjacent labels before code consolidation."
+    ],
+    "weak_evidence_policy": [
+      "Weak or not-observed tags remain in the enum, but need direct source evidence at runtime.",
+      "Do not use weak master examples as independent proof; use them only as cautionary boundary tests."
+    ],
+    "weak_or_not_observed_tags_in_this_family": [
+      "Indoor Air Quality",
+      "Acidification Reduction",
+      "Emission Thresholds for Construction Products",
+      "Registration of Biocidal Products"
+    ]
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical SpecificTopic value from this KM",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes; empty string allowed when No",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional canonical tag that better fits the evidence"
+      }
+    ],
+    "final_specific_topics_from_this_family": [
+      "all tags from tag_decisions with answer=Yes, already reconciled by this family KM"
+    ]
+  },
+  "tags": [
+    {
+      "tag": "Air Quality",
+      "binary_answer": "Yes|No",
+      "definition": "Controls, objectives, monitoring, or improvement measures for air pollution and the quality of outdoor air.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Air Quality\"?",
+      "yes_when": [
+        "The instrument centrally regulates emissions, pollutants, monitoring, plans, or duties intended to protect or improve air quality.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only mentions air as one environmental medium in a broad law, or the central rule is climate-only greenhouse gas accounting without air pollutant controls.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "air quality",
+        "air pollution",
+        "ambient air",
+        "NO2",
+        "PM10",
+        "particulate matter",
+        "sulphur dioxide",
+        "benzene"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Air Quality.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"on ambient air quality and cleaner air for Europe\". Should the LLM tag SpecificTopic = \"Air Quality\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The instrument centrally regulates emissions, pollutants, monitoring, plans, or duties intended to protect or improve air quality.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Air Quality.negative_incidental_keyword",
+          "question": "A source mentions \"air quality\" once in background, but its operative duties regulate a different subject and no duty matches \"The instrument centrally regulates emissions, pollutants, monitoring, plans, or duties intended to protect or improve air quality.\". Should the LLM tag SpecificTopic = \"Air Quality\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Air Quality.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only mentions air as one environmental medium in a broad law, or the central rule is climate-only greenhouse gas accounting without air pollutant controls.\". Should the LLM tag SpecificTopic = \"Air Quality\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Ambient Air Quality Standards",
+      "binary_answer": "Yes|No",
+      "definition": "Legally defined outdoor air-quality limit values, target values, assessment methods, zones, or exceedance management for ambient air.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Ambient Air Quality Standards\"?",
+      "yes_when": [
+        "The source sets or implements pollutant concentration limits, monitoring regimes, environmental quality standards, or compliance duties for ambient/outdoor air.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates emissions at a facility or product level without setting ambient concentration objectives.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "ambient air quality",
+        "limit values",
+        "target values",
+        "air quality standards",
+        "assessment of ambient air"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Ambient Air Quality Standards.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Union air quality standards are still failing to meet the targets set by the World Health Organisation.\". Should the LLM tag SpecificTopic = \"Ambient Air Quality Standards\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets or implements pollutant concentration limits, monitoring regimes, environmental quality standards, or compliance duties for ambient/outdoor air.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Ambient Air Quality Standards.negative_incidental_keyword",
+          "question": "A source mentions \"ambient air quality\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets or implements pollutant concentration limits, monitoring regimes, environmental quality standards, or compliance duties for ambient/outdoor air.\". Should the LLM tag SpecificTopic = \"Ambient Air Quality Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Ambient Air Quality Standards.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates emissions at a facility or product level without setting ambient concentration objectives.\". Should the LLM tag SpecificTopic = \"Ambient Air Quality Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Ambient Air Quality Standards.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"Thematic Strategy on Air Pollution\". Standing alone, should the LLM tag SpecificTopic = \"Ambient Air Quality Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Indoor Air Quality",
+      "binary_answer": "Yes|No",
+      "definition": "Rules for air quality inside buildings, workplaces, homes, schools, or other enclosed spaces.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Indoor Air Quality\"?",
+      "yes_when": [
+        "The regulated object is indoor air contaminants, ventilation, indoor exposure, indoor pollutant limits, or building indoor-air performance.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The text only addresses outdoor air emissions or occupational exposure to a specific hazardous substance without indoor-air quality standards.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "indoor air",
+        "ventilation",
+        "building air quality",
+        "indoor pollutants"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Indoor Air Quality.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The regulated object is indoor air contaminants, ventilation, indoor exposure, indoor pollutant limits, or building indoor-air performance.\". Should the LLM tag SpecificTopic = \"Indoor Air Quality\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The regulated object is indoor air contaminants, ventilation, indoor exposure, indoor pollutant limits, or building indoor-air performance.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Indoor Air Quality.negative_incidental_keyword",
+          "question": "A source mentions \"indoor air\" once in background, but its operative duties regulate a different subject and no duty matches \"The regulated object is indoor air contaminants, ventilation, indoor exposure, indoor pollutant limits, or building indoor-air performance.\". Should the LLM tag SpecificTopic = \"Indoor Air Quality\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Indoor Air Quality.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only addresses outdoor air emissions or occupational exposure to a specific hazardous substance without indoor-air quality standards.\". Should the LLM tag SpecificTopic = \"Indoor Air Quality\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Industrial Emissions",
+      "binary_answer": "Yes|No",
+      "definition": "Pollutant emissions from industrial installations, combustion plants, manufacturing sites, or other regulated facilities.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Industrial Emissions\"?",
+      "yes_when": [
+        "The source sets permits, thresholds, BAT-style controls, emission limit values, monitoring, or reduction duties for industrial facilities.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The instrument regulates product composition, consumer product safety, or broad environmental quality without a facility-emissions duty.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "industrial emissions",
+        "emission limit values",
+        "combustion plants",
+        "medium combustion",
+        "installations",
+        "BAT"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Industrial Emissions.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Member States shall take the necessary measures to ensure that all undertakings engaged in the decontamination and/or the disposal of PCBs, used PCBs and/or equipment containing PCBs obtain permits\". Should the LLM tag SpecificTopic = \"Industrial Emissions\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets permits, thresholds, BAT-style controls, emission limit values, monitoring, or reduction duties for industrial facilities.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Industrial Emissions.negative_incidental_keyword",
+          "question": "A source mentions \"industrial emissions\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets permits, thresholds, BAT-style controls, emission limit values, monitoring, or reduction duties for industrial facilities.\". Should the LLM tag SpecificTopic = \"Industrial Emissions\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Industrial Emissions.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The instrument regulates product composition, consumer product safety, or broad environmental quality without a facility-emissions duty.\". Should the LLM tag SpecificTopic = \"Industrial Emissions\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Industrial Emissions.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"design of work processes and engineering control measures so as to avoid or minimise the release of carcinogens or mutagens into the place of work\". Standing alone, should the LLM tag SpecificTopic = \"Industrial Emissions\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Contaminated Land Remediation",
+      "binary_answer": "Yes|No",
+      "definition": "Identification, clean-up, liability, remediation, or management of contaminated land or polluted sites.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Contaminated Land Remediation\"?",
+      "yes_when": [
+        "The source requires investigation, remediation, clean-up standards, liability, or risk management for contaminated soil or land.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text protects soil generally from erosion or degradation but does not address contamination or remediation.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "contaminated land",
+        "soil remediation",
+        "site remediation",
+        "clean-up",
+        "polluted land",
+        "bodemsanering"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Contaminated Land Remediation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"land damage, which is any land contamination that creates a significant risk of human health being adversely affected\". Should the LLM tag SpecificTopic = \"Contaminated Land Remediation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source requires investigation, remediation, clean-up standards, liability, or risk management for contaminated soil or land.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Contaminated Land Remediation.negative_incidental_keyword",
+          "question": "A source mentions \"contaminated land\" once in background, but its operative duties regulate a different subject and no duty matches \"The source requires investigation, remediation, clean-up standards, liability, or risk management for contaminated soil or land.\". Should the LLM tag SpecificTopic = \"Contaminated Land Remediation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Contaminated Land Remediation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text protects soil generally from erosion or degradation but does not address contamination or remediation.\". Should the LLM tag SpecificTopic = \"Contaminated Land Remediation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Contaminated Land Remediation.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"decontamination means all operations which enable equipment, objects, materials or fluids contaminated by PCBs to be reused, recycled or disposed of under safe conditions\". Standing alone, should the LLM tag SpecificTopic = \"Contaminated Land Remediation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Agricultural Pollution",
+      "binary_answer": "Yes|No",
+      "definition": "Pollution caused by agricultural activity, including nutrients, manure, fertilizers, pesticides, or farm runoff.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Agricultural Pollution\"?",
+      "yes_when": [
+        "The regulated source is farming or livestock activity causing water, soil, or air pollution.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Agriculture is only incidentally affected by a general biodiversity, land-use, or water-resource measure.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "nitrates",
+        "manure",
+        "fertilizers",
+        "fertilisers",
+        "farm runoff",
+        "agricultural pollution"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Agricultural Pollution.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"concerning the protection of waters against pollution caused by nitrates from agricultural sources\". Should the LLM tag SpecificTopic = \"Agricultural Pollution\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The regulated source is farming or livestock activity causing water, soil, or air pollution.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Agricultural Pollution.negative_incidental_keyword",
+          "question": "A source mentions \"nitrates\" once in background, but its operative duties regulate a different subject and no duty matches \"The regulated source is farming or livestock activity causing water, soil, or air pollution.\". Should the LLM tag SpecificTopic = \"Agricultural Pollution\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Agricultural Pollution.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Agriculture is only incidentally affected by a general biodiversity, land-use, or water-resource measure.\". Should the LLM tag SpecificTopic = \"Agricultural Pollution\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Soil Quality Standards",
+      "binary_answer": "Yes|No",
+      "definition": "Standards or threshold values for soil quality, contamination, pollutants, or soil condition.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Soil Quality Standards\"?",
+      "yes_when": [
+        "The source sets soil-quality objectives, contaminant limits, assessment methods, or quality-status duties.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source addresses general soil conservation or site remediation without defined quality thresholds or status criteria.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "soil quality",
+        "soil standards",
+        "contaminant limits",
+        "quality thresholds",
+        "soil condition"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Soil Quality Standards.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"bodemkwaliteitseis: eis betreffende de kwaliteit van de bodem\". Should the LLM tag SpecificTopic = \"Soil Quality Standards\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets soil-quality objectives, contaminant limits, assessment methods, or quality-status duties.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Soil Quality Standards.negative_incidental_keyword",
+          "question": "A source mentions \"soil quality\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets soil-quality objectives, contaminant limits, assessment methods, or quality-status duties.\". Should the LLM tag SpecificTopic = \"Soil Quality Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Soil Quality Standards.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source addresses general soil conservation or site remediation without defined quality thresholds or status criteria.\". Should the LLM tag SpecificTopic = \"Soil Quality Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Soil Quality Standards.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"The objects of this Act are: (b) to protect, restore and enhance the quality of the environment in Australia, having regard to the need to maintain ecologically sustainable development; and\". Standing alone, should the LLM tag SpecificTopic = \"Soil Quality Standards\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Acidification Reduction",
+      "binary_answer": "Yes|No",
+      "definition": "Reduction of acidifying pollutants such as SO2, NOx, and ammonia that cause acid rain or ecosystem acidification.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Acidification Reduction\"?",
+      "yes_when": [
+        "The source specifically aims to reduce acidification or acidifying emissions.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source broadly regulates air quality or industrial emissions without an acidification objective or acidifying-pollutant focus.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "acidification",
+        "acid rain",
+        "sulphur dioxide",
+        "nitrogen oxides",
+        "ammonia"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Acidification Reduction.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source specifically aims to reduce acidification or acidifying emissions.\". Should the LLM tag SpecificTopic = \"Acidification Reduction\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source specifically aims to reduce acidification or acidifying emissions.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Acidification Reduction.negative_incidental_keyword",
+          "question": "A source mentions \"acidification\" once in background, but its operative duties regulate a different subject and no duty matches \"The source specifically aims to reduce acidification or acidifying emissions.\". Should the LLM tag SpecificTopic = \"Acidification Reduction\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Acidification Reduction.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source broadly regulates air quality or industrial emissions without an acidification objective or acidifying-pollutant focus.\". Should the LLM tag SpecificTopic = \"Acidification Reduction\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Transboundary Air Pollution Control",
+      "binary_answer": "Yes|No",
+      "definition": "Controls on air pollutants that travel across borders or obligations under long-range/transboundary air pollution regimes.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Transboundary Air Pollution Control\"?",
+      "yes_when": [
+        "The source addresses long-range air pollution, cross-border air pollutants, international emission ceilings, or transboundary cooperation.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source regulates domestic ambient air quality or facility emissions without cross-border/long-range context.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "transboundary air pollution",
+        "long-range air pollution",
+        "cross-border air",
+        "LRTAP"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Transboundary Air Pollution Control.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"grensoverschrijdende luchtverontreiniging over lange afstand\". Should the LLM tag SpecificTopic = \"Transboundary Air Pollution Control\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source addresses long-range air pollution, cross-border air pollutants, international emission ceilings, or transboundary cooperation.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Transboundary Air Pollution Control.negative_incidental_keyword",
+          "question": "A source mentions \"transboundary air pollution\" once in background, but its operative duties regulate a different subject and no duty matches \"The source addresses long-range air pollution, cross-border air pollutants, international emission ceilings, or transboundary cooperation.\". Should the LLM tag SpecificTopic = \"Transboundary Air Pollution Control\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Transboundary Air Pollution Control.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source regulates domestic ambient air quality or facility emissions without cross-border/long-range context.\". Should the LLM tag SpecificTopic = \"Transboundary Air Pollution Control\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Emission Thresholds for Construction Products",
+      "binary_answer": "Yes|No",
+      "definition": "Emission limits, environmental thresholds, or pollutant performance requirements for construction products and materials.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Emission Thresholds for Construction Products\"?",
+      "yes_when": [
+        "The regulated object is a construction product/material and the source sets emission, pollutant, or environmental thresholds for that product.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The rule regulates whole-building energy performance or general industrial emissions rather than construction products.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "construction products",
+        "emission thresholds",
+        "construction materials",
+        "product emissions"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Emission Thresholds for Construction Products.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The regulated object is a construction product/material and the source sets emission, pollutant, or environmental thresholds for that product.\". Should the LLM tag SpecificTopic = \"Emission Thresholds for Construction Products\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The regulated object is a construction product/material and the source sets emission, pollutant, or environmental thresholds for that product.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Emission Thresholds for Construction Products.negative_incidental_keyword",
+          "question": "A source mentions \"construction products\" once in background, but its operative duties regulate a different subject and no duty matches \"The regulated object is a construction product/material and the source sets emission, pollutant, or environmental thresholds for that product.\". Should the LLM tag SpecificTopic = \"Emission Thresholds for Construction Products\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Emission Thresholds for Construction Products.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The rule regulates whole-building energy performance or general industrial emissions rather than construction products.\". Should the LLM tag SpecificTopic = \"Emission Thresholds for Construction Products\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Elimination of Persistent Organic Pollutants",
+      "binary_answer": "Yes|No",
+      "definition": "Prohibition, restriction, phase-out, disposal, monitoring, or elimination of persistent organic pollutants.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Elimination of Persistent Organic Pollutants\"?",
+      "yes_when": [
+        "The source directly regulates POPs, Stockholm Convention substances, PCB/PCT elimination, dioxins/furans, or POP waste disposal.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source broadly regulates hazardous substances or chemicals without persistent-organic-pollutant focus.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "persistent organic pollutants",
+        "POPs",
+        "PCB",
+        "PCT",
+        "Stockholm Convention",
+        "elimination"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Elimination of Persistent Organic Pollutants.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The aims of this Act are: (a) to give effect to the Basel Convention on the Control of Transboundary Movements of Hazardous Wastes and their Disposal; and\". Should the LLM tag SpecificTopic = \"Elimination of Persistent Organic Pollutants\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates POPs, Stockholm Convention substances, PCB/PCT elimination, dioxins/furans, or POP waste disposal.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Elimination of Persistent Organic Pollutants.negative_incidental_keyword",
+          "question": "A source mentions \"persistent organic pollutants\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates POPs, Stockholm Convention substances, PCB/PCT elimination, dioxins/furans, or POP waste disposal.\". Should the LLM tag SpecificTopic = \"Elimination of Persistent Organic Pollutants\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Elimination of Persistent Organic Pollutants.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source broadly regulates hazardous substances or chemicals without persistent-organic-pollutant focus.\". Should the LLM tag SpecificTopic = \"Elimination of Persistent Organic Pollutants\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Chemical Safety",
+      "binary_answer": "Yes|No",
+      "definition": "Protection of people and environment from chemical hazards through safe handling, assessment, exposure control, classification, or risk management.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Chemical Safety\"?",
+      "yes_when": [
+        "The source addresses chemical hazards, safety data, exposure/risk assessment, safe use, chemical accidents, or risk management for substances/mixtures.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Use Chemical Regulation for registration/market governance, Hazardous Substances for dangerous material restrictions, or Product Labeling for label-only duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "chemical safety",
+        "chemical hazards",
+        "risk assessment",
+        "safe use",
+        "safety data sheet",
+        "hazard classification"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Chemical Safety.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"concerning the Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH)\". Should the LLM tag SpecificTopic = \"Chemical Safety\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source addresses chemical hazards, safety data, exposure/risk assessment, safe use, chemical accidents, or risk management for substances/mixtures.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Chemical Safety.negative_incidental_keyword",
+          "question": "A source mentions \"chemical safety\" once in background, but its operative duties regulate a different subject and no duty matches \"The source addresses chemical hazards, safety data, exposure/risk assessment, safe use, chemical accidents, or risk management for substances/mixtures.\". Should the LLM tag SpecificTopic = \"Chemical Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Chemical Safety.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Use Chemical Regulation for registration/market governance, Hazardous Substances for dangerous material restrictions, or Product Labeling for label-only duties.\". Should the LLM tag SpecificTopic = \"Chemical Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Chemical Safety.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"The object of this Act is to regulate the export, import and transit of hazardous waste to ensure that exported, imported or transited waste is managed in an environmentally sound manner so that human beings and the environment, both within and outside Australia, are protected from the harmful effects of the waste.\". Standing alone, should the LLM tag SpecificTopic = \"Chemical Safety\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Chemical Regulation",
+      "binary_answer": "Yes|No",
+      "definition": "Regulatory governance of chemicals, including registration, evaluation, authorization, restriction, data sharing, notification, or market access.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Chemical Regulation\"?",
+      "yes_when": [
+        "The source establishes chemical regulatory schemes such as REACH/CLP/PIC, chemical registers, authorization, restrictions, test methods, or data-sharing obligations.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only addresses safety outcomes or hazardous-substance exposure without regulatory scheme mechanics.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "REACH",
+        "CLP",
+        "PIC",
+        "chemical regulation",
+        "registration",
+        "authorization",
+        "data sharing"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Chemical Regulation.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"on the fees and charges payable to the European Chemicals Agency pursuant to Regulation (EC) No 1907/2006 on the Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH)\". Should the LLM tag SpecificTopic = \"Chemical Regulation\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source establishes chemical regulatory schemes such as REACH/CLP/PIC, chemical registers, authorization, restrictions, test methods, or data-sharing obligations.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Chemical Regulation.negative_incidental_keyword",
+          "question": "A source mentions \"REACH\" once in background, but its operative duties regulate a different subject and no duty matches \"The source establishes chemical regulatory schemes such as REACH/CLP/PIC, chemical registers, authorization, restrictions, test methods, or data-sharing obligations.\". Should the LLM tag SpecificTopic = \"Chemical Regulation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Chemical Regulation.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only addresses safety outcomes or hazardous-substance exposure without regulatory scheme mechanics.\". Should the LLM tag SpecificTopic = \"Chemical Regulation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Chemical Regulation.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"An Act to make provision in relation to corporations and financial products and services, and for other purposes\". Standing alone, should the LLM tag SpecificTopic = \"Chemical Regulation\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Hazardous Substances",
+      "binary_answer": "Yes|No",
+      "definition": "Dangerous, toxic, hazardous, radioactive, carcinogenic, mutagenic, ozone-depleting, or otherwise harmful substances/materials.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Hazardous Substances\"?",
+      "yes_when": [
+        "The source centrally regulates dangerous chemicals, hazardous waste, POPs, asbestos, silica, radioactive waste, ozone-depleting substances, dangerous pollutants, or hazardous substance restrictions.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Do not tag merely because a product, facility, or environmental law has potential hazards; require hazardous substances or dangerous pollutants to be central.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "hazardous substances",
+        "hazardous waste",
+        "dangerous substances",
+        "POPs",
+        "asbestos",
+        "silica",
+        "radioactive waste",
+        "ozone-depleting substances"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Hazardous Substances.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"establishing a list of hazardous waste pursuant to Article 1(4) of Council Directive 91/689/EEC on hazardous waste\". Should the LLM tag SpecificTopic = \"Hazardous Substances\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally regulates dangerous chemicals, hazardous waste, POPs, asbestos, silica, radioactive waste, ozone-depleting substances, dangerous pollutants, or hazardous substance restrictions.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Hazardous Substances.negative_incidental_keyword",
+          "question": "A source mentions \"hazardous substances\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally regulates dangerous chemicals, hazardous waste, POPs, asbestos, silica, radioactive waste, ozone-depleting substances, dangerous pollutants, or hazardous substance restrictions.\". Should the LLM tag SpecificTopic = \"Hazardous Substances\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Hazardous Substances.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Do not tag merely because a product, facility, or environmental law has potential hazards; require hazardous substances or dangerous pollutants to be central.\". Should the LLM tag SpecificTopic = \"Hazardous Substances\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Restriction of Hazardous Substances",
+      "binary_answer": "Yes|No",
+      "definition": "Limits, bans, or restrictions on hazardous substances in products, materials, equipment, or supply chains.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Restriction of Hazardous Substances\"?",
+      "yes_when": [
+        "The source sets substance restrictions such as RoHS, banned/limited hazardous substances in electrical/electronic equipment, or product material restrictions.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source broadly regulates hazardous substances without product/content restriction limits.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "restriction of hazardous substances",
+        "RoHS",
+        "substance restriction",
+        "restricted substances",
+        "electrical equipment"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Restriction of Hazardous Substances.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"on the restriction of the use of certain hazardous substances in electrical and electronic equipment\". Should the LLM tag SpecificTopic = \"Restriction of Hazardous Substances\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source sets substance restrictions such as RoHS, banned/limited hazardous substances in electrical/electronic equipment, or product material restrictions.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Restriction of Hazardous Substances.negative_incidental_keyword",
+          "question": "A source mentions \"restriction of hazardous substances\" once in background, but its operative duties regulate a different subject and no duty matches \"The source sets substance restrictions such as RoHS, banned/limited hazardous substances in electrical/electronic equipment, or product material restrictions.\". Should the LLM tag SpecificTopic = \"Restriction of Hazardous Substances\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Restriction of Hazardous Substances.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source broadly regulates hazardous substances without product/content restriction limits.\". Should the LLM tag SpecificTopic = \"Restriction of Hazardous Substances\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Restriction of Hazardous Substances.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"An Act to make provision in relation to corporations and financial products and services, and for other purposes\". Standing alone, should the LLM tag SpecificTopic = \"Restriction of Hazardous Substances\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Registration of Biocidal Products",
+      "binary_answer": "Yes|No",
+      "definition": "Authorization, approval, registration, renewal, or market access for biocidal products and active substances.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Registration of Biocidal Products\"?",
+      "yes_when": [
+        "The source directly regulates registration/authorization of biocidal products, active substances, dossiers, approvals, or market placement.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source is broad chemical regulation or pesticide regulation without biocidal product registration.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "biocidal products",
+        "biocide",
+        "active substance",
+        "product authorisation",
+        "registration"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Registration of Biocidal Products.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly regulates registration/authorization of biocidal products, active substances, dossiers, approvals, or market placement.\". Should the LLM tag SpecificTopic = \"Registration of Biocidal Products\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates registration/authorization of biocidal products, active substances, dossiers, approvals, or market placement.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Registration of Biocidal Products.negative_incidental_keyword",
+          "question": "A source mentions \"biocidal products\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates registration/authorization of biocidal products, active substances, dossiers, approvals, or market placement.\". Should the LLM tag SpecificTopic = \"Registration of Biocidal Products\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Registration of Biocidal Products.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is broad chemical regulation or pesticide regulation without biocidal product registration.\". Should the LLM tag SpecificTopic = \"Registration of Biocidal Products\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    }
+  ]
+}

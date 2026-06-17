@@ -1,0 +1,2486 @@
+{
+  "km_id": "KM_FINAL_ST_99_TOPIC_RECONCILER",
+  "km_name": "Final SpecificTopic Reconciler",
+  "version": "3.2",
+  "created": "2026-04-29",
+  "purpose": "Convert grouped SpecificTopic candidates into final canonical SpecificTopic[] using raw-deep-dive ontology, companion-pair rules, high-risk suppression gates, and source-grounded centrality adjudication.",
+  "controlled_field": "SpecificTopic",
+  "controlled_enum": {
+    "allowed_values": [
+      "Air Quality",
+      "Ambient Air Quality Standards",
+      "Indoor Air Quality",
+      "Marine Pollution",
+      "Industrial Emissions",
+      "Stormwater Management",
+      "Contaminated Land Remediation",
+      "Agricultural Pollution",
+      "Soil Conservation",
+      "Soil Quality Standards",
+      "Waste Reduction and Recycling",
+      "Circular Economy",
+      "Extended Producer Responsibility (EPR)",
+      "Building Performance Standards",
+      "Emission Thresholds for Construction Products",
+      "Wastewater Treatment",
+      "Water Quality Standards",
+      "Water Resource Management",
+      "Water Use Efficiency",
+      "Water Allocation",
+      "Water Conservation",
+      "Drought Management",
+      "Transboundary Water Management",
+      "Fisheries Management",
+      "Marine Protected Areas",
+      "Coastal Zone Management",
+      "Water Infrastructure",
+      "Water Pricing",
+      "Land Use Planning",
+      "Climate Change Mitigation",
+      "Climate Change Adaptation",
+      "Renewable Energy Targets",
+      "Carbon Trading and Emissions Trading Schemes",
+      "Nationally Determined Contributions (NDCs)",
+      "Emission Reduction Obligations",
+      "Carbon Capture and Storage (CCS) Regulations",
+      "Carbon Pricing",
+      "Voluntary Carbon Markets",
+      "Renewable Energy Integration",
+      "Greenhouse Gas Emissions Trading",
+      "Industrial Energy Efficiency and Audits",
+      "Energy Efficiency Standards",
+      "Energy Efficiency in Building Construction",
+      "Green Public Procurement",
+      "Acidification Reduction",
+      "Transboundary Air Pollution Control",
+      "Biodiversity Conservation",
+      "Ecosystem Restoration",
+      "Protected Area Designation",
+      "Habitat Restoration",
+      "Endangered Species Protection",
+      "Invasive Species Control",
+      "Wildlife Trade Regulation",
+      "Pollinator Protection",
+      "Marine Environment Protection",
+      "Direct Impact Drivers of Biodiversity Loss",
+      "Impacts on the State of Species",
+      "Impacts on the Extent and Conditions of Ecosystems",
+      "Impacts on and Dependencies on Ecosystem Services",
+      "Minimum Wage",
+      "Employment Contracts",
+      "Non-Discrimination",
+      "Health and Safety",
+      "Work Environment",
+      "Ergonomics",
+      "Mental Health",
+      "Freedom of Association",
+      "Collective Bargaining",
+      "Whistleblower Protection",
+      "Occupational Health and Safety",
+      "Emergency Preparedness",
+      "Workforce Practices",
+      "Fair Labor Practices",
+      "Forced Labor and Human Trafficking",
+      "Child Labor",
+      "Secure Employment",
+      "Working Time",
+      "Adequate Wages",
+      "Social Dialogue",
+      "Work-Life Balance",
+      "Gender Equality and Equal Pay",
+      "Training and Skills Development",
+      "Inclusion of Persons with Disabilities",
+      "Measures Against Violence and Harassment in the Workplace",
+      "Diversity",
+      "Adequate Housing",
+      "Anti-Corruption",
+      "Anti-Bribery",
+      "ESG Reporting",
+      "ESG Due Diligence",
+      "Sustainability Reporting",
+      "Non-Financial Reporting",
+      "Compliance with Laws and Regulations",
+      "Financial Reporting",
+      "Corporate Social Responsibility",
+      "Political Engagement and Lobbying Activities",
+      "Protection of Whistleblowers",
+      "Relationships with Suppliers, Including Payment Practices",
+      "Corruption and Bribery Incidents",
+      "Corporate Culture",
+      "Product Safety",
+      "Compliance and Certification",
+      "Product Labeling",
+      "Consumer Protection Laws",
+      "Product Design and Manufacturing",
+      "Product Recall",
+      "Registration of Biocidal Products",
+      "Data Privacy (GDPR)",
+      "Data Privacy and Non-Financial Reporting",
+      "Information-Related Impacts on Consumers and End-Users",
+      "Personal Safety of Non-Consumers and End-Users",
+      "Social Inclusion of Consumers and End-Users",
+      "Elimination of Persistent Organic Pollutants",
+      "Chemical Safety",
+      "Chemical Regulation",
+      "Hazardous Substances",
+      "Restriction of Hazardous Substances",
+      "Electrical Equipment",
+      "Communities' Economic, Social, and Cultural Rights",
+      "Communities' Civil and Political Rights",
+      "Rights of Indigenous Peoples",
+      "Animal Welfare"
+    ],
+    "value_definitions": [
+      {
+        "value": "Air Quality",
+        "definition": "Controls, objectives, monitoring, or improvement measures for air pollution and the quality of outdoor air.",
+        "tag_when": "The instrument centrally regulates emissions, pollutants, monitoring, plans, or duties intended to protect or improve air quality.",
+        "do_not_tag_when": "The text only mentions air as one environmental medium in a broad law, or the central rule is climate-only greenhouse gas accounting without air pollutant controls.",
+        "evidence_signals": [
+          "air quality",
+          "air pollution",
+          "ambient air",
+          "NO2",
+          "PM10",
+          "particulate matter",
+          "sulphur dioxide",
+          "benzene"
+        ]
+      },
+      {
+        "value": "Ambient Air Quality Standards",
+        "definition": "Legally defined outdoor air-quality limit values, target values, assessment methods, zones, or exceedance management for ambient air.",
+        "tag_when": "The source sets or implements pollutant concentration limits, monitoring regimes, environmental quality standards, or compliance duties for ambient/outdoor air.",
+        "do_not_tag_when": "The source regulates emissions at a facility or product level without setting ambient concentration objectives.",
+        "evidence_signals": [
+          "ambient air quality",
+          "limit values",
+          "target values",
+          "air quality standards",
+          "assessment of ambient air"
+        ]
+      },
+      {
+        "value": "Indoor Air Quality",
+        "definition": "Rules for air quality inside buildings, workplaces, homes, schools, or other enclosed spaces.",
+        "tag_when": "The regulated object is indoor air contaminants, ventilation, indoor exposure, indoor pollutant limits, or building indoor-air performance.",
+        "do_not_tag_when": "The text only addresses outdoor air emissions or occupational exposure to a specific hazardous substance without indoor-air quality standards.",
+        "evidence_signals": [
+          "indoor air",
+          "ventilation",
+          "building air quality",
+          "indoor pollutants"
+        ]
+      },
+      {
+        "value": "Marine Pollution",
+        "definition": "Prevention, control, liability, or remediation of pollution of seas, oceans, coastal waters, or marine waters.",
+        "tag_when": "The instrument targets oil spills, ship-source pollution, dumping, hazardous discharges, marine contamination, or compensation for marine pollution damage.",
+        "do_not_tag_when": "The law is about marine biodiversity or fisheries management without pollutant contamination as a central concern.",
+        "evidence_signals": [
+          "marine pollution",
+          "pollution from ships",
+          "ship-source pollution",
+          "oil pollution",
+          "bunker oil",
+          "sea pollution"
+        ]
+      },
+      {
+        "value": "Industrial Emissions",
+        "definition": "Pollutant emissions from industrial installations, combustion plants, manufacturing sites, or other regulated facilities.",
+        "tag_when": "The source sets permits, thresholds, BAT-style controls, emission limit values, monitoring, or reduction duties for industrial facilities.",
+        "do_not_tag_when": "The instrument regulates product composition, consumer product safety, or broad environmental quality without a facility-emissions duty.",
+        "evidence_signals": [
+          "industrial emissions",
+          "emission limit values",
+          "combustion plants",
+          "medium combustion",
+          "installations",
+          "BAT"
+        ]
+      },
+      {
+        "value": "Stormwater Management",
+        "definition": "Management of rainwater runoff, drainage, urban runoff, or stormwater discharges.",
+        "tag_when": "The law directly regulates stormwater systems, runoff capture, drainage permits, sewer overflow, or pollution from stormwater.",
+        "do_not_tag_when": "The text only refers to water management generally, flooding, or wastewater treatment without stormwater-specific duties.",
+        "evidence_signals": [
+          "stormwater",
+          "runoff",
+          "urban runoff",
+          "drainage",
+          "combined sewer overflow"
+        ]
+      },
+      {
+        "value": "Contaminated Land Remediation",
+        "definition": "Identification, clean-up, liability, remediation, or management of contaminated land or polluted sites.",
+        "tag_when": "The source requires investigation, remediation, clean-up standards, liability, or risk management for contaminated soil or land.",
+        "do_not_tag_when": "The text protects soil generally from erosion or degradation but does not address contamination or remediation.",
+        "evidence_signals": [
+          "contaminated land",
+          "soil remediation",
+          "site remediation",
+          "clean-up",
+          "polluted land",
+          "bodemsanering"
+        ]
+      },
+      {
+        "value": "Agricultural Pollution",
+        "definition": "Pollution caused by agricultural activity, including nutrients, manure, fertilizers, pesticides, or farm runoff.",
+        "tag_when": "The regulated source is farming or livestock activity causing water, soil, or air pollution.",
+        "do_not_tag_when": "Agriculture is only incidentally affected by a general biodiversity, land-use, or water-resource measure.",
+        "evidence_signals": [
+          "nitrates",
+          "manure",
+          "fertilizers",
+          "fertilisers",
+          "farm runoff",
+          "agricultural pollution"
+        ]
+      },
+      {
+        "value": "Soil Conservation",
+        "definition": "Protection of soil as a natural resource from erosion, degradation, sealing, compaction, or loss of productive capacity.",
+        "tag_when": "The source centrally addresses soil protection, conservation, land degradation, erosion control, or sustainable soil management.",
+        "do_not_tag_when": "The main concern is contaminated land clean-up or pollutant thresholds rather than soil conservation.",
+        "evidence_signals": [
+          "soil conservation",
+          "soil protection",
+          "erosion",
+          "land degradation",
+          "soil sealing"
+        ]
+      },
+      {
+        "value": "Soil Quality Standards",
+        "definition": "Standards or threshold values for soil quality, contamination, pollutants, or soil condition.",
+        "tag_when": "The source sets soil-quality objectives, contaminant limits, assessment methods, or quality-status duties.",
+        "do_not_tag_when": "The source addresses general soil conservation or site remediation without defined quality thresholds or status criteria.",
+        "evidence_signals": [
+          "soil quality",
+          "soil standards",
+          "contaminant limits",
+          "quality thresholds",
+          "soil condition"
+        ]
+      },
+      {
+        "value": "Waste Reduction and Recycling",
+        "definition": "Waste prevention, collection, recycling, recovery, disposal hierarchy, landfill diversion, or waste management obligations.",
+        "tag_when": "The instrument centrally regulates waste generation, separate collection, recycling targets, recovery operations, landfill, waste shipment, or waste classification.",
+        "do_not_tag_when": "The source only mentions waste incidentally as a by-product of another regime without waste-management duties.",
+        "evidence_signals": [
+          "waste",
+          "recycling",
+          "recovery",
+          "landfill",
+          "waste shipments",
+          "waste framework"
+        ]
+      },
+      {
+        "value": "Circular Economy",
+        "definition": "Central resource-circularity transition measures: reuse, repair, durability, remanufacturing, circular design, material loops, resource productivity, or explicit circular-economy strategy.",
+        "tag_when": "The source centrally frames circularity, reuse/repair/durability, circular design, circular economy transition, product life extension, material loops, or resource productivity.",
+        "do_not_tag_when": "Do not tag solely because waste, recycling, packaging waste, WEEE, batteries, EPR, or end-of-life treatment appears. Prefer the more specific waste/EPR/product labels unless circularity itself is a central legal mechanism.",
+        "evidence_signals": [
+          "circular economy",
+          "reuse",
+          "repair",
+          "durability",
+          "remanufacturing",
+          "resource productivity",
+          "material loop",
+          "circular design",
+          "life extension"
+        ]
+      },
+      {
+        "value": "Extended Producer Responsibility (EPR)",
+        "definition": "Schemes placing financial, organizational, take-back, collection, recycling, or end-of-life responsibility on producers.",
+        "tag_when": "The law assigns producers/importers brand owners duties for collection, recycling, reporting, fees, or take-back of products/packaging.",
+        "do_not_tag_when": "The source regulates waste generally but does not allocate end-of-life responsibility to producers.",
+        "evidence_signals": [
+          "producer responsibility",
+          "product stewardship",
+          "take-back",
+          "packaging waste",
+          "WEEE",
+          "batteries"
+        ]
+      },
+      {
+        "value": "Building Performance Standards",
+        "definition": "Performance requirements for buildings, commonly energy, emissions, environmental, or operational performance standards.",
+        "tag_when": "The source sets building-level performance requirements, ratings, thresholds, or compliance duties.",
+        "do_not_tag_when": "The text concerns construction products, land-use planning, or energy equipment without building-level performance duties.",
+        "evidence_signals": [
+          "building performance",
+          "performance of buildings",
+          "building standards",
+          "building rating"
+        ]
+      },
+      {
+        "value": "Emission Thresholds for Construction Products",
+        "definition": "Emission limits, environmental thresholds, or pollutant performance requirements for construction products and materials.",
+        "tag_when": "The regulated object is a construction product/material and the source sets emission, pollutant, or environmental thresholds for that product.",
+        "do_not_tag_when": "The rule regulates whole-building energy performance or general industrial emissions rather than construction products.",
+        "evidence_signals": [
+          "construction products",
+          "emission thresholds",
+          "construction materials",
+          "product emissions"
+        ]
+      },
+      {
+        "value": "Wastewater Treatment",
+        "definition": "Collection, treatment, discharge, reuse, permitting, or performance requirements for sewage, urban wastewater, or industrial wastewater.",
+        "tag_when": "The source regulates wastewater systems, collecting systems, treatment plants, discharge permits, treatment standards, or effluent quality.",
+        "do_not_tag_when": "The text only concerns general water quality, water allocation, or stormwater without wastewater treatment duties.",
+        "evidence_signals": [
+          "wastewater",
+          "waste-water",
+          "sewage",
+          "urban waste water",
+          "treatment plant",
+          "collecting systems"
+        ]
+      },
+      {
+        "value": "Water Quality Standards",
+        "definition": "Legal standards, objectives, thresholds, monitoring, or classification for the quality of surface water, groundwater, drinking water, or marine/coastal waters.",
+        "tag_when": "The source sets or implements water-quality objectives, environmental quality standards, pollutant limits, monitoring, or status classifications.",
+        "do_not_tag_when": "The source manages water quantity, allocation, pricing, or infrastructure without quality thresholds or pollution controls.",
+        "evidence_signals": [
+          "water quality",
+          "environmental quality standards",
+          "surface water",
+          "groundwater",
+          "drinking water",
+          "water contamination"
+        ]
+      },
+      {
+        "value": "Water Resource Management",
+        "definition": "Planning, governance, integrated management, permits, protection, or sustainable use of water resources.",
+        "tag_when": "The source centrally manages water bodies, river basins, water resources, abstraction, planning, or resource status.",
+        "do_not_tag_when": "The text only sets a water-quality pollutant limit or wastewater treatment duty without broader resource management.",
+        "evidence_signals": [
+          "water resource management",
+          "river basin",
+          "water framework",
+          "water resources",
+          "abstraction"
+        ]
+      },
+      {
+        "value": "Water Use Efficiency",
+        "definition": "Requirements to reduce water use per output, product, building, process, or service.",
+        "tag_when": "The source mandates efficient water fixtures, water-efficiency labels, industrial water-efficiency practices, or water-use performance metrics.",
+        "do_not_tag_when": "The law addresses water conservation generally, water pricing, or water quality without efficiency metrics or product/process performance.",
+        "evidence_signals": [
+          "water efficiency",
+          "water-efficient",
+          "efficiency labelling",
+          "water use performance"
+        ]
+      },
+      {
+        "value": "Water Allocation",
+        "definition": "Allocation of water rights, permits, quotas, priority uses, abstraction volumes, or scarcity-based distributions.",
+        "tag_when": "The source governs who may withdraw/use water, how quantities are allocated, or how competing water uses are prioritized.",
+        "do_not_tag_when": "The source only addresses quality, pollution, drought response, or infrastructure without allocation rights or quantities.",
+        "evidence_signals": [
+          "water allocation",
+          "water rights",
+          "abstraction permit",
+          "withdrawal quota",
+          "allocation priority"
+        ]
+      },
+      {
+        "value": "Water Conservation",
+        "definition": "Reduction or protection of water consumption and preservation of water supplies.",
+        "tag_when": "The law requires conservation measures, demand reduction, water-saving practices, or restrictions to preserve water resources.",
+        "do_not_tag_when": "The source only regulates pollutant levels, wastewater treatment, or water tariffs without conservation objectives.",
+        "evidence_signals": [
+          "water conservation",
+          "water saving",
+          "reduce water consumption",
+          "conserve water"
+        ]
+      },
+      {
+        "value": "Drought Management",
+        "definition": "Preparedness, planning, emergency restrictions, risk management, or response measures for drought conditions.",
+        "tag_when": "The source directly addresses drought plans, drought risk, scarcity emergencies, water restrictions, or resilience during drought.",
+        "do_not_tag_when": "The text discusses climate adaptation or water management generally without drought-specific mechanisms.",
+        "evidence_signals": [
+          "drought",
+          "water scarcity",
+          "drought plan",
+          "drought management",
+          "scarcity restrictions"
+        ]
+      },
+      {
+        "value": "Transboundary Water Management",
+        "definition": "Management of shared rivers, lakes, groundwater, basins, or watercourses crossing national or administrative borders.",
+        "tag_when": "The source establishes obligations for international/transboundary waters, cross-border river basins, cooperation, information exchange, or shared water bodies.",
+        "do_not_tag_when": "The law is domestic water management with no cross-border resource, basin, or cooperation element.",
+        "evidence_signals": [
+          "transboundary waters",
+          "international river basin",
+          "shared watercourse",
+          "cross-border water"
+        ]
+      },
+      {
+        "value": "Fisheries Management",
+        "definition": "Management of fish stocks, fishing activity, catch limits, conservation of fisheries resources, aquaculture, or marine living resources as fisheries.",
+        "tag_when": "The regulated object is fishing, fish stock conservation, catch quotas, fishing gear, fishing vessels, or fisheries licensing.",
+        "do_not_tag_when": "The text only protects marine ecosystems or biodiversity without regulating fishing activity or fishery resources.",
+        "evidence_signals": [
+          "fisheries",
+          "fish stocks",
+          "catch limits",
+          "fishing vessels",
+          "marine living resources"
+        ]
+      },
+      {
+        "value": "Marine Protected Areas",
+        "definition": "Designation, management, restrictions, or conservation objectives for protected areas in marine or coastal waters.",
+        "tag_when": "The source creates or regulates marine protected areas, protected marine zones, special conservation areas at sea, or restrictions inside those areas.",
+        "do_not_tag_when": "The law addresses marine pollution, fisheries, or marine strategy without protected-area designation or management.",
+        "evidence_signals": [
+          "marine protected area",
+          "protected marine zone",
+          "special area of conservation",
+          "MPA"
+        ]
+      },
+      {
+        "value": "Coastal Zone Management",
+        "definition": "Planning, protection, development control, restoration, or integrated management of coastal areas and shorelines.",
+        "tag_when": "The source regulates coastal land/sea interfaces, shoreline development, coastal erosion, coastal ecosystem management, or coastal planning.",
+        "do_not_tag_when": "The text is about marine pollution, fisheries, or land-use planning without coastal-zone focus.",
+        "evidence_signals": [
+          "coastal zone",
+          "shoreline",
+          "coastal management",
+          "coastal erosion",
+          "coastal planning"
+        ]
+      },
+      {
+        "value": "Water Infrastructure",
+        "definition": "Infrastructure for water supply, distribution, treatment, storage, flood/drainage systems, or wastewater networks.",
+        "tag_when": "The regulated object is physical water infrastructure, public water systems, treatment works, distribution networks, reservoirs, or related investment/standards.",
+        "do_not_tag_when": "The law addresses water rights or quality objectives without infrastructure requirements.",
+        "evidence_signals": [
+          "water infrastructure",
+          "water supply network",
+          "treatment works",
+          "waterworks",
+          "sewerage infrastructure"
+        ]
+      },
+      {
+        "value": "Water Pricing",
+        "definition": "Tariffs, charges, fees, cost recovery, taxes, or pricing incentives for water use, supply, discharge, or abstraction.",
+        "tag_when": "The source sets or requires water tariffs, abstraction fees, wastewater charges, cost-recovery principles, or pricing incentives.",
+        "do_not_tag_when": "The text only regulates allocation, conservation, or quality without pricing or economic instruments.",
+        "evidence_signals": [
+          "water pricing",
+          "tariffs",
+          "water charges",
+          "cost recovery",
+          "abstraction fee"
+        ]
+      },
+      {
+        "value": "Land Use Planning",
+        "definition": "Spatial planning, zoning, environmental assessment of plans/projects, development control, or land-use decision-making.",
+        "tag_when": "The instrument centrally regulates planning approvals, land-use plans, EIA/SEA, zoning, project consent, or spatial development impacts.",
+        "do_not_tag_when": "The source merely affects land indirectly through environmental rules, biodiversity protection, or soil clean-up without a planning mechanism.",
+        "evidence_signals": [
+          "land use",
+          "spatial planning",
+          "zoning",
+          "environmental impact assessment",
+          "strategic environmental assessment",
+          "planning law"
+        ]
+      },
+      {
+        "value": "Climate Change Mitigation",
+        "definition": "Measures to reduce, avoid, price, limit, or remove greenhouse gas emissions or accelerate the low-carbon transition.",
+        "tag_when": "The source centrally targets greenhouse gas reductions, decarbonisation, net-zero, climate targets, carbon markets/pricing, renewable-energy expansion, energy efficiency, or mitigation planning.",
+        "do_not_tag_when": "Do not tag merely because a pollution, waste, transport, or environmental law has indirect climate benefits. Require an explicit climate, greenhouse gas, carbon, renewable-energy, or energy-efficiency mechanism.",
+        "evidence_signals": [
+          "climate mitigation",
+          "greenhouse gas",
+          "decarbonisation",
+          "net zero",
+          "carbon",
+          "emission reduction",
+          "renewable energy",
+          "energy efficiency"
+        ]
+      },
+      {
+        "value": "Climate Change Adaptation",
+        "definition": "Measures to prepare for, respond to, or build resilience against physical climate impacts.",
+        "tag_when": "The source addresses climate resilience, adaptation plans, physical climate risks, flood/heat/drought resilience, or adaptation duties.",
+        "do_not_tag_when": "The source only reduces emissions, prices carbon, or supports renewables without adaptation or resilience mechanisms.",
+        "evidence_signals": [
+          "climate adaptation",
+          "resilience",
+          "physical climate risk",
+          "adaptation plan"
+        ]
+      },
+      {
+        "value": "Renewable Energy Targets",
+        "definition": "Legally stated renewable energy share, capacity, production, procurement, or consumption targets.",
+        "tag_when": "The source sets numerical or programmatic renewable targets, mandates, trajectories, quota schemes, or national renewable commitments.",
+        "do_not_tag_when": "The text simply supports renewable projects or grid access without a target or quota architecture.",
+        "evidence_signals": [
+          "renewable energy target",
+          "renewable share",
+          "quota",
+          "trajectory",
+          "renewable electricity"
+        ]
+      },
+      {
+        "value": "Carbon Trading and Emissions Trading Schemes",
+        "definition": "Cap-and-trade or allowance-based systems for regulated emissions, including allocation, surrender, monitoring, registries, and trading.",
+        "tag_when": "The instrument establishes or modifies an emissions trading scheme, allowance market, cap, surrender duty, or trading registry.",
+        "do_not_tag_when": "The text only imposes a carbon tax, reporting duty, or voluntary credit program without compliance trading of allowances.",
+        "evidence_signals": [
+          "emissions trading",
+          "emission allowances",
+          "cap and trade",
+          "EU ETS",
+          "carbon market",
+          "surrender allowances"
+        ]
+      },
+      {
+        "value": "Nationally Determined Contributions (NDCs)",
+        "definition": "National climate commitments, targets, or implementation duties tied to Paris Agreement nationally determined contributions.",
+        "tag_when": "The source explicitly concerns NDC submission, implementation, updating, tracking, or achievement.",
+        "do_not_tag_when": "The source has national climate targets but no NDC or Paris-commitment connection.",
+        "evidence_signals": [
+          "NDC",
+          "nationally determined contribution",
+          "Paris Agreement contribution"
+        ]
+      },
+      {
+        "value": "Emission Reduction Obligations",
+        "definition": "Mandatory duties to reduce emissions by a defined amount, rate, threshold, standard, or compliance mechanism.",
+        "tag_when": "The source imposes enforceable emissions reduction duties on sectors, products, facilities, vehicles, fuels, or states.",
+        "do_not_tag_when": "The source only monitors emissions, creates reports, or sets aspirational goals without reduction obligations.",
+        "evidence_signals": [
+          "emission reduction",
+          "reduce emissions",
+          "CO2 standard",
+          "vehicle emissions",
+          "fuel economy",
+          "reduction obligation"
+        ]
+      },
+      {
+        "value": "Carbon Capture and Storage (CCS) Regulations",
+        "definition": "Rules governing capture, transport, storage, permitting, monitoring, liability, or safety of carbon dioxide storage.",
+        "tag_when": "The source directly regulates geological CO2 storage, CCS projects, storage site permits, leakage, monitoring, or CCS liability.",
+        "do_not_tag_when": "The source only mentions removals, offsets, or climate mitigation generally without CCS infrastructure or CO2 storage.",
+        "evidence_signals": [
+          "carbon capture",
+          "geological storage of CO2",
+          "CCS",
+          "carbon dioxide storage",
+          "storage permit"
+        ]
+      },
+      {
+        "value": "Carbon Pricing",
+        "definition": "Economic instruments that place a price on greenhouse gas emissions, including taxes, fees, levies, price floors, or allowance-price mechanisms.",
+        "tag_when": "The instrument sets a carbon tax, minimum CO2 price, emissions levy, auction price mechanism, or similar mandatory price on emissions.",
+        "do_not_tag_when": "The source creates emissions reporting, voluntary credits, or renewable incentives without pricing emissions.",
+        "evidence_signals": [
+          "carbon price",
+          "carbon tax",
+          "CO2 price",
+          "minimum CO2 price",
+          "emissions levy",
+          "environmental tax"
+        ]
+      },
+      {
+        "value": "Voluntary Carbon Markets",
+        "definition": "Non-compliance carbon crediting, offsetting, certification, trading, integrity, or claims regimes.",
+        "tag_when": "The source regulates voluntary carbon credits, offset claims, private carbon markets, certification, registries, or integrity standards.",
+        "do_not_tag_when": "The source concerns compliance ETS allowances, carbon taxes, or public climate targets only.",
+        "evidence_signals": [
+          "voluntary carbon market",
+          "carbon credits",
+          "offsets",
+          "carbon credit certification",
+          "voluntary offset"
+        ]
+      },
+      {
+        "value": "Renewable Energy Integration",
+        "definition": "Integration of renewable energy into electricity grids, energy markets, storage, balancing, connection, permitting, or system operation.",
+        "tag_when": "The source addresses grid access, market rules, system balancing, storage, interconnection, dispatch, or operational integration for renewables.",
+        "do_not_tag_when": "The text only sets renewable targets or subsidies without integration into the energy system.",
+        "evidence_signals": [
+          "renewable integration",
+          "grid access",
+          "renewable electricity",
+          "balancing",
+          "storage",
+          "system integration"
+        ]
+      },
+      {
+        "value": "Greenhouse Gas Emissions Trading",
+        "definition": "Emissions trading specifically for greenhouse gases, including GHG allowances, caps, monitoring, reporting, surrender, and registries.",
+        "tag_when": "The source clearly concerns greenhouse-gas allowance trading or an ETS focused on CO2/GHG emissions.",
+        "do_not_tag_when": "The trading regime is not emissions-related, or the source regulates a carbon tax or voluntary offsets rather than compliance GHG trading.",
+        "evidence_signals": [
+          "greenhouse gas emissions trading",
+          "GHG allowances",
+          "EU ETS",
+          "emission units",
+          "allowance surrender"
+        ]
+      },
+      {
+        "value": "Industrial Energy Efficiency and Audits",
+        "definition": "Energy audits, energy-management systems, or efficiency improvement duties for industrial or large-enterprise operations.",
+        "tag_when": "The source requires industrial energy audits, energy management, efficiency measures, audit reporting, or large-user efficiency programs.",
+        "do_not_tag_when": "The source sets product energy labels or building energy performance without industrial audit duties.",
+        "evidence_signals": [
+          "energy audit",
+          "industrial energy efficiency",
+          "energy management system",
+          "large enterprises"
+        ]
+      },
+      {
+        "value": "Energy Efficiency Standards",
+        "definition": "Minimum energy-performance standards, labelling, ecodesign, or efficiency requirements for products, equipment, systems, or broad energy use.",
+        "tag_when": "The source sets minimum energy efficiency levels, labels, ecodesign rules, energy performance requirements, or efficiency obligations.",
+        "do_not_tag_when": "The law is about renewable energy, carbon pricing, or building construction only without energy efficiency standards.",
+        "evidence_signals": [
+          "energy efficiency",
+          "minimum energy performance",
+          "energy labelling",
+          "ecodesign",
+          "efficiency standards"
+        ]
+      },
+      {
+        "value": "Energy Efficiency in Building Construction",
+        "definition": "Energy performance, efficiency, renovation, insulation, or construction requirements for buildings.",
+        "tag_when": "The source regulates energy performance of buildings, construction/renovation energy standards, building certificates, or nearly zero-energy buildings.",
+        "do_not_tag_when": "The source is product ecodesign or generic energy efficiency without a building-construction scope.",
+        "evidence_signals": [
+          "energy performance of buildings",
+          "building construction",
+          "renovation",
+          "nearly zero-energy building"
+        ]
+      },
+      {
+        "value": "Green Public Procurement",
+        "definition": "Environmental or sustainability criteria required or encouraged in government procurement.",
+        "tag_when": "The instrument regulates how public authorities purchase goods, works, or services using environmental, climate, or sustainability criteria.",
+        "do_not_tag_when": "The source concerns private procurement or product standards without a public-procurement mechanism.",
+        "evidence_signals": [
+          "green public procurement",
+          "public procurement",
+          "environmental criteria in procurement"
+        ]
+      },
+      {
+        "value": "Acidification Reduction",
+        "definition": "Reduction of acidifying pollutants such as SO2, NOx, and ammonia that cause acid rain or ecosystem acidification.",
+        "tag_when": "The source specifically aims to reduce acidification or acidifying emissions.",
+        "do_not_tag_when": "The source broadly regulates air quality or industrial emissions without an acidification objective or acidifying-pollutant focus.",
+        "evidence_signals": [
+          "acidification",
+          "acid rain",
+          "sulphur dioxide",
+          "nitrogen oxides",
+          "ammonia"
+        ]
+      },
+      {
+        "value": "Transboundary Air Pollution Control",
+        "definition": "Controls on air pollutants that travel across borders or obligations under long-range/transboundary air pollution regimes.",
+        "tag_when": "The source addresses long-range air pollution, cross-border air pollutants, international emission ceilings, or transboundary cooperation.",
+        "do_not_tag_when": "The source regulates domestic ambient air quality or facility emissions without cross-border/long-range context.",
+        "evidence_signals": [
+          "transboundary air pollution",
+          "long-range air pollution",
+          "cross-border air",
+          "LRTAP"
+        ]
+      },
+      {
+        "value": "Biodiversity Conservation",
+        "definition": "Protection, conservation, sustainable use, monitoring, or governance of biological diversity, habitats, species, or ecosystems.",
+        "tag_when": "The source centrally protects biodiversity, species, habitats, ecosystems, conservation status, Natura 2000, nature protection, or biodiversity impacts.",
+        "do_not_tag_when": "Do not tag merely because an environmental assessment or planning rule mentions flora, fauna, or environment in passing. Require biodiversity, species, habitats, ecosystems, or nature protection as a central protected interest.",
+        "evidence_signals": [
+          "biodiversity",
+          "habitats",
+          "species",
+          "Natura 2000",
+          "conservation status",
+          "nature protection",
+          "ecosystems"
+        ]
+      },
+      {
+        "value": "Ecosystem Restoration",
+        "definition": "Restoring degraded ecosystems, ecological functions, natural processes, or ecosystem condition.",
+        "tag_when": "The source mandates restoration plans, targets, repair of degraded ecosystems, nature restoration, or ecological recovery.",
+        "do_not_tag_when": "The text only protects existing areas/species or remediates pollution without ecosystem restoration.",
+        "evidence_signals": [
+          "ecosystem restoration",
+          "nature restoration",
+          "restore degraded ecosystems",
+          "ecological recovery"
+        ]
+      },
+      {
+        "value": "Protected Area Designation",
+        "definition": "Creation, designation, classification, boundaries, management, or restrictions for protected terrestrial or freshwater areas.",
+        "tag_when": "The source designates protected areas, special conservation areas, reserves, national parks, or Natura 2000 sites.",
+        "do_not_tag_when": "The source generally protects biodiversity or species without area designation or protected-area management.",
+        "evidence_signals": [
+          "protected areas",
+          "designation",
+          "Natura 2000",
+          "special areas of conservation",
+          "nature reserve"
+        ]
+      },
+      {
+        "value": "Habitat Restoration",
+        "definition": "Restoration, maintenance, or improvement of natural habitats or habitat quality for species.",
+        "tag_when": "The source targets habitat restoration, habitat condition, ecological corridors, breeding/resting sites, or habitat conservation duties.",
+        "do_not_tag_when": "The source protects species generally or designates areas without habitat restoration or habitat-condition duties.",
+        "evidence_signals": [
+          "habitat restoration",
+          "natural habitats",
+          "habitat condition",
+          "breeding sites",
+          "favourable conservation status"
+        ]
+      },
+      {
+        "value": "Endangered Species Protection",
+        "definition": "Protection, recovery, trade restrictions, taking prohibitions, or conservation measures for threatened/endangered species.",
+        "tag_when": "The source specifically protects endangered/threatened/protected species, wild birds, fauna/flora, or sets species recovery measures.",
+        "do_not_tag_when": "The source concerns broad biodiversity or habitats without species-specific protection.",
+        "evidence_signals": [
+          "endangered species",
+          "threatened species",
+          "protected species",
+          "wild birds",
+          "wild fauna and flora"
+        ]
+      },
+      {
+        "value": "Invasive Species Control",
+        "definition": "Prevention, early detection, eradication, containment, trade controls, or management of invasive alien species.",
+        "tag_when": "The source directly regulates invasive species lists, import/keeping bans, eradication, control plans, or pathway management.",
+        "do_not_tag_when": "The source only mentions species protection or biodiversity without invasive-species mechanisms.",
+        "evidence_signals": [
+          "invasive alien species",
+          "invasive species",
+          "eradication",
+          "containment",
+          "pathway management"
+        ]
+      },
+      {
+        "value": "Wildlife Trade Regulation",
+        "definition": "Regulation of trade, import, export, transport, possession, or commercialization of wildlife, species, specimens, or CITES-listed products.",
+        "tag_when": "The source controls wildlife trade, permits, certificates, CITES implementation, import/export of species, or trade in specimens.",
+        "do_not_tag_when": "The source protects wildlife habitat or biodiversity without a trade/import/export mechanism.",
+        "evidence_signals": [
+          "wildlife trade",
+          "CITES",
+          "import of specimens",
+          "export permits",
+          "trade in species"
+        ]
+      },
+      {
+        "value": "Pollinator Protection",
+        "definition": "Protection of bees, pollinators, pollination services, or measures reducing harms to pollinator species.",
+        "tag_when": "The source specifically regulates pollinators, bee protection, pesticide impacts on pollinators, or pollinator habitat measures.",
+        "do_not_tag_when": "The source addresses biodiversity, pesticides, or agriculture generally without pollinator-specific focus.",
+        "evidence_signals": [
+          "pollinators",
+          "bees",
+          "pollination",
+          "pollinator habitat",
+          "bee protection"
+        ]
+      },
+      {
+        "value": "Marine Environment Protection",
+        "definition": "Protection of marine ecosystems, marine environmental status, marine biodiversity, or marine resources beyond pollutant control.",
+        "tag_when": "The source targets marine environmental status, marine ecosystem protection, marine strategies, marine living resources, or sea-area conservation.",
+        "do_not_tag_when": "The central issue is oil spills/ship pollution only, which should be Marine Pollution; or fishing quotas only, which should be Fisheries Management.",
+        "evidence_signals": [
+          "marine environment",
+          "marine strategy",
+          "good environmental status",
+          "marine ecosystem",
+          "marine living resources"
+        ]
+      },
+      {
+        "value": "Direct Impact Drivers of Biodiversity Loss",
+        "definition": "Drivers that directly cause biodiversity loss, including land-use change, exploitation, invasive species, pollution, climate change, and ecosystem disturbance.",
+        "tag_when": "The source identifies or regulates direct biodiversity-loss drivers as a substantive topic, not merely a generic environmental effect.",
+        "do_not_tag_when": "The law targets a single driver such as pollution or climate without linking it to biodiversity impacts.",
+        "evidence_signals": [
+          "drivers of biodiversity loss",
+          "land-use change",
+          "overexploitation",
+          "invasive species",
+          "ecosystem degradation"
+        ]
+      },
+      {
+        "value": "Impacts on the State of Species",
+        "definition": "Impacts on species populations, distribution, conservation status, extinction risk, or abundance.",
+        "tag_when": "The source requires assessment, prevention, disclosure, or mitigation of impacts on species state or conservation status.",
+        "do_not_tag_when": "The source only protects habitat or broad biodiversity without species-state or population impact focus.",
+        "evidence_signals": [
+          "state of species",
+          "species population",
+          "conservation status",
+          "extinction risk",
+          "species abundance"
+        ]
+      },
+      {
+        "value": "Impacts on the Extent and Conditions of Ecosystems",
+        "definition": "Impacts on ecosystem area, distribution, fragmentation, degradation, ecological integrity, or condition.",
+        "tag_when": "The source requires assessment, prevention, disclosure, or mitigation of impacts on ecosystem extent or condition.",
+        "do_not_tag_when": "The source mentions ecosystems generally without an impact/condition/extent framework.",
+        "evidence_signals": [
+          "ecosystem extent",
+          "ecosystem condition",
+          "degradation",
+          "fragmentation",
+          "ecological integrity"
+        ]
+      },
+      {
+        "value": "Impacts on and Dependencies on Ecosystem Services",
+        "definition": "Impacts on, risks to, or dependencies on services that ecosystems provide to people and businesses.",
+        "tag_when": "The source directly references ecosystem services, dependencies, nature-related services, or impacts on the benefits provided by ecosystems.",
+        "do_not_tag_when": "The source protects biodiversity generally without service/dependency concepts.",
+        "evidence_signals": [
+          "ecosystem services",
+          "dependencies",
+          "services provided by ecosystems",
+          "nature-related dependencies"
+        ]
+      },
+      {
+        "value": "Minimum Wage",
+        "definition": "Statutory minimum wage rates, minimum remuneration floors, or wage-setting mechanisms.",
+        "tag_when": "The source sets, implements, enforces, or adjusts minimum wage or statutory minimum remuneration.",
+        "do_not_tag_when": "The text concerns pay equity, living wages, wage reporting, or labor contracts without minimum wage standards.",
+        "evidence_signals": [
+          "minimum wage",
+          "minimumloon",
+          "statutory wage floor",
+          "minimum remuneration"
+        ]
+      },
+      {
+        "value": "Employment Contracts",
+        "definition": "Formation, terms, transparency, information, rights, obligations, or termination of employment contracts/relationships.",
+        "tag_when": "The source regulates written terms, employee information, employment relationship status, contract conditions, probation, termination, or employment terms.",
+        "do_not_tag_when": "The source regulates broad workforce rights without contract terms or employment relationship rules.",
+        "evidence_signals": [
+          "employment contract",
+          "terms of employment",
+          "employee information",
+          "arbeidsovereenkomst",
+          "employment relationship"
+        ]
+      },
+      {
+        "value": "Non-Discrimination",
+        "definition": "Equal treatment and prohibition of discrimination based on protected characteristics in employment or services.",
+        "tag_when": "The source prohibits discrimination or requires equal treatment based on gender, race, disability, age, religion, sexual orientation, or similar traits.",
+        "do_not_tag_when": "The source only promotes diversity or equal pay without legal anti-discrimination duties.",
+        "evidence_signals": [
+          "non-discrimination",
+          "equal treatment",
+          "discrimination",
+          "racial equality",
+          "age discrimination",
+          "disability"
+        ]
+      },
+      {
+        "value": "Health and Safety",
+        "definition": "General health and safety protections for people, often in work or product contexts when the source does not fit a narrower safety label.",
+        "tag_when": "The source centrally protects health and safety but the regulated context is broader than occupational safety or consumer product safety.",
+        "do_not_tag_when": "Use Occupational Health and Safety for workplace hazards and Product Safety for product risks when those are the central context.",
+        "evidence_signals": [
+          "health and safety",
+          "safety",
+          "health protection",
+          "risk prevention"
+        ]
+      },
+      {
+        "value": "Work Environment",
+        "definition": "Quality, safety, conditions, and organization of the workplace environment beyond a single specific labor right.",
+        "tag_when": "The source addresses working environment, physical/psychosocial conditions, workplace conditions, or rest/leave as workplace conditions.",
+        "do_not_tag_when": "The source fits a narrower label such as Working Time, Mental Health, Ergonomics, or Occupational Health and Safety.",
+        "evidence_signals": [
+          "work environment",
+          "working conditions",
+          "workplace conditions",
+          "rest periods"
+        ]
+      },
+      {
+        "value": "Ergonomics",
+        "definition": "Workplace design and practices that reduce musculoskeletal strain or adapt work to human physical capabilities.",
+        "tag_when": "The source directly regulates ergonomics, manual handling, workstation design, musculoskeletal risk, or repetitive-strain prevention.",
+        "do_not_tag_when": "The source only refers generally to occupational safety or workplace health without ergonomic hazards.",
+        "evidence_signals": [
+          "ergonomics",
+          "manual handling",
+          "workstation",
+          "musculoskeletal",
+          "repetitive strain"
+        ]
+      },
+      {
+        "value": "Mental Health",
+        "definition": "Psychological health, stress, psychosocial risks, wellbeing, or mental-health protections connected to work or regulated services.",
+        "tag_when": "The source regulates mental health, psychosocial risks, stress, burnout, harassment-related wellbeing, or support duties.",
+        "do_not_tag_when": "The source regulates general occupational safety or harassment without mental-health or psychosocial-risk framing.",
+        "evidence_signals": [
+          "mental health",
+          "psychosocial risk",
+          "stress",
+          "burnout",
+          "wellbeing"
+        ]
+      },
+      {
+        "value": "Freedom of Association",
+        "definition": "Rights of workers to join, form, or participate in trade unions or worker organizations.",
+        "tag_when": "The source protects union membership, organizing, worker representation, or association rights.",
+        "do_not_tag_when": "The source only addresses collective bargaining outcomes or social dialogue without association rights.",
+        "evidence_signals": [
+          "freedom of association",
+          "trade union",
+          "union membership",
+          "worker organization"
+        ]
+      },
+      {
+        "value": "Collective Bargaining",
+        "definition": "Negotiation and agreements between employers and worker representatives or trade unions over employment conditions.",
+        "tag_when": "The source regulates collective agreements, bargaining rights, coverage, negotiation procedures, or employer duties to bargain.",
+        "do_not_tag_when": "The source only protects union association or consultation without bargaining or collective agreements.",
+        "evidence_signals": [
+          "collective bargaining",
+          "collective agreement",
+          "bargaining rights",
+          "trade union negotiations"
+        ]
+      },
+      {
+        "value": "Whistleblower Protection",
+        "definition": "Protections for individuals, especially workers, who report wrongdoing, breaches, misconduct, or legal violations.",
+        "tag_when": "The source establishes worker/reporting-person protections against retaliation, reporting channels, confidentiality, or remedies.",
+        "do_not_tag_when": "Use Protection of Whistleblowers when the central framing is business-conduct/governance systems rather than worker protection.",
+        "evidence_signals": [
+          "whistleblower",
+          "reporting person",
+          "retaliation",
+          "protected disclosure",
+          "reporting channel"
+        ]
+      },
+      {
+        "value": "Occupational Health and Safety",
+        "definition": "Workplace hazard prevention, exposure limits, protective measures, risk assessment, training, monitoring, and employer safety duties.",
+        "tag_when": "The source regulates workplace safety, occupational exposure, employer duties, risk assessment, work equipment, carcinogens at work, or worker protection.",
+        "do_not_tag_when": "The source is general public health, consumer product safety, or environmental emissions without workplace exposure duties.",
+        "evidence_signals": [
+          "occupational health and safety",
+          "workers' safety",
+          "risk assessment at work",
+          "exposure at work",
+          "workplace hazards"
+        ]
+      },
+      {
+        "value": "Emergency Preparedness",
+        "definition": "Planning, training, response, evacuation, resilience, or emergency procedures for incidents affecting workers or operations.",
+        "tag_when": "The source requires emergency plans, preparedness, response systems, drills, evacuation, or major-accident readiness.",
+        "do_not_tag_when": "The source only imposes general safety duties without emergency planning or incident-response mechanisms.",
+        "evidence_signals": [
+          "emergency preparedness",
+          "emergency plan",
+          "incident response",
+          "evacuation",
+          "major accident"
+        ]
+      },
+      {
+        "value": "Workforce Practices",
+        "definition": "General workforce management, employment practices, labor standards, worker treatment, or HR practices not captured by a narrower labor label.",
+        "tag_when": "The source broadly regulates workforce practices and no more specific labor label captures the central duty.",
+        "do_not_tag_when": "Use narrower labels such as Employment Contracts, Working Time, Minimum Wage, Non-Discrimination, OHS, or Collective Bargaining when those are central.",
+        "evidence_signals": [
+          "workforce practices",
+          "employment practices",
+          "labor practices",
+          "worker treatment"
+        ]
+      },
+      {
+        "value": "Fair Labor Practices",
+        "definition": "Fair treatment of workers through labor standards, decent work, equitable conditions, and protection from exploitative labor practices.",
+        "tag_when": "The source sets broad fair labor standards or labor-rights duties that are not limited to a single narrower topic.",
+        "do_not_tag_when": "The source is only about wages, discrimination, forced labor, child labor, or contracts; tag the specific topic instead.",
+        "evidence_signals": [
+          "fair work",
+          "fair labor",
+          "labour standards",
+          "decent work",
+          "equal treatment at work"
+        ]
+      },
+      {
+        "value": "Forced Labor and Human Trafficking",
+        "definition": "Prevention, prohibition, due diligence, remediation, or enforcement related to forced labor, modern slavery, trafficking, or servitude.",
+        "tag_when": "The source directly addresses forced labor, trafficking, modern slavery, supply-chain exploitation, or due diligence for those harms.",
+        "do_not_tag_when": "The source only addresses general labor standards or child labor without forced labor or trafficking.",
+        "evidence_signals": [
+          "forced labor",
+          "forced labour",
+          "human trafficking",
+          "modern slavery",
+          "servitude"
+        ]
+      },
+      {
+        "value": "Child Labor",
+        "definition": "Prohibition, prevention, due diligence, or restrictions concerning labor by children or young persons.",
+        "tag_when": "The source regulates child labor, worst forms of child labor, minimum working age, youth labor protections, or supply-chain child labor.",
+        "do_not_tag_when": "The source is about education, child welfare, or general labor without child labor provisions.",
+        "evidence_signals": [
+          "child labor",
+          "child labour",
+          "worst forms of child labour",
+          "minimum age",
+          "youth labour",
+          "kinderarbeid"
+        ]
+      },
+      {
+        "value": "Secure Employment",
+        "definition": "Stability and security of employment, including protection against precarious work, arbitrary dismissal, or insecure contracts.",
+        "tag_when": "The source directly regulates job security, dismissal protections, permanent/temporary contracts, or precarious employment safeguards.",
+        "do_not_tag_when": "The source addresses general employment contracts without security/precariousness as a central issue.",
+        "evidence_signals": [
+          "secure employment",
+          "job security",
+          "precarious work",
+          "dismissal protection",
+          "temporary contracts"
+        ]
+      },
+      {
+        "value": "Working Time",
+        "definition": "Rules on working hours, rest periods, breaks, annual leave, night work, overtime, or maximum working time.",
+        "tag_when": "The source centrally regulates working-time limits, rest, annual leave, overtime, night work, or scheduling.",
+        "do_not_tag_when": "The source mentions work-life balance or workplace conditions without time/rest/leave rules.",
+        "evidence_signals": [
+          "working time",
+          "annual leave",
+          "rest periods",
+          "maximum hours",
+          "overtime",
+          "night work"
+        ]
+      },
+      {
+        "value": "Adequate Wages",
+        "definition": "Wage adequacy, living wage, fair remuneration, wage sufficiency, or income adequacy beyond statutory minimum wage mechanics.",
+        "tag_when": "The source addresses adequate/living/fair wages, wage sufficiency, wage adequacy criteria, or wage-setting for decent living.",
+        "do_not_tag_when": "The source only sets a statutory minimum wage rate; tag Minimum Wage instead unless adequacy is central.",
+        "evidence_signals": [
+          "adequate wages",
+          "living wage",
+          "fair remuneration",
+          "wage adequacy",
+          "decent wages"
+        ]
+      },
+      {
+        "value": "Social Dialogue",
+        "definition": "Consultation, information, participation, or dialogue between workers, worker representatives, employers, and public authorities.",
+        "tag_when": "The source centrally regulates consultation, information, negotiation, participation, worker representatives, works councils, trade unions, or collective processes between employers and workers.",
+        "do_not_tag_when": "Do not tag for ordinary employment information duties or general labor protections unless worker representation, consultation, or collective participation is a central mechanism.",
+        "evidence_signals": [
+          "worker representatives",
+          "consultation",
+          "works council",
+          "trade unions",
+          "social dialogue",
+          "collective participation",
+          "information and consultation"
+        ]
+      },
+      {
+        "value": "Work-Life Balance",
+        "definition": "Rights and policies supporting balance between work and family/private life, including parental, paternity, carers, flexible work, or leave entitlements.",
+        "tag_when": "The source regulates parental leave, carers' leave, flexible working, work-life balance directives, or maternity/paternity balancing rights.",
+        "do_not_tag_when": "The text only regulates annual leave or working hours without family/private-life balance objectives.",
+        "evidence_signals": [
+          "work-life balance",
+          "parental leave",
+          "maternity leave",
+          "paternity leave",
+          "carers' leave",
+          "flexible working"
+        ]
+      },
+      {
+        "value": "Gender Equality and Equal Pay",
+        "definition": "Equal pay, gender equality, pay transparency, equal treatment between men and women, or gender-based employment equality.",
+        "tag_when": "The source addresses equal pay, gender discrimination, gender equality, pay transparency, or equal treatment of men and women.",
+        "do_not_tag_when": "The source addresses non-discrimination generally without a gender/pay focus.",
+        "evidence_signals": [
+          "equal pay",
+          "gender equality",
+          "men and women",
+          "pay transparency",
+          "gender discrimination"
+        ]
+      },
+      {
+        "value": "Training and Skills Development",
+        "definition": "Worker training, skills development, upskilling, professional development, or competence-building duties.",
+        "tag_when": "The source requires employee training, skills plans, qualifications, competence, retraining, or development opportunities.",
+        "do_not_tag_when": "The text mentions training only as incidental compliance instruction for safety or product use; tag the central topic instead.",
+        "evidence_signals": [
+          "training",
+          "skills development",
+          "upskilling",
+          "competence",
+          "professional development"
+        ]
+      },
+      {
+        "value": "Inclusion of Persons with Disabilities",
+        "definition": "Inclusion, accessibility, reasonable accommodation, equal treatment, or participation of persons with disabilities.",
+        "tag_when": "The source specifically protects or supports persons with disabilities in employment, services, accessibility, or accommodations.",
+        "do_not_tag_when": "The source has broad non-discrimination without disability-specific rules or inclusion measures.",
+        "evidence_signals": [
+          "disability",
+          "persons with disabilities",
+          "reasonable accommodation",
+          "accessibility",
+          "chronic illness"
+        ]
+      },
+      {
+        "value": "Measures Against Violence and Harassment in the Workplace",
+        "definition": "Prevention, reporting, investigation, sanctions, or remedies for workplace violence, bullying, intimidation, harassment, or sexual harassment.",
+        "tag_when": "The source directly regulates workplace harassment or violence, prevention plans, reporting channels, employer duties, or remedies.",
+        "do_not_tag_when": "The source only addresses discrimination or mental health without harassment/violence mechanisms.",
+        "evidence_signals": [
+          "workplace harassment",
+          "violence at work",
+          "sexual harassment",
+          "bullying",
+          "intimidation"
+        ]
+      },
+      {
+        "value": "Diversity",
+        "definition": "Diversity in workforce, leadership, boards, hiring, representation, or inclusion across demographic groups.",
+        "tag_when": "The source requires or encourages diversity policies, representation, quotas, diversity disclosures, or inclusive practices.",
+        "do_not_tag_when": "The source addresses a specific equality right such as non-discrimination, disability inclusion, or gender equal pay; use the specific label.",
+        "evidence_signals": [
+          "diversity",
+          "diverse representation",
+          "inclusion",
+          "board diversity",
+          "diversity policy"
+        ]
+      },
+      {
+        "value": "Adequate Housing",
+        "definition": "Access to safe, secure, affordable, habitable, and adequate housing, including worker housing when regulated.",
+        "tag_when": "The source directly addresses adequate housing rights, accommodation standards, worker housing, or housing access/conditions.",
+        "do_not_tag_when": "The source concerns buildings, land-use planning, or construction without housing adequacy or rights.",
+        "evidence_signals": [
+          "adequate housing",
+          "housing conditions",
+          "worker accommodation",
+          "affordable housing",
+          "habitable housing"
+        ]
+      },
+      {
+        "value": "Anti-Corruption",
+        "definition": "Prevention, detection, reporting, enforcement, or governance controls for corruption, misuse of entrusted power, conflicts of interest, or improper influence.",
+        "tag_when": "The source centrally regulates corruption offences, anti-corruption controls, public/private corruption, conflict-of-interest rules, or corruption prevention.",
+        "do_not_tag_when": "The source only addresses general compliance, corporate governance, or financial crime without corruption.",
+        "evidence_signals": [
+          "anti-corruption",
+          "corruption",
+          "conflict of interest",
+          "integrity",
+          "improper influence"
+        ]
+      },
+      {
+        "value": "Anti-Bribery",
+        "definition": "Prevention, prohibition, detection, reporting, or sanctions for giving, receiving, offering, or soliciting bribes.",
+        "tag_when": "The source specifically regulates bribery, bribe offers, facilitation payments, gifts/hospitality as bribes, or bribery offences.",
+        "do_not_tag_when": "The source addresses corruption broadly without bribery-specific mechanisms, unless bribery is expressly named.",
+        "evidence_signals": [
+          "anti-bribery",
+          "bribery",
+          "bribe",
+          "facilitation payment",
+          "gifts and hospitality"
+        ]
+      },
+      {
+        "value": "ESG Reporting",
+        "definition": "Reporting or disclosure of environmental, social, governance, sustainability, or responsible-business information.",
+        "tag_when": "The source centrally requires ESG/sustainability disclosures, ESG statements, management reports, non-financial statements, or related reporting architecture.",
+        "do_not_tag_when": "The source includes operational reporting to regulators only, such as permits or emissions returns, without ESG or sustainability disclosure architecture.",
+        "evidence_signals": [
+          "ESG reporting",
+          "sustainability reporting",
+          "non-financial statement",
+          "management report",
+          "CSRD"
+        ]
+      },
+      {
+        "value": "ESG Due Diligence",
+        "definition": "Processes to identify, prevent, mitigate, account for, and remedy ESG, human-rights, environmental, or supply-chain adverse impacts.",
+        "tag_when": "The source requires due diligence over human rights, environmental impacts, supply chains, value chains, forced labor, child labor, or sustainability risks.",
+        "do_not_tag_when": "The text only imposes reporting or general compliance without a due-diligence process.",
+        "evidence_signals": [
+          "due diligence",
+          "supply chain due diligence",
+          "adverse impacts",
+          "human rights due diligence",
+          "value chain"
+        ]
+      },
+      {
+        "value": "Sustainability Reporting",
+        "definition": "Disclosure of sustainability impacts, risks, opportunities, policies, metrics, or targets, often under CSRD/ESRS-style reporting.",
+        "tag_when": "The source specifically requires sustainability reports, sustainability statements, ESRS disclosures, or sustainability information in annual reports.",
+        "do_not_tag_when": "The source merely requires environmental monitoring or financial statements without sustainability disclosure.",
+        "evidence_signals": [
+          "sustainability reporting",
+          "sustainability statement",
+          "ESRS",
+          "sustainability disclosures"
+        ]
+      },
+      {
+        "value": "Non-Financial Reporting",
+        "definition": "Disclosure of non-financial information such as environmental, social, employee, human-rights, anti-corruption, or diversity matters.",
+        "tag_when": "The source refers to non-financial reporting/statements or implements non-financial disclosure requirements.",
+        "do_not_tag_when": "The source is financial reporting only or operational regulatory reporting without public non-financial disclosure.",
+        "evidence_signals": [
+          "non-financial reporting",
+          "non-financial statement",
+          "NFRD",
+          "non-financial information"
+        ]
+      },
+      {
+        "value": "Compliance with Laws and Regulations",
+        "definition": "Central regulation of legal-compliance architecture, compliance-management systems, authorisation/register regimes as the regulated object, certification/conformity status, or economic/criminal compliance offences.",
+        "tag_when": "The source centrally regulates compliance systems, legal conformity programs, approval/certification status, regulated registers, broad compliance duties, or offence frameworks as the subject of the instrument.",
+        "do_not_tag_when": "Do not tag for ordinary legal obligations, permits, monitoring, reporting, competent authorities, enforcement provisions, transposition duties, penalties, sanctions, or the fact that the source is a law. Suppress unless compliance architecture is itself a central regulated object.",
+        "evidence_signals": [
+          "compliance program",
+          "compliance management",
+          "certification status",
+          "conformity assessment",
+          "regulated register",
+          "economic offence",
+          "criminal compliance offence",
+          "authorisation regime as main subject"
+        ]
+      },
+      {
+        "value": "Financial Reporting",
+        "definition": "Accounting, financial statements, annual accounts, audit, transparency, securities reporting, or financial disclosure obligations.",
+        "tag_when": "The source regulates financial statements, accounting rules, annual accounts, audit reports, transparency reports, or financial disclosure.",
+        "do_not_tag_when": "The source concerns sustainability/non-financial reporting without financial statements or accounting.",
+        "evidence_signals": [
+          "financial reporting",
+          "annual accounts",
+          "financial statements",
+          "accounting directive",
+          "transparency directive"
+        ]
+      },
+      {
+        "value": "Corporate Social Responsibility",
+        "definition": "Corporate responsibility commitments, policies, or obligations concerning social/environmental impacts and responsible business conduct.",
+        "tag_when": "The source explicitly addresses CSR, responsible business conduct, corporate responsibility policies, or broad corporate accountability.",
+        "do_not_tag_when": "The source has a specific ESG due-diligence, reporting, labor, environmental, or governance topic; use that specific label unless CSR is central.",
+        "evidence_signals": [
+          "corporate social responsibility",
+          "CSR",
+          "responsible business conduct",
+          "corporate responsibility"
+        ]
+      },
+      {
+        "value": "Political Engagement and Lobbying Activities",
+        "definition": "Corporate political contributions, lobbying, advocacy, public-policy influence, registration, transparency, or related controls.",
+        "tag_when": "The source regulates lobbying, political donations, public-policy engagement, registers of lobbyists, or transparency of political influence.",
+        "do_not_tag_when": "The source mentions government interaction only as normal regulatory compliance or permitting.",
+        "evidence_signals": [
+          "lobbying",
+          "political engagement",
+          "political contributions",
+          "public policy influence",
+          "lobby register"
+        ]
+      },
+      {
+        "value": "Protection of Whistleblowers",
+        "definition": "Governance/business-conduct systems protecting whistleblowers or reporting persons from retaliation.",
+        "tag_when": "The source establishes whistleblowing channels, confidentiality, anti-retaliation duties, governance controls, or reporting protections.",
+        "do_not_tag_when": "Use Whistleblower Protection when the primary framing is worker rights in own workforce rather than governance conduct.",
+        "evidence_signals": [
+          "protection of whistleblowers",
+          "reporting persons",
+          "whistleblowing channel",
+          "retaliation"
+        ]
+      },
+      {
+        "value": "Relationships with Suppliers, Including Payment Practices",
+        "definition": "Supplier relationship management, purchasing practices, fair payment, late payment, procurement conduct, or supplier terms.",
+        "tag_when": "The source directly regulates supplier due diligence, payment terms/practices, purchasing practices, supply-chain relationship governance, or supplier transparency.",
+        "do_not_tag_when": "The source merely affects suppliers indirectly through product or environmental duties.",
+        "evidence_signals": [
+          "supplier relationships",
+          "payment practices",
+          "late payment",
+          "supply chain",
+          "purchasing practices"
+        ]
+      },
+      {
+        "value": "Corruption and Bribery Incidents",
+        "definition": "Reporting, disclosure, handling, investigation, or consequences of actual corruption or bribery incidents.",
+        "tag_when": "The source requires disclosure, investigation, enforcement, registers, or reporting of corruption/bribery incidents.",
+        "do_not_tag_when": "The source establishes general anti-corruption policies but does not address incidents or incident reporting.",
+        "evidence_signals": [
+          "corruption incidents",
+          "bribery incidents",
+          "reported cases",
+          "investigation of corruption"
+        ]
+      },
+      {
+        "value": "Corporate Culture",
+        "definition": "Values, governance culture, ethical standards, integrity systems, codes of conduct, or compliance culture within an organization.",
+        "tag_when": "The source regulates corporate culture, ethics programs, integrity systems, conduct policies, gifts/hospitality culture, or board oversight of conduct.",
+        "do_not_tag_when": "The text only creates legal compliance duties without culture, ethics, or conduct-system framing.",
+        "evidence_signals": [
+          "corporate culture",
+          "code of conduct",
+          "ethics",
+          "integrity",
+          "compliance culture",
+          "gifts"
+        ]
+      },
+      {
+        "value": "Product Safety",
+        "definition": "Safety requirements, risk controls, conformity, market surveillance, warnings, or liability for goods/services placed on the market.",
+        "tag_when": "The regulated object is product safety, defects, safety standards, toys, cosmetics, food safety, machinery/product risks, or market surveillance.",
+        "do_not_tag_when": "The source regulates product labeling, chemical registration, or consumer rights without safety-risk controls.",
+        "evidence_signals": [
+          "product safety",
+          "defective products",
+          "toy safety",
+          "safe products",
+          "market surveillance",
+          "risk to consumers"
+        ]
+      },
+      {
+        "value": "Compliance and Certification",
+        "definition": "Conformity assessment, certification, licensing, accreditation, or compliance marks demonstrating that products or organizations meet requirements.",
+        "tag_when": "The source centrally requires certificates, conformity assessment, accreditation, certification bodies, compliance marks, or similar formal verification.",
+        "do_not_tag_when": "The source creates legal duties but no certification/conformity process; do not tag solely for general compliance.",
+        "evidence_signals": [
+          "certification",
+          "conformity assessment",
+          "CE marking",
+          "accreditation",
+          "compliance certificate"
+        ]
+      },
+      {
+        "value": "Product Labeling",
+        "definition": "Mandatory labels, markings, information, warnings, claims, traceability information, or presentation requirements for products.",
+        "tag_when": "The source regulates product labels, packaging information, food information, energy labels, textile labels, hazard labels, or consumer information duties on products.",
+        "do_not_tag_when": "The source regulates product safety, design, or advertising without label/marking/information requirements.",
+        "evidence_signals": [
+          "labelling",
+          "labeling",
+          "marking",
+          "food information",
+          "energy label",
+          "textile label",
+          "claims"
+        ]
+      },
+      {
+        "value": "Consumer Protection Laws",
+        "definition": "Central rules protecting consumers in transactions, marketing, contracts, products, services, information asymmetry, financial services, or unfair trader practices.",
+        "tag_when": "The source centrally protects consumers/end-users through rights, remedies, unfair commercial-practice rules, misleading-advertising controls, contract safeguards, product/service information, or consumer transaction protections.",
+        "do_not_tag_when": "Do not tag where consumers are only indirectly affected by environmental, labor, industrial, product-stewardship, or reporting rules. For downstream ESRS mapping, distinguish market/trader conduct from direct end-user safety or information impacts.",
+        "evidence_signals": [
+          "consumer protection",
+          "consumer rights",
+          "unfair commercial practices",
+          "misleading advertising",
+          "contractual consumer rights",
+          "consumer remedies",
+          "financial services consumer"
+        ]
+      },
+      {
+        "value": "Product Design and Manufacturing",
+        "definition": "Requirements for product design, manufacture, composition, durability, repairability, safety-by-design, or production specifications.",
+        "tag_when": "The source directly regulates how products are designed or manufactured, including ecodesign, construction/design requirements, or material composition.",
+        "do_not_tag_when": "The source is only about labeling, recall, waste disposal, or consumer rights after sale.",
+        "evidence_signals": [
+          "product design",
+          "manufacturing",
+          "ecodesign",
+          "design requirements",
+          "technical specifications"
+        ]
+      },
+      {
+        "value": "Product Recall",
+        "definition": "Withdrawal, recall, corrective action, notification, or market-removal procedures for unsafe or non-compliant products.",
+        "tag_when": "The source regulates product recall, withdrawal from market, corrective actions, safety notifications, or recall obligations.",
+        "do_not_tag_when": "The source only sets general product safety standards without recall/withdrawal mechanisms.",
+        "evidence_signals": [
+          "recall",
+          "withdrawal",
+          "corrective action",
+          "market removal",
+          "unsafe products"
+        ]
+      },
+      {
+        "value": "Registration of Biocidal Products",
+        "definition": "Authorization, approval, registration, renewal, or market access for biocidal products and active substances.",
+        "tag_when": "The source directly regulates registration/authorization of biocidal products, active substances, dossiers, approvals, or market placement.",
+        "do_not_tag_when": "The source is broad chemical regulation or pesticide regulation without biocidal product registration.",
+        "evidence_signals": [
+          "biocidal products",
+          "biocide",
+          "active substance",
+          "product authorisation",
+          "registration"
+        ]
+      },
+      {
+        "value": "Data Privacy (GDPR)",
+        "definition": "Protection of personal data and privacy, including GDPR-style processing principles, rights, controllers/processors, and enforcement.",
+        "tag_when": "The source regulates personal data, data protection, privacy rights, GDPR implementation, processing, controllers, processors, or data-subject rights.",
+        "do_not_tag_when": "The source concerns cybersecurity, financial reporting, or non-financial reporting without personal-data/privacy duties.",
+        "evidence_signals": [
+          "GDPR",
+          "personal data",
+          "data protection",
+          "privacy",
+          "processing of personal data",
+          "gegevensbescherming"
+        ]
+      },
+      {
+        "value": "Data Privacy and Non-Financial Reporting",
+        "definition": "Combined data privacy and non-financial/ESG disclosure obligations, especially where privacy-related information is part of sustainability or non-financial reporting.",
+        "tag_when": "The source explicitly connects personal data/privacy with non-financial or sustainability reporting obligations.",
+        "do_not_tag_when": "The source is only privacy/GDPR or only non-financial reporting; tag those separately instead.",
+        "evidence_signals": [
+          "data privacy and non-financial reporting",
+          "personal data in non-financial reporting",
+          "privacy disclosures"
+        ]
+      },
+      {
+        "value": "Information-Related Impacts on Consumers and End-Users",
+        "definition": "Consumer/end-user impacts from information, privacy, data, content, transparency, accessibility of information, or misleading/insufficient information.",
+        "tag_when": "The source directly regulates information-related consumer/end-user impacts, privacy notices, data impacts, product information, digital information, or transparency to users.",
+        "do_not_tag_when": "The source is generic data protection with no consumer/end-user framing, or product labeling without wider information-impact context.",
+        "evidence_signals": [
+          "information-related impacts",
+          "consumer information",
+          "privacy notice",
+          "end-user information",
+          "misleading information"
+        ]
+      },
+      {
+        "value": "Personal Safety of Non-Consumers and End-Users",
+        "definition": "Physical safety of consumers or end-users from product, service, facility, or operational risks; keep this canonical label even though the wording says 'Non-Consumers'.",
+        "tag_when": "The source directly addresses physical safety, injury risk, health harm, dangerous products/services, or safety of users/end-users.",
+        "do_not_tag_when": "The source is about privacy, social inclusion, or general consumer rights without personal safety risk.",
+        "evidence_signals": [
+          "personal safety",
+          "consumer safety",
+          "end-user safety",
+          "risk of injury",
+          "dangerous product"
+        ]
+      },
+      {
+        "value": "Social Inclusion of Consumers and End-Users",
+        "definition": "Fair access, non-discrimination, accessibility, inclusion, affordability, or equitable treatment of consumers/end-users.",
+        "tag_when": "The source protects access or inclusion of consumers/end-users, including vulnerable groups, accessibility, affordability, non-discrimination in services, or universal access.",
+        "do_not_tag_when": "The source concerns worker inclusion or general consumer protection without inclusion/accessibility focus.",
+        "evidence_signals": [
+          "social inclusion",
+          "accessibility",
+          "vulnerable consumers",
+          "universal service",
+          "consumer inclusion"
+        ]
+      },
+      {
+        "value": "Elimination of Persistent Organic Pollutants",
+        "definition": "Prohibition, restriction, phase-out, disposal, monitoring, or elimination of persistent organic pollutants.",
+        "tag_when": "The source directly regulates POPs, Stockholm Convention substances, PCB/PCT elimination, dioxins/furans, or POP waste disposal.",
+        "do_not_tag_when": "The source broadly regulates hazardous substances or chemicals without persistent-organic-pollutant focus.",
+        "evidence_signals": [
+          "persistent organic pollutants",
+          "POPs",
+          "PCB",
+          "PCT",
+          "Stockholm Convention",
+          "elimination"
+        ]
+      },
+      {
+        "value": "Chemical Safety",
+        "definition": "Protection of people and environment from chemical hazards through safe handling, assessment, exposure control, classification, or risk management.",
+        "tag_when": "The source addresses chemical hazards, safety data, exposure/risk assessment, safe use, chemical accidents, or risk management for substances/mixtures.",
+        "do_not_tag_when": "Use Chemical Regulation for registration/market governance, Hazardous Substances for dangerous material restrictions, or Product Labeling for label-only duties.",
+        "evidence_signals": [
+          "chemical safety",
+          "chemical hazards",
+          "risk assessment",
+          "safe use",
+          "safety data sheet",
+          "hazard classification"
+        ]
+      },
+      {
+        "value": "Chemical Regulation",
+        "definition": "Regulatory governance of chemicals, including registration, evaluation, authorization, restriction, data sharing, notification, or market access.",
+        "tag_when": "The source establishes chemical regulatory schemes such as REACH/CLP/PIC, chemical registers, authorization, restrictions, test methods, or data-sharing obligations.",
+        "do_not_tag_when": "The source only addresses safety outcomes or hazardous-substance exposure without regulatory scheme mechanics.",
+        "evidence_signals": [
+          "REACH",
+          "CLP",
+          "PIC",
+          "chemical regulation",
+          "registration",
+          "authorization",
+          "data sharing"
+        ]
+      },
+      {
+        "value": "Hazardous Substances",
+        "definition": "Dangerous, toxic, hazardous, radioactive, carcinogenic, mutagenic, ozone-depleting, or otherwise harmful substances/materials.",
+        "tag_when": "The source centrally regulates dangerous chemicals, hazardous waste, POPs, asbestos, silica, radioactive waste, ozone-depleting substances, dangerous pollutants, or hazardous substance restrictions.",
+        "do_not_tag_when": "Do not tag merely because a product, facility, or environmental law has potential hazards; require hazardous substances or dangerous pollutants to be central.",
+        "evidence_signals": [
+          "hazardous substances",
+          "hazardous waste",
+          "dangerous substances",
+          "POPs",
+          "asbestos",
+          "silica",
+          "radioactive waste",
+          "ozone-depleting substances"
+        ]
+      },
+      {
+        "value": "Restriction of Hazardous Substances",
+        "definition": "Limits, bans, or restrictions on hazardous substances in products, materials, equipment, or supply chains.",
+        "tag_when": "The source sets substance restrictions such as RoHS, banned/limited hazardous substances in electrical/electronic equipment, or product material restrictions.",
+        "do_not_tag_when": "The source broadly regulates hazardous substances without product/content restriction limits.",
+        "evidence_signals": [
+          "restriction of hazardous substances",
+          "RoHS",
+          "substance restriction",
+          "restricted substances",
+          "electrical equipment"
+        ]
+      },
+      {
+        "value": "Electrical Equipment",
+        "definition": "Rules for electrical or electronic equipment, including safety, waste, hazardous substances, energy performance, or product requirements.",
+        "tag_when": "The regulated object is electrical/electronic equipment, WEEE, RoHS goods, appliances, batteries in equipment, or electronic product standards.",
+        "do_not_tag_when": "The source regulates chemicals, waste, or energy efficiency generally without electrical/electronic equipment as the product class.",
+        "evidence_signals": [
+          "electrical equipment",
+          "electronic equipment",
+          "WEEE",
+          "RoHS",
+          "appliances",
+          "electronics"
+        ]
+      },
+      {
+        "value": "Communities' Economic, Social, and Cultural Rights",
+        "definition": "Rights of affected communities to livelihoods, health, education, housing, culture, land, water, or other economic/social/cultural interests.",
+        "tag_when": "The source directly protects or affects community rights to land, housing, cultural heritage, health, livelihood, water, education, or community wellbeing.",
+        "do_not_tag_when": "The source has broad environmental effects on the public but no community-rights framing or affected-community mechanism.",
+        "evidence_signals": [
+          "affected communities",
+          "economic social and cultural rights",
+          "livelihoods",
+          "cultural heritage",
+          "community wellbeing"
+        ]
+      },
+      {
+        "value": "Communities' Civil and Political Rights",
+        "definition": "Community rights related to participation, consultation, access to justice, expression, assembly, security, and political/civic freedoms.",
+        "tag_when": "The source directly addresses community consultation, participation, access to information/justice, civil liberties, or political rights of affected communities.",
+        "do_not_tag_when": "The source only imposes public notice or administrative procedure without community rights as a central issue.",
+        "evidence_signals": [
+          "civil and political rights",
+          "public participation",
+          "access to justice",
+          "community consultation",
+          "free expression"
+        ]
+      },
+      {
+        "value": "Rights of Indigenous Peoples",
+        "definition": "Rights, consultation, consent, land, culture, self-determination, and protections specific to Indigenous peoples.",
+        "tag_when": "The source directly references Indigenous peoples, traditional lands, free prior and informed consent, cultural rights, or Indigenous community protections.",
+        "do_not_tag_when": "The source affects rural/local communities generally but does not identify Indigenous peoples or Indigenous rights.",
+        "evidence_signals": [
+          "Indigenous peoples",
+          "traditional lands",
+          "FPIC",
+          "free prior and informed consent",
+          "tribal",
+          "aboriginal"
+        ]
+      },
+      {
+        "value": "Animal Welfare",
+        "definition": "Protection of animal health, humane treatment, husbandry, transport, slaughter, testing, or welfare conditions.",
+        "tag_when": "The source directly regulates animal welfare, cruelty, livestock treatment, transport/slaughter conditions, animal testing, or welfare standards.",
+        "do_not_tag_when": "The source protects wildlife biodiversity or endangered species without welfare/treatment of animals.",
+        "evidence_signals": [
+          "animal welfare",
+          "humane treatment",
+          "animal transport",
+          "slaughter",
+          "animal testing",
+          "livestock welfare"
+        ]
+      }
+    ]
+  },
+  "centrality_model": {
+    "centrality_levels": {
+      "primary": "The label is one of the main regulated objects, protected interests, legal mechanisms, or duty structures.",
+      "companion": "The label is a distinct central pillar that is necessary to describe the source, but not the dominant topic.",
+      "incidental": "The label is only mentioned as background, an affected medium, an example, an implementation detail, or an indirect consequence.",
+      "reject": "The label is a nearby concept but should not be emitted."
+    },
+    "evidence_roles": {
+      "regulated_object": "What the law directly regulates: e.g., wastewater, packaging, emissions allowances, employment contracts.",
+      "legal_mechanism": "How the law operates: e.g., EPR, carbon price, reporting duty, conformity assessment.",
+      "protected_interest": "The protected interest: e.g., air quality, water quality, worker health, biodiversity.",
+      "direct_addressee": "Who must comply: e.g., employers, producers, ships, financial institutions.",
+      "affected_medium": "An environmental or social medium affected by the law but not necessarily the central object.",
+      "implementation_actor": "Member State, ministry, competent authority, regulator, court, or agency administering the regime.",
+      "background_context": "Recital/background/context without operative duties.",
+      "incidental_reference": "A passing mention, example, or downstream consequence."
+    },
+    "survival_rule": "Only primary and strong companion candidates survive. Incidental, implementation_actor-only, background_context, and weak affected_medium candidates are dropped."
+  },
+  "reconciliation_algorithm": [
+    "1. Reject candidates whose label is not in controlled_enum.allowed_values.",
+    "2. Re-evaluate candidate centrality from the evidence_packet; do not blindly trust family KM centrality claims.",
+    "3. Merge duplicate labels across family KMs; keep the strongest source evidence and highest valid centrality.",
+    "4. Drop candidates with centrality=reject or centrality=incidental.",
+    "5. Drop candidates whose evidence_role is only implementation_actor, background_context, incidental_reference, or weak affected_medium.",
+    "6. Keep primary candidates first. Keep companion candidates only when they represent a distinct central legal pillar with direct title/scope/operative-provision evidence.",
+    "7. Apply label_specific_survival_rules. For listed high-risk labels, companion centrality is insufficient by default; require primary centrality plus direct regulated_object/legal_mechanism/protected_interest/direct_addressee evidence.",
+    "8. Suppress high-risk generic labels unless they satisfy their strict tag_when and survival_gate tests.",
+    "9. Prefer the most specific label over a generic parent label when both are supported by the same evidence.",
+    "10. Preserve strong specific primary candidates even when another label is more central; do not drop a source-supported primary candidate solely due to label-count pressure.",
+    "11. Final SpecificTopic[] should normally contain 2-3 labels. Use 4-5 only for multiple independent regulated obligations or protected interests.",
+    "12. Return no label rather than a weak generic label when the source evidence is insufficient."
+  ],
+  "high_risk_generic_suppressions": [
+    {
+      "label": "Biodiversity Conservation",
+      "suppress_unless": "Biodiversity, species, habitats, protected areas, conservation status, ecosystems, or nature protection are central.",
+      "do_not_use_for": [
+        "generic EIA/SEA references to flora/fauna",
+        "environmental background text only"
+      ]
+    },
+    {
+      "label": "Chemical Regulation",
+      "suppress_unless": "The source centrally regulates chemical registration, evaluation, authorization, restriction, classification/labelling/packaging, data sharing, notification, PIC/REACH/CLP-style market governance, or chemical registers.",
+      "do_not_use_for": [
+        "generic hazardous substances",
+        "generic pollution",
+        "facility emissions",
+        "waste laws without chemical market governance"
+      ],
+      "survival_gate": "Require direct regulatory-scheme evidence, not just a chemical-like substance mention."
+    },
+    {
+      "label": "Chemical Safety",
+      "suppress_unless": "The source centrally regulates chemical hazard/risk protection, exposure control, safe handling/use, safety data, classification, risk assessment, or chemical accident/risk-management duties.",
+      "do_not_use_for": [
+        "generic pollution",
+        "wastewater",
+        "environmental liability",
+        "facility risk",
+        "product stewardship without chemical hazard duties"
+      ],
+      "survival_gate": "Require direct chemical lifecycle, exposure, hazard, risk assessment, classification, or safe-use evidence."
+    },
+    {
+      "label": "Circular Economy",
+      "suppress_unless": "The source centrally frames circularity, reuse, repair, durability, circular design, material loops, or resource-productivity strategy.",
+      "do_not_use_for": [
+        "recycling alone",
+        "waste reduction alone",
+        "EPR alone",
+        "packaging waste alone",
+        "WEEE/batteries alone"
+      ]
+    },
+    {
+      "label": "Climate Change Mitigation",
+      "suppress_unless": "The source has explicit climate, greenhouse gas, carbon, renewable-energy, energy-efficiency, or decarbonisation mechanisms.",
+      "do_not_use_for": [
+        "general pollution control",
+        "waste laws",
+        "landfill laws",
+        "environmental assessment laws with indirect climate benefits"
+      ]
+    },
+    {
+      "label": "Compliance and Certification",
+      "suppress_unless": "The source centrally requires conformity assessment, certification, CE marking, accreditation, certification bodies, audit/certification status, or formal compliance schemes.",
+      "do_not_use_for": [
+        "ordinary EPR",
+        "packaging",
+        "WEEE",
+        "labeling",
+        "product stewardship",
+        "authorization duties without certification/conformity assessment",
+        "general legal compliance"
+      ],
+      "survival_gate": "Require primary centrality and direct legal_mechanism or regulated_object evidence. Companion is reject by default."
+    },
+    {
+      "label": "Compliance with Laws and Regulations",
+      "suppress_unless": "Compliance architecture, compliance management, legal conformity program, certification/compliance status, regulated register/authorization regime, or offence/compliance framework is itself the central regulated object.",
+      "do_not_use_for": [
+        "ordinary legal obligations",
+        "Member State transposition",
+        "competent authorities",
+        "monitoring or reporting",
+        "permits as incidental implementation",
+        "penalties or sanctions",
+        "the fact that the source is a law",
+        "environmental/product/labor duties with normal enforcement language"
+      ],
+      "survival_gate": "Require primary centrality and direct title/scope/operative-provision support. Companion is reject by default."
+    },
+    {
+      "label": "Consumer Protection Laws",
+      "suppress_unless": "Consumer rights, unfair practices, misleading advertising, contract protections, consumer remedies, product/service information, or transaction safeguards are central.",
+      "do_not_use_for": [
+        "indirect consumer benefits from environmental or labor laws"
+      ]
+    },
+    {
+      "label": "Corporate Culture",
+      "suppress_unless": "The source centrally regulates corporate culture, ethics programs, codes of conduct, integrity systems, or conduct-policy governance.",
+      "do_not_use_for": [
+        "ordinary corporate obligations",
+        "generic compliance duties",
+        "anti-corruption references without culture/ethics/conduct-system framing"
+      ],
+      "survival_gate": "Require primary centrality and direct business-conduct governance evidence."
+    },
+    {
+      "label": "Hazardous Substances",
+      "suppress_unless": "Hazardous chemicals, hazardous waste, POPs, asbestos, silica, radioactive waste, ozone-depleting substances, dangerous pollutants, or comparable hazardous materials are central regulated objects.",
+      "do_not_use_for": [
+        "generic pollution",
+        "wastewater",
+        "facility risk",
+        "environmental liability language",
+        "product safety risk without hazardous substance regulation"
+      ],
+      "survival_gate": "Require primary centrality and direct substance/waste/pollutant restriction, exposure, disposal, classification, or remediation evidence."
+    },
+    {
+      "label": "Impacts on and Dependencies on Ecosystem Services",
+      "suppress_unless": "The source directly references ecosystem services, nature-related dependencies, or impacts/dependencies on services ecosystems provide.",
+      "do_not_use_for": [
+        "general biodiversity protection",
+        "environmental assessment",
+        "ecosystem mentions without services/dependencies framing"
+      ],
+      "survival_gate": "Require explicit ecosystem-services/dependency wording."
+    },
+    {
+      "label": "Impacts on the Extent and Conditions of Ecosystems",
+      "suppress_unless": "The source requires assessment, prevention, mitigation, disclosure, or management of ecosystem extent, condition, degradation, fragmentation, or ecological integrity as an explicit framework.",
+      "do_not_use_for": [
+        "general environmental assessment",
+        "biodiversity mentions",
+        "planning laws without ecosystem-condition framework"
+      ],
+      "survival_gate": "Require explicit ecosystem impact/condition/extent language and operative duties."
+    },
+    {
+      "label": "Impacts on the State of Species",
+      "suppress_unless": "The source requires assessment, prevention, mitigation, disclosure, or management of species population, distribution, conservation status, extinction risk, or abundance impacts.",
+      "do_not_use_for": [
+        "general environmental assessment",
+        "biodiversity mentions",
+        "habitat protection without species-state impact framework"
+      ],
+      "survival_gate": "Require explicit species-state/population/conservation-status impact language and operative duties."
+    },
+    {
+      "label": "Information-Related Impacts on Consumers and End-Users",
+      "suppress_unless": "The source directly regulates end-user/consumer information, product information, privacy/data notices, digital information, warnings, instructions, accessibility of information, or misleading/insufficient information affecting users.",
+      "do_not_use_for": [
+        "general transparency",
+        "public access to information",
+        "public participation",
+        "financial reporting",
+        "non-financial reporting",
+        "sustainability disclosure",
+        "reporting to regulators"
+      ],
+      "survival_gate": "Require primary centrality and direct consumer/end-user framing."
+    },
+    {
+      "label": "Social Dialogue",
+      "suppress_unless": "Worker representatives, unions, consultation, works councils, collective bargaining, or information/consultation processes are central.",
+      "do_not_use_for": [
+        "general employee-information duties without representative/collective mechanism"
+      ]
+    }
+  ],
+  "cross_family_disambiguation_rules": [
+    {
+      "case": "Wastewater vs marine pollution",
+      "rule": "Wastewater Treatment is primary for urban wastewater/sewage/collecting systems. Marine Pollution is not added merely because receiving waters include coastal or marine waters."
+    },
+    {
+      "case": "Water quality vs water resource management",
+      "rule": "Water Quality Standards requires quality objectives/standards or pollutant status. Water Resource Management requires basin/resource planning, abstraction/allocation, integrated management, or governance of water as a resource."
+    },
+    {
+      "case": "Waste/recycling vs circular economy",
+      "rule": "Waste Reduction and Recycling, EPR, Product Labeling, WEEE, or batteries do not automatically imply Circular Economy."
+    },
+    {
+      "case": "Pollution vs climate",
+      "rule": "Pollutant limits, industrial emissions, hazardous substances, and air-quality rules do not imply Climate Change Mitigation unless greenhouse gases/carbon/energy transition are central."
+    },
+    {
+      "case": "EIA/SEA/planning vs biodiversity",
+      "rule": "Land Use Planning is primary for environmental assessment/planning laws. Add biodiversity labels only when biodiversity/species/habitats/ecosystems are distinct central protected interests."
+    },
+    {
+      "case": "Own workforce vs value-chain workers",
+      "rule": "Employment conditions, wages, working time, OHS, and discrimination are S1-style topics. Forced labor, child labor, human trafficking, or supplier due diligence is value-chain-oriented when the duties fall on companies for suppliers/imports/value chains."
+    },
+    {
+      "case": "Consumer market conduct vs end-user safety",
+      "rule": "Unfair commercial practices or misleading advertising select Consumer Protection Laws but downstream ESRS may be G1 rather than S4. Product safety, labeling, privacy, recall, and end-user information remain S4-style."
+    },
+    {
+      "case": "High-risk companion candidates",
+      "rule": "For Compliance with Laws and Regulations, Compliance and Certification, Chemical Safety, Chemical Regulation, Hazardous Substances, Information-Related Impacts, Corporate Culture, and ecosystem-impact labels, do not retain companion candidates unless direct title/scope/operative support makes them independent primary-like pillars."
+    },
+    {
+      "case": "Generated but dropped specific candidates",
+      "rule": "When a specific candidate has primary centrality plus regulated_object/legal_mechanism/protected_interest/direct_addressee evidence, preserve it even if a broader label is also present; prefer removing the broader weak label."
+    }
+  ],
+  "output_contract": {
+    "SpecificTopic": {
+      "value": "array of canonical SpecificTopic labels, max 5",
+      "confidence": "0.0-1.0",
+      "tag_reason": "why selected labels are central and why near-misses were rejected",
+      "evidence_excerpt": "short source-supported excerpts, one or more, supporting the selected topics",
+      "rejected_candidates": [
+        {
+          "label": "candidate label rejected",
+          "reason": "incidental/generic/nearby/displaced by more specific label"
+        }
+      ]
+    }
+  },
+  "validation_rules": [
+    "Emit only canonical labels from controlled_enum.allowed_values.",
+    "Emit at most 5 SpecificTopic labels.",
+    "Do not output labels from weak, incidental, background, or implementation-only evidence.",
+    "Do not use benchmark labels, filenames, row IDs, URLs, URL slugs, or exact full-title lookup tables.",
+    "Every retained label must have source evidence and centrality justification.",
+    "Re-evaluate family centrality claims; final survival requires source evidence, not merely candidate confidence.",
+    "High-risk labels require primary centrality plus direct title/scope/operative-provision support; companion evidence is reject by default unless explicitly justified."
+  ],
+  "revision_note": "v3.2 raw deep-dive patch: ontology-backed SpecificTopic finalization, companion rescue, and high-risk FP suppression.",
+  "label_specific_survival_rules": [
+    {
+      "label": "Compliance with Laws and Regulations",
+      "suppress_unless": "Compliance architecture, compliance management, legal conformity program, certification/compliance status, regulated register/authorization regime, or offence/compliance framework is itself the central regulated object.",
+      "do_not_use_for": [
+        "ordinary legal obligations",
+        "Member State transposition",
+        "competent authorities",
+        "monitoring or reporting",
+        "permits as incidental implementation",
+        "penalties or sanctions",
+        "the fact that the source is a law",
+        "environmental/product/labor duties with normal enforcement language"
+      ],
+      "survival_gate": "Require primary centrality and direct title/scope/operative-provision support. Companion is reject by default."
+    },
+    {
+      "label": "Compliance and Certification",
+      "suppress_unless": "The source centrally requires conformity assessment, certification, CE marking, accreditation, certification bodies, audit/certification status, or formal compliance schemes.",
+      "do_not_use_for": [
+        "ordinary EPR",
+        "packaging",
+        "WEEE",
+        "labeling",
+        "product stewardship",
+        "authorization duties without certification/conformity assessment",
+        "general legal compliance"
+      ],
+      "survival_gate": "Require primary centrality and direct legal_mechanism or regulated_object evidence. Companion is reject by default."
+    },
+    {
+      "label": "Chemical Safety",
+      "suppress_unless": "The source centrally regulates chemical hazard/risk protection, exposure control, safe handling/use, safety data, classification, risk assessment, or chemical accident/risk-management duties.",
+      "do_not_use_for": [
+        "generic pollution",
+        "wastewater",
+        "environmental liability",
+        "facility risk",
+        "product stewardship without chemical hazard duties"
+      ],
+      "survival_gate": "Require direct chemical lifecycle, exposure, hazard, risk assessment, classification, or safe-use evidence."
+    },
+    {
+      "label": "Chemical Regulation",
+      "suppress_unless": "The source centrally regulates chemical registration, evaluation, authorization, restriction, classification/labelling/packaging, data sharing, notification, PIC/REACH/CLP-style market governance, or chemical registers.",
+      "do_not_use_for": [
+        "generic hazardous substances",
+        "generic pollution",
+        "facility emissions",
+        "waste laws without chemical market governance"
+      ],
+      "survival_gate": "Require direct regulatory-scheme evidence, not just a chemical-like substance mention."
+    },
+    {
+      "label": "Hazardous Substances",
+      "suppress_unless": "Hazardous chemicals, hazardous waste, POPs, asbestos, silica, radioactive waste, ozone-depleting substances, dangerous pollutants, or comparable hazardous materials are central regulated objects.",
+      "do_not_use_for": [
+        "generic pollution",
+        "wastewater",
+        "facility risk",
+        "environmental liability language",
+        "product safety risk without hazardous substance regulation"
+      ],
+      "survival_gate": "Require primary centrality and direct substance/waste/pollutant restriction, exposure, disposal, classification, or remediation evidence."
+    },
+    {
+      "label": "Information-Related Impacts on Consumers and End-Users",
+      "suppress_unless": "The source directly regulates end-user/consumer information, product information, privacy/data notices, digital information, warnings, instructions, accessibility of information, or misleading/insufficient information affecting users.",
+      "do_not_use_for": [
+        "general transparency",
+        "public access to information",
+        "public participation",
+        "financial reporting",
+        "non-financial reporting",
+        "sustainability disclosure",
+        "reporting to regulators"
+      ],
+      "survival_gate": "Require primary centrality and direct consumer/end-user framing."
+    },
+    {
+      "label": "Corporate Culture",
+      "suppress_unless": "The source centrally regulates corporate culture, ethics programs, codes of conduct, integrity systems, or conduct-policy governance.",
+      "do_not_use_for": [
+        "ordinary corporate obligations",
+        "generic compliance duties",
+        "anti-corruption references without culture/ethics/conduct-system framing"
+      ],
+      "survival_gate": "Require primary centrality and direct business-conduct governance evidence."
+    },
+    {
+      "label": "Impacts on the Extent and Conditions of Ecosystems",
+      "suppress_unless": "The source requires assessment, prevention, mitigation, disclosure, or management of ecosystem extent, condition, degradation, fragmentation, or ecological integrity as an explicit framework.",
+      "do_not_use_for": [
+        "general environmental assessment",
+        "biodiversity mentions",
+        "planning laws without ecosystem-condition framework"
+      ],
+      "survival_gate": "Require explicit ecosystem impact/condition/extent language and operative duties."
+    },
+    {
+      "label": "Impacts on the State of Species",
+      "suppress_unless": "The source requires assessment, prevention, mitigation, disclosure, or management of species population, distribution, conservation status, extinction risk, or abundance impacts.",
+      "do_not_use_for": [
+        "general environmental assessment",
+        "biodiversity mentions",
+        "habitat protection without species-state impact framework"
+      ],
+      "survival_gate": "Require explicit species-state/population/conservation-status impact language and operative duties."
+    },
+    {
+      "label": "Impacts on and Dependencies on Ecosystem Services",
+      "suppress_unless": "The source directly references ecosystem services, nature-related dependencies, or impacts/dependencies on services ecosystems provide.",
+      "do_not_use_for": [
+        "general biodiversity protection",
+        "environmental assessment",
+        "ecosystem mentions without services/dependencies framing"
+      ],
+      "survival_gate": "Require explicit ecosystem-services/dependency wording."
+    }
+  ],
+  "max_final_topics_policy": {
+    "normal_max": 3,
+    "absolute_max": 5,
+    "allow_four_or_five_only_when": "The source contains multiple independent regulated obligations/protected interests with direct operative-provision evidence.",
+    "companion_default": "Companion labels do not survive unless a label-specific survival rule or direct independent legal pillar supports them."
+  },
+  "global_reconciliation_policy_v3_2": [
+    "Do not trust family centrality blindly. Re-adjudicate centrality from source title, scope, definitions, addressees, and operative provisions.",
+    "Keep source-supported benchmark-expected companion labels where the ontology says the benchmark expects both broad and narrow labels.",
+    "Reject high-risk adjacent labels unless their label-specific survival rule is satisfied.",
+    "Normally output 1-3 SpecificTopic labels. Output 4-5 only when separate central legal pillars are explicit.",
+    "Do not keep semantically adjacent labels solely because they are plausible ESG coverage.",
+    "Do not drop a proposed gold-like candidate only because another label is more central; apply allowed_companion_pairs and rescue rules first."
+  ],
+  "allowed_companion_pairs_v3_2": [
+    {
+      "labels": [
+        "Non-Discrimination",
+        "Employment Contracts"
+      ],
+      "keep_both_when": "Source regulates employment access, employment conditions, dismissal, training, occupation, employment relationship, worker information, or employment equality."
+    },
+    {
+      "labels": [
+        "Occupational Health and Safety",
+        "Work Environment"
+      ],
+      "keep_both_when": "Source regulates working time, rest, night work, leave, pregnancy/maternity workplace conditions, or workplace organization as health/safety/work-environment protection."
+    },
+    {
+      "labels": [
+        "Fair Labor Practices",
+        "Employment Contracts"
+      ],
+      "keep_both_when": "Source is broad labor/fair-work/employment standards or worker-protection framework."
+    },
+    {
+      "labels": [
+        "Emission Reduction Obligations",
+        "Climate Change Mitigation"
+      ],
+      "keep_both_when": "Source imposes direct GHG/climate emission-reduction obligations in a climate mechanism."
+    },
+    {
+      "labels": [
+        "Carbon Trading and Emissions Trading Schemes",
+        "Emission Reduction Obligations"
+      ],
+      "keep_both_when": "Source has allowance surrender, caps, registry, emissions-unit compliance, or emissions trading obligations."
+    },
+    {
+      "labels": [
+        "Waste Reduction and Recycling",
+        "Extended Producer Responsibility (EPR)"
+      ],
+      "keep_both_when": "Source assigns end-of-life collection/recycling/fees/take-back/reporting duties to producers."
+    },
+    {
+      "labels": [
+        "Product Safety",
+        "Consumer Protection Laws"
+      ],
+      "keep_both_when": "Product-risk or market-surveillance duties protect consumers/end-users."
+    },
+    {
+      "labels": [
+        "Product Labeling",
+        "Consumer Protection Laws"
+      ],
+      "keep_both_when": "Consumer-facing product information, warnings, claims, labels, or misleading-label controls are central."
+    },
+    {
+      "labels": [
+        "Water Quality Standards",
+        "Wastewater Treatment"
+      ],
+      "keep_both_when": "Wastewater collection/treatment duties are tied to effluent, receiving-water, pollution, EQS, or water-quality standards."
+    },
+    {
+      "labels": [
+        "Marine Pollution",
+        "Marine Environment Protection"
+      ],
+      "keep_both_when": "Marine pollution prevention/remediation is explicitly linked to marine environment/resource protection beyond pollution liability."
+    },
+    {
+      "labels": [
+        "Compliance with Laws and Regulations",
+        "Financial Reporting"
+      ],
+      "keep_both_when": "Source regulates financial reporting through a legal compliance/market supervision architecture."
+    }
+  ],
+  "mutual_exclusion_or_separate_evidence_rules_v3_2": [
+    {
+      "labels": [
+        "Product Labeling",
+        "Information-Related Impacts on Consumers and End-Users"
+      ],
+      "rule": "Product labeling does not automatically imply Information-Related Impacts. Keep both only when consumer/end-user information harms, information rights, privacy/information asymmetry, or end-user accessibility are central."
+    },
+    {
+      "labels": [
+        "Chemical Regulation",
+        "Hazardous Substances"
+      ],
+      "rule": "Chemical regulation does not automatically imply Hazardous Substances. Keep both only when hazardous properties, exposure, restrictions, classification, hazardous waste, or dangerous substances are operative."
+    },
+    {
+      "labels": [
+        "Climate Change Mitigation",
+        "Emission Reduction Obligations"
+      ],
+      "rule": "Climate mitigation does not automatically imply direct reduction obligations. Keep both only if enforceable reductions, caps, standards, or surrender obligations exist."
+    },
+    {
+      "labels": [
+        "Biodiversity Conservation",
+        "Endangered Species Protection"
+      ],
+      "rule": "Biodiversity/habitat context does not imply endangered species. Keep Endangered Species Protection only with species-specific protection."
+    },
+    {
+      "labels": [
+        "Compliance with Laws and Regulations",
+        "Compliance and Certification"
+      ],
+      "rule": "Legal-compliance architecture and formal certification/conformity assessment are distinct. Keep both only when both are central."
+    }
+  ],
+  "high_risk_label_survival_overrides_v3_2": [
+    {
+      "label": "Compliance with Laws and Regulations",
+      "survive_when_any": [
+        "central compliance-management system",
+        "legal conformity program",
+        "regulated register",
+        "approval/ratification/protocol approval regime",
+        "AML/terrorism-financing compliance",
+        "economic/criminal offence framework",
+        "environmental criminal law",
+        "national emissions units registry"
+      ],
+      "reject_when_any": [
+        "ordinary duties",
+        "permits",
+        "competent authorities",
+        "monitoring",
+        "implementation",
+        "transposition",
+        "ordinary penalties",
+        "generic enforcement"
+      ]
+    },
+    {
+      "label": "Hazardous Substances",
+      "survive_when_any": [
+        "hazardous substances/waste",
+        "dangerous substances",
+        "radioactive waste",
+        "asbestos",
+        "silica",
+        "POPs",
+        "ozone-depleting substances",
+        "mercury/cadmium/lead/PCB/PCT",
+        "hazardous exposure/restriction/disposal duties"
+      ],
+      "reject_when_any": [
+        "generic pollution",
+        "ordinary wastewater",
+        "generic chemicals",
+        "environmental liability",
+        "waste management without hazardous-substance object"
+      ]
+    },
+    {
+      "label": "Industrial Emissions",
+      "survive_when_any": [
+        "industrial installations",
+        "combustion plants",
+        "emission limit values",
+        "BAT",
+        "integrated pollution prevention/control",
+        "facility emissions",
+        "extractive waste facilities",
+        "PCB/PCT disposal or decontamination equipment"
+      ],
+      "reject_when_any": [
+        "product composition only",
+        "consumer product safety only",
+        "chemical registration only",
+        "ambient quality without facility duties"
+      ]
+    },
+    {
+      "label": "Climate Change Mitigation",
+      "survive_when_any": [
+        "explicit climate/GHG/carbon/decarbonisation/net-zero/renewables transition/carbon market/carbon pricing mitigation mechanism"
+      ],
+      "reject_when_any": [
+        "indirect environmental benefit",
+        "energy efficiency without climate/GHG framing",
+        "pollution",
+        "waste",
+        "product safety",
+        "financial supervision",
+        "economic offences"
+      ]
+    },
+    {
+      "label": "Product Labeling",
+      "survive_when_any": [
+        "mandatory labels",
+        "markings",
+        "warnings",
+        "instructions",
+        "claims",
+        "product information",
+        "CE/hazard/food/textile/energy labels"
+      ],
+      "reject_when_any": [
+        "traceability records",
+        "reporting to regulators",
+        "public transparency",
+        "non-financial disclosure"
+      ]
+    },
+    {
+      "label": "Information-Related Impacts on Consumers and End-Users",
+      "survive_when_any": [
+        "consumer/end-user information harm",
+        "privacy/information rights",
+        "misleading or insufficient end-user information",
+        "information asymmetry affecting consumers/end-users"
+      ],
+      "reject_when_any": [
+        "ordinary product labeling alone",
+        "public access to information",
+        "financial/non-financial reporting",
+        "traceability",
+        "sustainability disclosure",
+        "reporting to regulators"
+      ]
+    },
+    {
+      "label": "Endangered Species Protection",
+      "survive_when_any": [
+        "threatened/endangered/protected species",
+        "wild birds",
+        "wild fauna/flora",
+        "taking/killing/disturbance prohibitions",
+        "species recovery"
+      ],
+      "reject_when_any": [
+        "generic biodiversity",
+        "habitat",
+        "Natura 2000",
+        "protected area",
+        "EIA/SEA without species-specific duties"
+      ]
+    },
+    {
+      "label": "Circular Economy",
+      "survive_when_any": [
+        "explicit circular economy",
+        "reuse",
+        "repair",
+        "durability",
+        "remanufacturing",
+        "material loops",
+        "circular design",
+        "life extension"
+      ],
+      "reject_when_any": [
+        "waste/recycling/EPR/WEEE/batteries/packaging only without circularity framing"
+      ]
+    },
+    {
+      "label": "Compliance and Certification",
+      "survive_when_any": [
+        "conformity assessment",
+        "certification",
+        "accreditation",
+        "CE marking",
+        "notified bodies",
+        "formal compliance certificates/status"
+      ],
+      "reject_when_any": [
+        "ordinary legal duties",
+        "permits",
+        "monitoring",
+        "general compliance",
+        "enforcement"
+      ]
+    },
+    {
+      "label": "Employment Contracts",
+      "survive_when_any": [
+        "employment relationship",
+        "employment conditions",
+        "access to employment",
+        "dismissal",
+        "probation",
+        "employee information",
+        "maternity/pregnancy employment protection",
+        "equal treatment in employment"
+      ],
+      "reject_when_any": [
+        "workforce mention without employment relationship/conditions"
+      ]
+    },
+    {
+      "label": "Fair Labor Practices",
+      "survive_when_any": [
+        "broad fair-work",
+        "worker-protection",
+        "employment standards",
+        "child/youth labor",
+        "equal treatment",
+        "labor rights framework"
+      ],
+      "reject_when_any": [
+        "single narrow workplace technical rule with no broader labor-rights framing"
+      ]
+    },
+    {
+      "label": "Water Quality Standards",
+      "survive_when_any": [
+        "environmental quality standards",
+        "water quality objectives",
+        "status classes",
+        "pollutant thresholds",
+        "surface/ground/drinking water quality",
+        "water contamination monitoring"
+      ],
+      "reject_when_any": [
+        "water quantity/allocation/pricing only"
+      ]
+    },
+    {
+      "label": "Consumer Protection Laws",
+      "survive_when_any": [
+        "consumer rights",
+        "unfair commercial practices",
+        "misleading advertising",
+        "consumer remedies",
+        "product/service information duties",
+        "product safety/labeling regime intended to protect consumers"
+      ],
+      "reject_when_any": [
+        "consumers only indirectly affected by environmental, industrial, labor, reporting, or product-stewardship duties"
+      ]
+    }
+  ],
+  "reconciliation_algorithm_v3_2": [
+    "1. Normalize and deduplicate all family candidates.",
+    "2. Re-adjudicate each candidate using title/scope/definitions/addressees/operative evidence and assign benchmark_centrality: core, benchmark_expected_companion, ordinary_companion, adjacent, incidental, reject.",
+    "3. Apply high_risk_label_survival_overrides_v3_2 before generic centrality thresholds.",
+    "4. Keep all core labels.",
+    "5. Keep benchmark_expected_companion labels when allowed_companion_pairs_v3_2 or label-specific survival rules support them.",
+    "6. Reject adjacent/incidental labels unless survival overrides explicitly rescue them.",
+    "7. Apply mutual-exclusion rules and prefer benchmark-exact regulated-object labels over broad ESG semantic labels.",
+    "8. If more than 5 labels remain, keep title/scope/operative supported labels first, then regulated_object, legal_mechanism, protected_interest, direct_addressee.",
+    "9. Preserve all rejected candidates with reasons and the source evidence role."
+  ]
+}

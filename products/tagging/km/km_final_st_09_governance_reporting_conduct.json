@@ -1,0 +1,963 @@
+{
+  "km_id": "KM_FINAL_ST_09_GOVERNANCE_REPORTING_CONDUCT",
+  "km_name": "SpecificTopic Binary KM - Governance, Reporting, Due Diligence and Business Conduct",
+  "version": "5.0-simplified-binary",
+  "created": "2026-04-29",
+  "controlled_field": "SpecificTopic",
+  "purpose": "Binary Yes/No SpecificTopic decisions for the governance_reporting_conduct family. This simplified KM owns its tag-level reconciliation and emits only final Yes tags for this family.",
+  "family_reconciliation": {
+    "standalone_specific_topic_reconciler_removed": true,
+    "reconciled_output_key": "final_specific_topics_from_this_family",
+    "rules": [
+      "Answer every tag in this KM independently as Yes or No before producing the family final list.",
+      "Emit only tags answered Yes in final_specific_topics_from_this_family.",
+      "Do not emit candidates, centrality labels, or nearby labels as final tags.",
+      "If two tags overlap, keep both only when the source has distinct operative evidence for both; otherwise answer Yes only for the more directly satisfied decision question.",
+      "Reject incidental, background, implementation-actor-only, and keyword-only evidence even when a semantic signal appears.",
+      "The standalone SpecificTopic reconciler has been removed; this family KM is responsible for suppressing weak/adjacent labels before code consolidation."
+    ],
+    "weak_evidence_policy": [
+      "Weak or not-observed tags remain in the enum, but need direct source evidence at runtime.",
+      "Do not use weak master examples as independent proof; use them only as cautionary boundary tests."
+    ],
+    "weak_or_not_observed_tags_in_this_family": [
+      "Sustainability Reporting",
+      "Corporate Social Responsibility",
+      "Political Engagement and Lobbying Activities",
+      "Protection of Whistleblowers",
+      "Relationships with Suppliers, Including Payment Practices",
+      "Corruption and Bribery Incidents",
+      "Whistleblower Protection"
+    ]
+  },
+  "output_contract": {
+    "tag_decisions": [
+      {
+        "tag": "canonical SpecificTopic value from this KM",
+        "answer": "Yes|No",
+        "confidence": "0.0-1.0",
+        "evidence_excerpt": "required when answer is Yes; empty string allowed when No",
+        "tag_reason": "required when answer is Yes",
+        "rejection_reason": "required when answer is No",
+        "nearby_label_if_any": "optional canonical tag that better fits the evidence"
+      }
+    ],
+    "final_specific_topics_from_this_family": [
+      "all tags from tag_decisions with answer=Yes, already reconciled by this family KM"
+    ]
+  },
+  "tags": [
+    {
+      "tag": "Anti-Corruption",
+      "binary_answer": "Yes|No",
+      "definition": "Prevention, detection, reporting, enforcement, or governance controls for corruption, misuse of entrusted power, conflicts of interest, or improper influence.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Anti-Corruption\"?",
+      "yes_when": [
+        "The source centrally regulates corruption offences, anti-corruption controls, public/private corruption, conflict-of-interest rules, or corruption prevention.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source only addresses general compliance, corporate governance, or financial crime without corruption.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "anti-corruption",
+        "corruption",
+        "conflict of interest",
+        "integrity",
+        "improper influence"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Anti-Corruption.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Convention drawn up on the basis of Article K.3 (2) (c) of the Treaty on European Union on the fight against corruption involving officials of the European Communities or officials of Member States of the European Union\". Should the LLM tag SpecificTopic = \"Anti-Corruption\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally regulates corruption offences, anti-corruption controls, public/private corruption, conflict-of-interest rules, or corruption prevention.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Anti-Corruption.negative_incidental_keyword",
+          "question": "A source mentions \"anti-corruption\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally regulates corruption offences, anti-corruption controls, public/private corruption, conflict-of-interest rules, or corruption prevention.\". Should the LLM tag SpecificTopic = \"Anti-Corruption\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Anti-Corruption.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source only addresses general compliance, corporate governance, or financial crime without corruption.\". Should the LLM tag SpecificTopic = \"Anti-Corruption\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Anti-Bribery",
+      "binary_answer": "Yes|No",
+      "definition": "Prevention, prohibition, detection, reporting, or sanctions for giving, receiving, offering, or soliciting bribes.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Anti-Bribery\"?",
+      "yes_when": [
+        "The source specifically regulates bribery, bribe offers, facilitation payments, gifts/hospitality as bribes, or bribery offences.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source addresses corruption broadly without bribery-specific mechanisms, unless bribery is expressly named.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "anti-bribery",
+        "bribery",
+        "bribe",
+        "facilitation payment",
+        "gifts and hospitality"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Anti-Bribery.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"Article 2 Passive corruption 1. For the purposes of this Convention, the deliberate action of an official, who, directly or through an intermediary, requests or receives advantages of any kind whatsoever, for himself or for a third party, or accepts a promise of such an advantage, to act or refrain from acting in acco…\". Should the LLM tag SpecificTopic = \"Anti-Bribery\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source specifically regulates bribery, bribe offers, facilitation payments, gifts/hospitality as bribes, or bribery offences.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Anti-Bribery.negative_incidental_keyword",
+          "question": "A source mentions \"anti-bribery\" once in background, but its operative duties regulate a different subject and no duty matches \"The source specifically regulates bribery, bribe offers, facilitation payments, gifts/hospitality as bribes, or bribery offences.\". Should the LLM tag SpecificTopic = \"Anti-Bribery\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Anti-Bribery.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source addresses corruption broadly without bribery-specific mechanisms, unless bribery is expressly named.\". Should the LLM tag SpecificTopic = \"Anti-Bribery\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Anti-Bribery.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"the United Nations Convention Against Corruption, done at New York on 31 October 2003 [2006] ATS 2;\". Standing alone, should the LLM tag SpecificTopic = \"Anti-Bribery\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESG Reporting",
+      "binary_answer": "Yes|No",
+      "definition": "Reporting or disclosure of environmental, social, governance, sustainability, or responsible-business information.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"ESG Reporting\"?",
+      "yes_when": [
+        "The source centrally requires ESG/sustainability disclosures, ESG statements, management reports, non-financial statements, or related reporting architecture.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source includes operational reporting to regulators only, such as permits or emissions returns, without ESG or sustainability disclosure architecture.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "ESG reporting",
+        "sustainability reporting",
+        "non-financial statement",
+        "management report",
+        "CSRD"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.ESG Reporting.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The information should not be restricted to the financial aspects of the undertaking's business, and there should be an analysis of environmental and social aspects of the business necessary for an understanding of the undertaking's development, performance or position.\". Should the LLM tag SpecificTopic = \"ESG Reporting\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally requires ESG/sustainability disclosures, ESG statements, management reports, non-financial statements, or related reporting architecture.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.ESG Reporting.negative_incidental_keyword",
+          "question": "A source mentions \"ESG reporting\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally requires ESG/sustainability disclosures, ESG statements, management reports, non-financial statements, or related reporting architecture.\". Should the LLM tag SpecificTopic = \"ESG Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.ESG Reporting.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source includes operational reporting to regulators only, such as permits or emissions returns, without ESG or sustainability disclosure architecture.\". Should the LLM tag SpecificTopic = \"ESG Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "ESG Due Diligence",
+      "binary_answer": "Yes|No",
+      "definition": "Processes to identify, prevent, mitigate, account for, and remedy ESG, human-rights, environmental, or supply-chain adverse impacts.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"ESG Due Diligence\"?",
+      "yes_when": [
+        "The source requires due diligence over human rights, environmental impacts, supply chains, value chains, forced labor, child labor, or sustainability risks.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only imposes reporting or general compliance without a due-diligence process.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "due diligence",
+        "supply chain due diligence",
+        "adverse impacts",
+        "human rights due diligence",
+        "value chain"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.ESG Due Diligence.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"verklaart dat zij gepaste zorgvuldigheid als bedoeld in artikel 5 betracht om te voorkomen dat die goederen of diensten met behulp van kinderarbeid tot stand komen\". Should the LLM tag SpecificTopic = \"ESG Due Diligence\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source requires due diligence over human rights, environmental impacts, supply chains, value chains, forced labor, child labor, or sustainability risks.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.ESG Due Diligence.negative_incidental_keyword",
+          "question": "A source mentions \"due diligence\" once in background, but its operative duties regulate a different subject and no duty matches \"The source requires due diligence over human rights, environmental impacts, supply chains, value chains, forced labor, child labor, or sustainability risks.\". Should the LLM tag SpecificTopic = \"ESG Due Diligence\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.ESG Due Diligence.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only imposes reporting or general compliance without a due-diligence process.\". Should the LLM tag SpecificTopic = \"ESG Due Diligence\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.ESG Due Diligence.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"CHARTER OF FUNDAMENTAL RIGHTS OF THE EUROPEAN UNION\". Standing alone, should the LLM tag SpecificTopic = \"ESG Due Diligence\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Sustainability Reporting",
+      "binary_answer": "Yes|No",
+      "definition": "Disclosure of sustainability impacts, risks, opportunities, policies, metrics, or targets, often under CSRD/ESRS-style reporting.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Sustainability Reporting\"?",
+      "yes_when": [
+        "The source specifically requires sustainability reports, sustainability statements, ESRS disclosures, or sustainability information in annual reports.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source merely requires environmental monitoring or financial statements without sustainability disclosure.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "sustainability reporting",
+        "sustainability statement",
+        "ESRS",
+        "sustainability disclosures"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Sustainability Reporting.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source specifically requires sustainability reports, sustainability statements, ESRS disclosures, or sustainability information in annual reports.\". Should the LLM tag SpecificTopic = \"Sustainability Reporting\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source specifically requires sustainability reports, sustainability statements, ESRS disclosures, or sustainability information in annual reports.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Sustainability Reporting.negative_incidental_keyword",
+          "question": "A source mentions \"sustainability reporting\" once in background, but its operative duties regulate a different subject and no duty matches \"The source specifically requires sustainability reports, sustainability statements, ESRS disclosures, or sustainability information in annual reports.\". Should the LLM tag SpecificTopic = \"Sustainability Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Sustainability Reporting.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source merely requires environmental monitoring or financial statements without sustainability disclosure.\". Should the LLM tag SpecificTopic = \"Sustainability Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Non-Financial Reporting",
+      "binary_answer": "Yes|No",
+      "definition": "Disclosure of non-financial information such as environmental, social, employee, human-rights, anti-corruption, or diversity matters.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Non-Financial Reporting\"?",
+      "yes_when": [
+        "The source refers to non-financial reporting/statements or implements non-financial disclosure requirements.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source is financial reporting only or operational regulatory reporting without public non-financial disclosure.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "non-financial reporting",
+        "non-financial statement",
+        "NFRD",
+        "non-financial information"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Non-Financial Reporting.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"This Directive establishes requirements in relation to the disclosure of periodic and ongoing information about issuers\". Should the LLM tag SpecificTopic = \"Non-Financial Reporting\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source refers to non-financial reporting/statements or implements non-financial disclosure requirements.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Non-Financial Reporting.negative_incidental_keyword",
+          "question": "A source mentions \"non-financial reporting\" once in background, but its operative duties regulate a different subject and no duty matches \"The source refers to non-financial reporting/statements or implements non-financial disclosure requirements.\". Should the LLM tag SpecificTopic = \"Non-Financial Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Non-Financial Reporting.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source is financial reporting only or operational regulatory reporting without public non-financial disclosure.\". Should the LLM tag SpecificTopic = \"Non-Financial Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Compliance with Laws and Regulations",
+      "binary_answer": "Yes|No",
+      "definition": "Central regulation of legal-compliance architecture, compliance-management systems, authorisation/register regimes as the regulated object, certification/conformity status, or economic/criminal compliance offences.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Compliance with Laws and Regulations\"?",
+      "yes_when": [
+        "The source centrally regulates compliance systems, legal conformity programs, approval/certification status, regulated registers, broad compliance duties, or offence frameworks as the subject of the instrument.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "Do not tag for ordinary legal obligations, permits, monitoring, reporting, competent authorities, enforcement provisions, transposition duties, penalties, sanctions, or the fact that the source is a law. Suppress unless compliance architecture is itself a central regulated object.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "compliance program",
+        "compliance management",
+        "certification status",
+        "conformity assessment",
+        "regulated register",
+        "economic offence",
+        "criminal compliance offence",
+        "authorisation regime as main subject"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Compliance with Laws and Regulations.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"existing systems of penalties have not been sufficient to achieve complete compliance with the laws for the protection of the environment.\". Should the LLM tag SpecificTopic = \"Compliance with Laws and Regulations\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source centrally regulates compliance systems, legal conformity programs, approval/certification status, regulated registers, broad compliance duties, or offence frameworks as the subject of the instrument.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Compliance with Laws and Regulations.negative_incidental_keyword",
+          "question": "A source mentions \"compliance program\" once in background, but its operative duties regulate a different subject and no duty matches \"The source centrally regulates compliance systems, legal conformity programs, approval/certification status, regulated registers, broad compliance duties, or offence frameworks as the subject of the…\". Should the LLM tag SpecificTopic = \"Compliance with Laws and Regulations\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Compliance with Laws and Regulations.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Do not tag for ordinary legal obligations, permits, monitoring, reporting, competent authorities, enforcement provisions, transposition duties, penalties, sanctions, or the fact that the source is a law. Suppress unless compliance architecture is itself a cen…\". Should the LLM tag SpecificTopic = \"Compliance with Laws and Regulations\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Financial Reporting",
+      "binary_answer": "Yes|No",
+      "definition": "Accounting, financial statements, annual accounts, audit, transparency, securities reporting, or financial disclosure obligations.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Financial Reporting\"?",
+      "yes_when": [
+        "The source regulates financial statements, accounting rules, annual accounts, audit reports, transparency reports, or financial disclosure.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The source concerns sustainability/non-financial reporting without financial statements or accounting.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "financial reporting",
+        "annual accounts",
+        "financial statements",
+        "accounting directive",
+        "transparency directive"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Financial Reporting.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"This Directive builds on this approach with regard to annual and interim financial reporting\". Should the LLM tag SpecificTopic = \"Financial Reporting\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates financial statements, accounting rules, annual accounts, audit reports, transparency reports, or financial disclosure.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Financial Reporting.negative_incidental_keyword",
+          "question": "A source mentions \"financial reporting\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates financial statements, accounting rules, annual accounts, audit reports, transparency reports, or financial disclosure.\". Should the LLM tag SpecificTopic = \"Financial Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Financial Reporting.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source concerns sustainability/non-financial reporting without financial statements or accounting.\". Should the LLM tag SpecificTopic = \"Financial Reporting\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Corporate Social Responsibility",
+      "binary_answer": "Yes|No",
+      "definition": "Corporate responsibility commitments, policies, or obligations concerning social/environmental impacts and responsible business conduct.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Corporate Social Responsibility\"?",
+      "yes_when": [
+        "The source explicitly addresses CSR, responsible business conduct, corporate responsibility policies, or broad corporate accountability.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source has a specific ESG due-diligence, reporting, labor, environmental, or governance topic; use that specific label unless CSR is central.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "corporate social responsibility",
+        "CSR",
+        "responsible business conduct",
+        "corporate responsibility"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Corporate Social Responsibility.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source explicitly addresses CSR, responsible business conduct, corporate responsibility policies, or broad corporate accountability.\". Should the LLM tag SpecificTopic = \"Corporate Social Responsibility\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source explicitly addresses CSR, responsible business conduct, corporate responsibility policies, or broad corporate accountability.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Corporate Social Responsibility.negative_incidental_keyword",
+          "question": "A source mentions \"corporate social responsibility\" once in background, but its operative duties regulate a different subject and no duty matches \"The source explicitly addresses CSR, responsible business conduct, corporate responsibility policies, or broad corporate accountability.\". Should the LLM tag SpecificTopic = \"Corporate Social Responsibility\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Corporate Social Responsibility.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source has a specific ESG due-diligence, reporting, labor, environmental, or governance topic; use that specific label unless CSR is central.\". Should the LLM tag SpecificTopic = \"Corporate Social Responsibility\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Political Engagement and Lobbying Activities",
+      "binary_answer": "Yes|No",
+      "definition": "Corporate political contributions, lobbying, advocacy, public-policy influence, registration, transparency, or related controls.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Political Engagement and Lobbying Activities\"?",
+      "yes_when": [
+        "The source regulates lobbying, political donations, public-policy engagement, registers of lobbyists, or transparency of political influence.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source mentions government interaction only as normal regulatory compliance or permitting.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "lobbying",
+        "political engagement",
+        "political contributions",
+        "public policy influence",
+        "lobby register"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Political Engagement and Lobbying Activities.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source regulates lobbying, political donations, public-policy engagement, registers of lobbyists, or transparency of political influence.\". Should the LLM tag SpecificTopic = \"Political Engagement and Lobbying Activities\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates lobbying, political donations, public-policy engagement, registers of lobbyists, or transparency of political influence.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Political Engagement and Lobbying Activities.negative_incidental_keyword",
+          "question": "A source mentions \"lobbying\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates lobbying, political donations, public-policy engagement, registers of lobbyists, or transparency of political influence.\". Should the LLM tag SpecificTopic = \"Political Engagement and Lobbying Activities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Political Engagement and Lobbying Activities.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source mentions government interaction only as normal regulatory compliance or permitting.\". Should the LLM tag SpecificTopic = \"Political Engagement and Lobbying Activities\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Protection of Whistleblowers",
+      "binary_answer": "Yes|No",
+      "definition": "Governance/business-conduct systems protecting whistleblowers or reporting persons from retaliation.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Protection of Whistleblowers\"?",
+      "yes_when": [
+        "The source establishes whistleblowing channels, confidentiality, anti-retaliation duties, governance controls, or reporting protections.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "Use Whistleblower Protection when the primary framing is worker rights in own workforce rather than governance conduct.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "protection of whistleblowers",
+        "reporting persons",
+        "whistleblowing channel",
+        "retaliation"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Protection of Whistleblowers.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source establishes whistleblowing channels, confidentiality, anti-retaliation duties, governance controls, or reporting protections.\". Should the LLM tag SpecificTopic = \"Protection of Whistleblowers\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source establishes whistleblowing channels, confidentiality, anti-retaliation duties, governance controls, or reporting protections.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Protection of Whistleblowers.negative_incidental_keyword",
+          "question": "A source mentions \"protection of whistleblowers\" once in background, but its operative duties regulate a different subject and no duty matches \"The source establishes whistleblowing channels, confidentiality, anti-retaliation duties, governance controls, or reporting protections.\". Should the LLM tag SpecificTopic = \"Protection of Whistleblowers\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Protection of Whistleblowers.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Use Whistleblower Protection when the primary framing is worker rights in own workforce rather than governance conduct.\". Should the LLM tag SpecificTopic = \"Protection of Whistleblowers\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Relationships with Suppliers, Including Payment Practices",
+      "binary_answer": "Yes|No",
+      "definition": "Supplier relationship management, purchasing practices, fair payment, late payment, procurement conduct, or supplier terms.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Relationships with Suppliers, Including Payment Practices\"?",
+      "yes_when": [
+        "The source directly regulates supplier due diligence, payment terms/practices, purchasing practices, supply-chain relationship governance, or supplier transparency.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source merely affects suppliers indirectly through product or environmental duties.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "supplier relationships",
+        "payment practices",
+        "late payment",
+        "supply chain",
+        "purchasing practices"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Relationships with Suppliers, Including Payment Practices.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source directly regulates supplier due diligence, payment terms/practices, purchasing practices, supply-chain relationship governance, or supplier transparency.\". Should the LLM tag SpecificTopic = \"Relationships with Suppliers, Including Payment Practices\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source directly regulates supplier due diligence, payment terms/practices, purchasing practices, supply-chain relationship governance, or supplier transparency.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Relationships with Suppliers, Including Payment Practices.negative_incidental_keyword",
+          "question": "A source mentions \"supplier relationships\" once in background, but its operative duties regulate a different subject and no duty matches \"The source directly regulates supplier due diligence, payment terms/practices, purchasing practices, supply-chain relationship governance, or supplier transparency.\". Should the LLM tag SpecificTopic = \"Relationships with Suppliers, Including Payment Practices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Relationships with Suppliers, Including Payment Practices.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source merely affects suppliers indirectly through product or environmental duties.\". Should the LLM tag SpecificTopic = \"Relationships with Suppliers, Including Payment Practices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Relationships with Suppliers, Including Payment Practices.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"describe the structure, operations and supply chains of the reporting entity; and (c) describe the risks of modern slavery practices in the operations and supply chains of the reporting entity\". Standing alone, should the LLM tag SpecificTopic = \"Relationships with Suppliers, Including Payment Practices\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Corruption and Bribery Incidents",
+      "binary_answer": "Yes|No",
+      "definition": "Reporting, disclosure, handling, investigation, or consequences of actual corruption or bribery incidents.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Corruption and Bribery Incidents\"?",
+      "yes_when": [
+        "The source requires disclosure, investigation, enforcement, registers, or reporting of corruption/bribery incidents.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "The source establishes general anti-corruption policies but does not address incidents or incident reporting.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "corruption incidents",
+        "bribery incidents",
+        "reported cases",
+        "investigation of corruption"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Corruption and Bribery Incidents.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source requires disclosure, investigation, enforcement, registers, or reporting of corruption/bribery incidents.\". Should the LLM tag SpecificTopic = \"Corruption and Bribery Incidents\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source requires disclosure, investigation, enforcement, registers, or reporting of corruption/bribery incidents.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Corruption and Bribery Incidents.negative_incidental_keyword",
+          "question": "A source mentions \"corruption incidents\" once in background, but its operative duties regulate a different subject and no duty matches \"The source requires disclosure, investigation, enforcement, registers, or reporting of corruption/bribery incidents.\". Should the LLM tag SpecificTopic = \"Corruption and Bribery Incidents\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Corruption and Bribery Incidents.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The source establishes general anti-corruption policies but does not address incidents or incident reporting.\". Should the LLM tag SpecificTopic = \"Corruption and Bribery Incidents\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Corporate Culture",
+      "binary_answer": "Yes|No",
+      "definition": "Values, governance culture, ethical standards, integrity systems, codes of conduct, or compliance culture within an organization.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Corporate Culture\"?",
+      "yes_when": [
+        "The source regulates corporate culture, ethics programs, integrity systems, conduct policies, gifts/hospitality culture, or board oversight of conduct.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental."
+      ],
+      "no_when": [
+        "The text only creates legal compliance duties without culture, ethics, or conduct-system framing.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately."
+      ],
+      "evidence_signals": [
+        "corporate culture",
+        "code of conduct",
+        "ethics",
+        "integrity",
+        "compliance culture",
+        "gifts"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Corporate Culture.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"teneinde de vrijheid tot het aanbieden en verstrekken van geschenken in verband met het uitoefenen van een bedrijf te beperken\". Should the LLM tag SpecificTopic = \"Corporate Culture\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source regulates corporate culture, ethics programs, integrity systems, conduct policies, gifts/hospitality culture, or board oversight of conduct.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Corporate Culture.negative_incidental_keyword",
+          "question": "A source mentions \"corporate culture\" once in background, but its operative duties regulate a different subject and no duty matches \"The source regulates corporate culture, ethics programs, integrity systems, conduct policies, gifts/hospitality culture, or board oversight of conduct.\". Should the LLM tag SpecificTopic = \"Corporate Culture\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Corporate Culture.boundary_exclusion",
+          "question": "A source fits this exclusion: \"The text only creates legal compliance duties without culture, ethics, or conduct-system framing.\". Should the LLM tag SpecificTopic = \"Corporate Culture\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Whistleblower Protection",
+      "binary_answer": "Yes|No",
+      "definition": "Protections for individuals, especially workers, who report wrongdoing, breaches, misconduct, or legal violations.",
+      "decision_question": "Should this source be tagged SpecificTopic = \"Whistleblower Protection\"?",
+      "yes_when": [
+        "The source establishes worker/reporting-person protections against retaliation, reporting channels, confidentiality, or remedies.",
+        "There is a source-supported evidence role: regulated_object, legal_mechanism, protected_interest, direct_addressee, direct_regulated_product/facility, or final-topic ESRS mapping trace.",
+        "The tag is primary, companion, or benchmark_expected_companion; it is not merely adjacent or incidental.",
+        "Evidence-packet support for this tag is weak, indirect, or absent; answer Yes only when the current source text independently and directly satisfies the definition, decision question, and a yes_when rule."
+      ],
+      "no_when": [
+        "Use Protection of Whistleblowers when the central framing is business-conduct/governance systems rather than worker protection.",
+        "The only support is a keyword hit, source URL/domain/slug, filename, row ID, benchmark answer, generic legal boilerplate, or implementation/enforcement actor.",
+        "A narrower or different canonical label captures the operative source evidence more accurately.",
+        "Do not answer Yes from analogy to weak master examples, broad ESG relatedness, a title-only hunch, or the absence of a better label."
+      ],
+      "evidence_signals": [
+        "whistleblower",
+        "reporting person",
+        "retaliation",
+        "protected disclosure",
+        "reporting channel"
+      ],
+      "test_case": [
+        {
+          "id": "SpecificTopic.Whistleblower Protection.positive_direct",
+          "question": "A source's title/scope/operative provisions centrally say: \"The source establishes worker/reporting-person protections against retaliation, reporting channels, confidentiality, or remedies.\". Should the LLM tag SpecificTopic = \"Whistleblower Protection\"? Answer Yes/No and cite the evidence role.",
+          "expected_answer": "Yes",
+          "reasoning_check": "Yes if the quoted evidence satisfies the tag_when rule: The source establishes worker/reporting-person protections against retaliation, reporting channels, confidentiality, or remedies.",
+          "forces_reasoning_about": [
+            "centrality",
+            "regulated object or legal mechanism",
+            "whether the excerpt is source evidence rather than a benchmark artifact"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Whistleblower Protection.negative_incidental_keyword",
+          "question": "A source mentions \"whistleblower\" once in background, but its operative duties regulate a different subject and no duty matches \"The source establishes worker/reporting-person protections against retaliation, reporting channels, confidentiality, or remedies.\". Should the LLM tag SpecificTopic = \"Whistleblower Protection\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. A keyword or background reference is not enough; the label needs source-supported central evidence.",
+          "forces_reasoning_about": [
+            "keyword-vs-operative-evidence distinction",
+            "background/incidental evidence rejection"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Whistleblower Protection.boundary_exclusion",
+          "question": "A source fits this exclusion: \"Use Protection of Whistleblowers when the central framing is business-conduct/governance systems rather than worker protection.\". Should the LLM tag SpecificTopic = \"Whistleblower Protection\"?",
+          "expected_answer": "No",
+          "reasoning_check": "No. The label-specific do_not_tag_when rule excludes this case.",
+          "forces_reasoning_about": [
+            "nearby-label disambiguation",
+            "negative evidence",
+            "over-tagging prevention"
+          ]
+        },
+        {
+          "id": "SpecificTopic.Whistleblower Protection.master_weak_edge",
+          "question": "The master evidence includes a weak/indirect edge example: \"encourage confidential reporting of infringements of this Directive\". Standing alone, should the LLM tag SpecificTopic = \"Whistleblower Protection\"?",
+          "expected_answer": "No",
+          "reasoning_check": "The master reason was classified as weak/cautionary; the LLM must look for central legal duties, not rely on weak contextual association.",
+          "forces_reasoning_about": [
+            "indirect evidence handling",
+            "need for additional operative support",
+            "central vs adjacent concept"
+          ]
+        }
+      ]
+    }
+  ]
+}
