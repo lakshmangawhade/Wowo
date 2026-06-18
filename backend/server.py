@@ -26,15 +26,15 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator, model_validator
 from dotenv import load_dotenv
 
-from pipeline import (
+from backend.pipeline import (
     build_evidence_packet,
     build_prerequisite_context,
     run_tagging_pipeline,
     score_stage_output,
 )
-from pipeline_cache import clear_pipeline_cache
-from pipeline_config import load_pipeline_config
-from security import (
+from backend.pipeline_cache import clear_pipeline_cache
+from backend.pipeline_config import load_pipeline_config
+from backend.security import (
     MAX_CSV_BYTES,
     MAX_DOC_BYTES,
     MAX_EVAL_BYTES,
@@ -168,13 +168,6 @@ def call_fab_improve_agent(user_message: str) -> str:
         return resp.json()["output"]["content"]
     raise Exception("FAB improve agent rate limit exceeded after retries")
 
-
-            log.warning("FAB improve agent rate limited — retrying in %ss", wait)
-            time.sleep(wait)
-            continue
-        resp.raise_for_status()
-        return resp.json()["output"]["content"]
-    raise Exception("FAB improve agent rate limit exceeded after retries")
 
 
 # ── Eval script helpers ───────────────────────────────────────────────────────
@@ -654,49 +647,57 @@ def score_batch(req: ScoreBatchRequest):
     def process_pair(p):
         doc_id   = p.get("doc_id", "")
         filename = p.get("filename", "")
-        gt_vals  = p.get("gt") or get_gt_for_doc(doc_id)
-        gt_text  = gt_vals.get(gt_col, "") if gt_vals else ""
-
-        input_doc = read_input_doc(filename) if filename else {}
         ai_output = ""
         error_msg = ""
         method = ""
-
-        if km_obj and input_doc:
-            evidence = build_evidence_packet(input_doc, pipeline_cfg)
-            extra_context = build_prerequisite_context(
-                input_doc,
-                KM_DIR,
-                req.km_stage,
-                call_fab_agent,
-                pipeline_cfg,
-                doc_id,
-            )
-            ai_output, method, error_msg = score_stage_output(
-                req.km_stage,
-                km_obj,
-                evidence,
-                extra_context,
-                call_fab_agent,
-                KM_DIR,
-                pipeline_cfg,
-                input_doc,
-            )
-
-        score_input = "" if ai_output.startswith("ERROR:") else ai_output
-        try:
-            score = float(evaluate(score_input, gt_text))
-        except Exception:
-            score = 0.0
-
+        score = 0.0
         precision = recall = 0.0
-        if evaluate_detailed and not ai_output.startswith("ERROR:"):
+
+        try:
+            gt_vals  = p.get("gt") or get_gt_for_doc(doc_id)
+            gt_text  = gt_vals.get(gt_col, "") if gt_vals else ""
+
+            input_doc = read_input_doc(filename) if filename else {}
+
+            if km_obj and input_doc:
+                evidence = build_evidence_packet(input_doc, pipeline_cfg)
+                extra_context = build_prerequisite_context(
+                    input_doc,
+                    KM_DIR,
+                    req.km_stage,
+                    call_fab_agent,
+                    pipeline_cfg,
+                    doc_id,
+                )
+                ai_output, method, error_msg = score_stage_output(
+                    req.km_stage,
+                    km_obj,
+                    evidence,
+                    extra_context,
+                    call_fab_agent,
+                    KM_DIR,
+                    pipeline_cfg,
+                    input_doc,
+                )
+
+            score_input = "" if ai_output.startswith("ERROR:") else ai_output
             try:
-                detail = evaluate_detailed(ai_output, gt_text)
-                precision = detail.get("precision", 0)
-                recall = detail.get("recall", 0)
+                score = float(evaluate(score_input, gt_text))
             except Exception:
-                pass
+                score = 0.0
+
+            if evaluate_detailed and not ai_output.startswith("ERROR:"):
+                try:
+                    detail = evaluate_detailed(ai_output, gt_text)
+                    precision = detail.get("precision", 0)
+                    recall = detail.get("recall", 0)
+                except Exception:
+                    pass
+
+        except Exception as exc:
+            error_msg = f"process_pair failed: {exc}"
+            log.exception("score_batch process_pair error for doc_id=%s filename=%s", doc_id, filename)
+            gt_text = ""
 
         return {
             "doc_id":    doc_id,
@@ -715,7 +716,10 @@ def score_batch(req: ScoreBatchRequest):
     with ThreadPoolExecutor(max_workers=2) as ex:
         futures = {ex.submit(process_pair, p): p for p in req.pairs}
         for future in as_completed(futures):
-            results.append(future.result())
+            try:
+                results.append(future.result())
+            except Exception as exc:
+                log.exception("score_batch future raised unexpectedly: %s", exc)
 
     scores    = [r["score"]     for r in results]
     precs     = [r["precision"] for r in results]

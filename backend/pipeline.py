@@ -9,18 +9,18 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
-from esrs_lookup import lookup_esrs_topics
-from evidence import build_evidence_packet as _build_evidence_packet
-from extraction_rules import extract_metadata_fields, extraction_is_complete
-from family_registry import (
+from backend.esrs_lookup import lookup_esrs_topics
+from backend.evidence import build_evidence_packet as _build_evidence_packet
+from backend.extraction_rules import extract_metadata_fields, extraction_is_complete
+from backend.family_registry import (
     STAGE_FAMILY_MAP,
     format_router_families,
     normalize_routed_families,
 )
-from pipeline_cache import get_cached_upstream, update_doc_context
-from pipeline_config import PipelineConfig, load_pipeline_config
-from router_rules import route_families_by_rules, router_output_to_families
-from validator import validate_and_repair
+from backend.pipeline_cache import get_cached_upstream, update_doc_context
+from backend.pipeline_config import PipelineConfig, load_pipeline_config
+from backend.router_rules import route_families_by_rules, router_output_to_families
+from backend.validator import validate_and_repair
 
 ALL_PIPELINE_STAGES = [
     "km_04_orchestrator_extraction",
@@ -40,7 +40,7 @@ GT_COLUMNS = [
 
 EXTRACT_KEYS = {
     "km_01a_specific_topic_family_router": ["topic_families_to_run", "primary_family"],
-    "km_01z_specific_topic_reconciler": ["final_specific_topics", "specific_topics"],
+    "km_01z_specific_topic_reconciler": ["final_specific_topics", "specific_topics", "SpecificTopic"],
     "km_02_applicable_sectors": ["applicable_sectors", "sectors"],
     "km_03_esrs_mapping": ["closest_esrs", "esrs_topics", "final_closest_esrs_topics"],
     "km_04_orchestrator_extraction": ["SpecificTopic"],
@@ -101,6 +101,9 @@ def _extract_field(obj: dict, keys: list[str]) -> str:
         value = obj.get(key)
         if value is None:
             continue
+        # unwrap output_contract shape: {"SpecificTopic": {"value": [...], ...}}
+        if isinstance(value, dict):
+            value = value.get("value", value)
         if isinstance(value, list):
             if value and isinstance(value[0], dict):
                 return format_router_families(obj) if key == "topic_families_to_run" else json.dumps(value)
@@ -247,7 +250,7 @@ def _run_esrs(
     call_fab_agent: Callable[[str], str],
     config: PipelineConfig,
 ) -> tuple[dict, str]:
-    specific_topics = _extract_field(reconciler_out, ["final_specific_topics", "specific_topics"])
+    specific_topics = _extract_field(reconciler_out, ["final_specific_topics", "specific_topics", "SpecificTopic"])
 
     if config.use_esrs_lookup and specific_topics:
         lookup_out = lookup_esrs_topics(specific_topics, km_dir)
@@ -271,7 +274,7 @@ def _run_esrs(
 
 def _merge_final(state: PipelineState) -> dict:
     final = {
-        "SpecificTopic": _extract_field(state.reconciler_out, ["final_specific_topics", "specific_topics"]),
+        "SpecificTopic": _extract_field(state.reconciler_out, ["final_specific_topics", "specific_topics", "SpecificTopic"]),
         "SpecificTopicFamily": format_router_families(state.router_out),
         "ClosestESRSTopics": _extract_field(state.esrs_out, ["final_closest_esrs_topics", "closest_esrs", "esrs_topics"]),
         "ApplicableSectors": _extract_field(state.sectors_out, ["applicable_sectors", "sectors"]),
