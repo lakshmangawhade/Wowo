@@ -9,6 +9,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
+from dataclasses import replace
+
 from esrs_lookup import lookup_esrs_topics
 from evidence import build_evidence_packet as _build_evidence_packet
 from extraction_rules import extract_metadata_fields, extraction_is_complete
@@ -92,25 +94,34 @@ def format_km_query(km: dict, evidence: dict, extra_context: dict | None = None)
 
 
 def parse_json_response(raw: str) -> dict:
-    """Parse LLM JSON response, handling markdown fences and extracting first JSON object."""
+    """Parse LLM JSON response, handling markdown fences."""
     if not raw or not raw.strip():
         raise ValueError("Empty response from LLM")
     cleaned = re.sub(r"```json\s*|```\s*", "", raw).strip()
-    # Find the outermost JSON object
-    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-    if match:
-        cleaned = match.group()
+
+    # Try direct parse first
     try:
         return json.loads(cleaned)
     except json.JSONDecodeError:
-        # Try to find a valid JSON subset
-        # Walk back from the end to find a closing brace that makes valid JSON
-        for end in range(len(cleaned), 0, -1):
-            try:
-                return json.loads(cleaned[:end])
-            except json.JSONDecodeError:
-                continue
-        raise ValueError(f"Could not parse JSON from response: {raw[:200]}")
+        pass
+
+    # Extract first balanced JSON object
+    start = cleaned.find("{")
+    if start == -1:
+        raise ValueError(f"No JSON object in response: {raw[:200]}")
+    depth = 0
+    for i in range(start, len(cleaned)):
+        ch = cleaned[i]
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                try:
+                    return json.loads(cleaned[start : i + 1])
+                except json.JSONDecodeError as exc:
+                    raise ValueError(f"Invalid JSON in response: {raw[:200]}") from exc
+    raise ValueError(f"Unclosed JSON object in response: {raw[:200]}")
 
 
 def _extract_yes_tags(obj: dict) -> list[str]:
@@ -131,6 +142,24 @@ def _extract_yes_tags(obj: dict) -> list[str]:
 def _labels_from_value(value: Any) -> list[str]:
     if value is None:
         return []
+    if isinstance(value, dict):
+        # KM output_contract shape: {"value": [...], "confidence": ...}
+        inner = value.get("value")
+        if inner is not None:
+            if isinstance(inner, str) and (
+                "array of" in inner.lower() or inner.strip().endswith("max 5")
+            ):
+                pass
+            else:
+                nested = _labels_from_value(inner)
+                if nested:
+                    return nested
+        for key in ("labels", "topics", "tags", "items", "final_specific_topics"):
+            if key in value:
+                nested = _labels_from_value(value[key])
+                if nested:
+                    return nested
+        return []
     if isinstance(value, list):
         labels: list[str] = []
         for item in value:
@@ -142,8 +171,10 @@ def _labels_from_value(value: Any) -> list[str]:
                 labels.append(str(item).strip())
         return labels
     if isinstance(value, str):
+        if "array of" in value.lower() and "label" in value.lower():
+            return []
         return [part.strip() for part in re.split(r"[;,]", value) if part.strip()]
-    return [str(value).strip()]
+    return []
 
 
 def _extract_field(obj: dict, keys: list[str]) -> str:
@@ -153,6 +184,13 @@ def _extract_field(obj: dict, keys: list[str]) -> str:
     """
     if not obj:
         return ""
+
+    # Unwrap output_contract wrapper if present
+    contract = obj.get("output_contract")
+    if isinstance(contract, dict):
+        nested = _extract_field(contract, keys)
+        if nested:
+            return nested
 
     # Binary KM: tag_decisions with Yes answers
     yes_tags = _extract_yes_tags(obj)
@@ -166,6 +204,7 @@ def _extract_field(obj: dict, keys: list[str]) -> str:
         "final_closest_esrs_topics",
         "final_applicable_sectors",
         "specific_topics",
+        "SpecificTopic",
         "closest_esrs",
         "esrs_topics",
         "applicable_sectors",
@@ -667,6 +706,88 @@ def _upstream_stages_for(target_stage: str) -> list[str]:
     }
     idx = stage_idx.get(target_stage, 5)
     return ordered[:idx]
+
+
+def _successful_family_candidates(candidates: list) -> list:
+    return [c for c in candidates if c.get("output") and not c.get("error")]
+
+
+def score_document_for_stage(
+    input_doc: dict,
+    km_dir: Path,
+    call_fab_agent_fn: Callable[[str], str],
+    target_stage: str,
+    km_obj: dict,
+    doc_id: str | None = None,
+    config: PipelineConfig | None = None,
+) -> dict:
+    """
+    Score one document for a pipeline stage.
+    Runs fresh upstream context (no cache) then the target stage LLM/rules.
+    """
+    cfg = config or load_pipeline_config()
+    needs_families = "family_st_kms" in _upstream_stages_for(target_stage)
+    scoring_cfg = replace(
+        cfg,
+        use_pipeline_cache=False,
+        use_rule_router=False if needs_families else cfg.use_rule_router,
+    )
+
+    evidence = build_evidence_packet(input_doc, scoring_cfg)
+    extra: dict[str, Any] = {}
+    methods: dict[str, Any] = {}
+
+    upstream = _upstream_stages_for(target_stage)
+    if upstream:
+        partial = run_tagging_pipeline(
+            input_doc,
+            km_dir,
+            call_fab_agent_fn,
+            selected_stages=upstream,
+            config=scoring_cfg,
+            doc_id=None,
+        )
+        trace = partial.get("trace", {})
+        methods = dict(trace.get("methods") or {})
+        if trace.get("extraction"):
+            extra["extraction_output"] = trace["extraction"]
+        if trace.get("router"):
+            extra["router_output"] = trace["router"]
+        if trace.get("family_candidates"):
+            candidates = list(trace["family_candidates"])
+            if needs_families and not _successful_family_candidates(candidates):
+                all_families = list(STAGE_FAMILY_MAP.keys())
+                candidates = _run_families_parallel(
+                    all_families,
+                    evidence,
+                    extra.get("extraction_output", {}),
+                    extra.get("router_output", {}),
+                    km_dir,
+                    call_fab_agent_fn,
+                    scoring_cfg,
+                )
+                methods["families"] = "llm_parallel_retry_all"
+            extra["family_candidates"] = candidates
+
+    ai_output, method, error = score_stage_output(
+        target_stage,
+        km_obj,
+        evidence,
+        extra,
+        call_fab_agent_fn,
+        km_dir,
+        scoring_cfg,
+        input_doc,
+    )
+
+    return {
+        "ai_output": ai_output,
+        "method": method,
+        "error": error,
+        "upstream_methods": methods,
+        "family_count": len(extra.get("family_candidates", [])),
+        "families_ok": len(_successful_family_candidates(extra.get("family_candidates", []))),
+    }
 
 
 def score_stage_output(

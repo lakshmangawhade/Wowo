@@ -1,6 +1,7 @@
 # server.py — TagForge API
 import io
 import os
+import sys
 import json
 import csv
 import random
@@ -26,11 +27,16 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator, model_validator
 from dotenv import load_dotenv
 
+# Ensure backend modules resolve whether started as `server:app` or `backend.server:app`
+_BACKEND_DIR = Path(__file__).resolve().parent
+_ROOT_DIR = _BACKEND_DIR.parent
+for _path in (str(_BACKEND_DIR), str(_ROOT_DIR)):
+    if _path not in sys.path:
+        sys.path.insert(0, _path)
+
 from pipeline import (
-    build_evidence_packet,
-    build_prerequisite_context,
+    score_document_for_stage,
     run_tagging_pipeline,
-    score_stage_output,
 )
 from pipeline_cache import clear_pipeline_cache
 from pipeline_config import load_pipeline_config
@@ -140,7 +146,7 @@ def call_fab_agent(user_message: str) -> str:
             time.sleep(wait)
             continue
         resp.raise_for_status()
-        return resp.json()["output"]["content"]
+        return _extract_fab_content(resp.json())
     raise Exception("FAB agent rate limit exceeded after retries")
 
 
@@ -166,8 +172,23 @@ def call_fab_improve_agent(user_message: str) -> str:
             time.sleep(wait)
             continue
         resp.raise_for_status()
-        return resp.json()["output"]["content"]
+        return _extract_fab_content(resp.json())
     raise Exception("FAB improve agent rate limit exceeded after retries")
+
+
+def _extract_fab_content(data: dict) -> str:
+    """Extract text content from FAB agent JSON response."""
+    output = data.get("output")
+    if isinstance(output, dict):
+        text = output.get("content") or output.get("text") or output.get("message")
+        if text:
+            return str(text)
+    if isinstance(output, str):
+        return output
+    for key in ("content", "text", "message", "result"):
+        if data.get(key):
+            return str(data[key])
+    raise ValueError(f"FAB response missing content: {list(data.keys())}")
 
 
 # ── Eval script helpers ───────────────────────────────────────────────────────
@@ -645,57 +666,52 @@ def score_batch(req: ScoreBatchRequest):
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     def process_pair(p):
-        doc_id   = p.get("doc_id", "")
+        doc_id = p.get("doc_id", "")
         filename = p.get("filename", "")
-        gt_vals  = p.get("gt") or get_gt_for_doc(doc_id)
-        gt_text  = gt_vals.get(gt_col, "") if gt_vals else ""
-
-        input_doc = read_input_doc(filename) if filename else {}
+        gt_vals = p.get("gt") or get_gt_for_doc(doc_id)
+        gt_text = gt_vals.get(gt_col, "") if gt_vals else ""
         ai_output = ""
         error_msg = ""
         method = ""
+        score = 0.0
+        precision = recall = 0.0
+        debug: dict = {}
 
         try:
-            if km_obj and input_doc:
-                evidence = build_evidence_packet(input_doc, pipeline_cfg)
-                extra_context = build_prerequisite_context(
+            input_doc = read_input_doc(filename) if filename else {}
+            if not input_doc:
+                error_msg = f"Document not found or empty: {filename}"
+            elif km_obj:
+                scored = score_document_for_stage(
                     input_doc,
                     KM_DIR,
-                    req.km_stage,
                     call_fab_agent,
-                    pipeline_cfg,
-                    doc_id,
-                )
-                ai_output, method, error_msg = score_stage_output(
                     req.km_stage,
                     km_obj,
-                    evidence,
-                    extra_context,
-                    call_fab_agent,
-                    KM_DIR,
-                    pipeline_cfg,
-                    input_doc,
+                    doc_id=doc_id,
+                    config=pipeline_cfg,
                 )
+                ai_output = scored.get("ai_output", "")
+                method = scored.get("method", "")
+                error_msg = scored.get("error", "")
+                debug = {
+                    "upstream_methods": scored.get("upstream_methods", {}),
+                    "families_ok": scored.get("families_ok", 0),
+                    "family_count": scored.get("family_count", 0),
+                }
+
+                score_input = "" if str(ai_output).startswith("ERROR:") else ai_output
+                score = float(evaluate(score_input, gt_text))
+
+                if evaluate_detailed and score_input:
+                    detail = evaluate_detailed(ai_output, gt_text)
+                    precision = detail.get("precision", 0)
+                    recall = detail.get("recall", 0)
         except Exception as exc:
             error_msg = str(exc)
             ai_output = f"ERROR: {exc}"
             method = "error"
-            log.exception("process_pair failed for %s", doc_id or filename)
-
-        score_input = "" if ai_output.startswith("ERROR:") else ai_output
-        try:
-            score = float(evaluate(score_input, gt_text))
-        except Exception:
-            score = 0.0
-
-        precision = recall = 0.0
-        if evaluate_detailed and not ai_output.startswith("ERROR:"):
-            try:
-                detail = evaluate_detailed(ai_output, gt_text)
-                precision = detail.get("precision", 0)
-                recall = detail.get("recall", 0)
-            except Exception:
-                pass
+            log.exception("score_batch process_pair failed for %s", doc_id or filename)
 
         return {
             "doc_id":    doc_id,
@@ -708,6 +724,7 @@ def score_batch(req: ScoreBatchRequest):
             "set":       p.get("set", ""),
             "error":     error_msg,
             "method":    method,
+            "debug":     debug,
         }
 
     results = []
@@ -718,7 +735,7 @@ def score_batch(req: ScoreBatchRequest):
                 results.append(future.result())
             except Exception as exc:
                 pair = futures.get(future, {})
-                log.exception("score-batch failed for doc %s", pair.get("doc_id", "?"))
+                log.exception("score_batch future failed for %s", pair.get("doc_id", "?"))
                 results.append({
                     "doc_id":    pair.get("doc_id", ""),
                     "filename":  pair.get("filename", ""),
@@ -730,15 +747,16 @@ def score_batch(req: ScoreBatchRequest):
                     "set":       pair.get("set", ""),
                     "error":     str(exc),
                     "method":    "error",
+                    "debug":     {},
                 })
 
-    scores    = [r["score"]     for r in results]
-    precs     = [r["precision"] for r in results]
-    recs      = [r["recall"]    for r in results]
+    scores = [r["score"] for r in results]
+    precs = [r["precision"] for r in results]
+    recs = [r["recall"] for r in results]
     avg_score = round(sum(scores) / len(scores), 2) if scores else 0.0
-    avg_prec  = round(sum(precs)  / len(precs),  2) if precs  else 0.0
-    avg_rec   = round(sum(recs)   / len(recs),   2) if recs   else 0.0
-    failures  = [r for r in results if r["score"] < 50 or r.get("error")]
+    avg_prec = round(sum(precs) / len(precs), 2) if precs else 0.0
+    avg_rec = round(sum(recs) / len(recs), 2) if recs else 0.0
+    failures = [r for r in results if r["score"] < 50 or r.get("error")]
 
     return {
         "results":       results,
@@ -751,7 +769,7 @@ def score_batch(req: ScoreBatchRequest):
             "use_rule_extraction": pipeline_cfg.use_rule_extraction,
             "use_rule_router": pipeline_cfg.use_rule_router,
             "use_esrs_lookup": pipeline_cfg.use_esrs_lookup,
-            "use_pipeline_cache": pipeline_cfg.use_pipeline_cache,
+            "use_pipeline_cache": False,
         },
     }
 
