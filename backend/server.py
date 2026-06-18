@@ -162,14 +162,7 @@ def call_fab_improve_agent(user_message: str) -> str:
         resp = http_requests.post(url, json=payload, headers=headers, timeout=180)
         if resp.status_code == 429:
             wait = 15 * (attempt + 1)
-            time.sleep(wait)
-            continue
-        resp.raise_for_status()
-        return resp.json()["output"]["content"]
-    raise Exception("FAB improve agent rate limit exceeded after retries")
-
-
-            log.warning("FAB improve agent rate limited — retrying in %ss", wait)
+            log.warning("FAB improve agent rate limited - retrying in %ss", wait)
             time.sleep(wait)
             continue
         resp.raise_for_status()
@@ -662,26 +655,32 @@ def score_batch(req: ScoreBatchRequest):
         error_msg = ""
         method = ""
 
-        if km_obj and input_doc:
-            evidence = build_evidence_packet(input_doc, pipeline_cfg)
-            extra_context = build_prerequisite_context(
-                input_doc,
-                KM_DIR,
-                req.km_stage,
-                call_fab_agent,
-                pipeline_cfg,
-                doc_id,
-            )
-            ai_output, method, error_msg = score_stage_output(
-                req.km_stage,
-                km_obj,
-                evidence,
-                extra_context,
-                call_fab_agent,
-                KM_DIR,
-                pipeline_cfg,
-                input_doc,
-            )
+        try:
+            if km_obj and input_doc:
+                evidence = build_evidence_packet(input_doc, pipeline_cfg)
+                extra_context = build_prerequisite_context(
+                    input_doc,
+                    KM_DIR,
+                    req.km_stage,
+                    call_fab_agent,
+                    pipeline_cfg,
+                    doc_id,
+                )
+                ai_output, method, error_msg = score_stage_output(
+                    req.km_stage,
+                    km_obj,
+                    evidence,
+                    extra_context,
+                    call_fab_agent,
+                    KM_DIR,
+                    pipeline_cfg,
+                    input_doc,
+                )
+        except Exception as exc:
+            error_msg = str(exc)
+            ai_output = f"ERROR: {exc}"
+            method = "error"
+            log.exception("process_pair failed for %s", doc_id or filename)
 
         score_input = "" if ai_output.startswith("ERROR:") else ai_output
         try:
@@ -715,7 +714,23 @@ def score_batch(req: ScoreBatchRequest):
     with ThreadPoolExecutor(max_workers=2) as ex:
         futures = {ex.submit(process_pair, p): p for p in req.pairs}
         for future in as_completed(futures):
-            results.append(future.result())
+            try:
+                results.append(future.result())
+            except Exception as exc:
+                pair = futures.get(future, {})
+                log.exception("score-batch failed for doc %s", pair.get("doc_id", "?"))
+                results.append({
+                    "doc_id":    pair.get("doc_id", ""),
+                    "filename":  pair.get("filename", ""),
+                    "ai_output": f"ERROR: {exc}",
+                    "gt_output": "",
+                    "score":     0.0,
+                    "precision": 0.0,
+                    "recall":    0.0,
+                    "set":       pair.get("set", ""),
+                    "error":     str(exc),
+                    "method":    "error",
+                })
 
     scores    = [r["score"]     for r in results]
     precs     = [r["precision"] for r in results]
