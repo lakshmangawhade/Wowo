@@ -725,69 +725,82 @@ def score_document_for_stage(
     Score one document for a pipeline stage.
     Runs fresh upstream context (no cache) then the target stage LLM/rules.
     """
-    cfg = config or load_pipeline_config()
-    needs_families = "family_st_kms" in _upstream_stages_for(target_stage)
-    scoring_cfg = replace(
-        cfg,
-        use_pipeline_cache=False,
-        use_rule_router=False if needs_families else cfg.use_rule_router,
-    )
-
-    evidence = build_evidence_packet(input_doc, scoring_cfg)
-    extra: dict[str, Any] = {}
-    methods: dict[str, Any] = {}
-
-    upstream = _upstream_stages_for(target_stage)
-    if upstream:
-        partial = run_tagging_pipeline(
-            input_doc,
-            km_dir,
-            call_fab_agent_fn,
-            selected_stages=upstream,
-            config=scoring_cfg,
-            doc_id=None,
+    try:
+        cfg = config or load_pipeline_config()
+        needs_families = "family_st_kms" in _upstream_stages_for(target_stage)
+        scoring_cfg = replace(
+            cfg,
+            use_pipeline_cache=False,
+            use_rule_router=False if needs_families else cfg.use_rule_router,
         )
-        trace = partial.get("trace", {})
-        methods = dict(trace.get("methods") or {})
-        if trace.get("extraction"):
-            extra["extraction_output"] = trace["extraction"]
-        if trace.get("router"):
-            extra["router_output"] = trace["router"]
-        if trace.get("family_candidates"):
-            candidates = list(trace["family_candidates"])
-            if needs_families and not _successful_family_candidates(candidates):
-                all_families = list(STAGE_FAMILY_MAP.keys())
-                candidates = _run_families_parallel(
-                    all_families,
-                    evidence,
-                    extra.get("extraction_output", {}),
-                    extra.get("router_output", {}),
-                    km_dir,
-                    call_fab_agent_fn,
-                    scoring_cfg,
-                )
-                methods["families"] = "llm_parallel_retry_all"
-            extra["family_candidates"] = candidates
 
-    ai_output, method, error = score_stage_output(
-        target_stage,
-        km_obj,
-        evidence,
-        extra,
-        call_fab_agent_fn,
-        km_dir,
-        scoring_cfg,
-        input_doc,
-    )
+        evidence = build_evidence_packet(input_doc, scoring_cfg)
+        extra: dict[str, Any] = {}
+        methods: dict[str, Any] = {}
 
-    return {
-        "ai_output": ai_output,
-        "method": method,
-        "error": error,
-        "upstream_methods": methods,
-        "family_count": len(extra.get("family_candidates", [])),
-        "families_ok": len(_successful_family_candidates(extra.get("family_candidates", []))),
-    }
+        upstream = _upstream_stages_for(target_stage)
+        if upstream:
+            partial = run_tagging_pipeline(
+                input_doc,
+                km_dir,
+                call_fab_agent_fn,
+                selected_stages=upstream,
+                config=scoring_cfg,
+                doc_id=None,
+            )
+            trace = partial.get("trace", {})
+            methods = dict(trace.get("methods") or {})
+            if trace.get("extraction"):
+                extra["extraction_output"] = trace["extraction"]
+            if trace.get("router"):
+                extra["router_output"] = trace["router"]
+            if trace.get("family_candidates"):
+                candidates = list(trace["family_candidates"])
+                if needs_families and not _successful_family_candidates(candidates):
+                    try:
+                        all_families = list(STAGE_FAMILY_MAP.keys())
+                        candidates = _run_families_parallel(
+                            all_families,
+                            evidence,
+                            extra.get("extraction_output", {}),
+                            extra.get("router_output", {}),
+                            km_dir,
+                            call_fab_agent_fn,
+                            scoring_cfg,
+                        )
+                        methods["families"] = "llm_parallel_retry_all"
+                    except Exception:
+                        methods["families"] = "retry_failed"
+                extra["family_candidates"] = candidates
+
+        ai_output, method, error = score_stage_output(
+            target_stage,
+            km_obj,
+            evidence,
+            extra,
+            call_fab_agent_fn,
+            km_dir,
+            scoring_cfg,
+            input_doc,
+        )
+
+        return {
+            "ai_output": ai_output,
+            "method": method,
+            "error": error,
+            "upstream_methods": methods,
+            "family_count": len(extra.get("family_candidates", [])),
+            "families_ok": len(_successful_family_candidates(extra.get("family_candidates", []))),
+        }
+    except Exception as exc:
+        return {
+            "ai_output": f"ERROR: {exc}",
+            "method": "error",
+            "error": str(exc),
+            "upstream_methods": {},
+            "family_count": 0,
+            "families_ok": 0,
+        }
 
 
 def score_stage_output(

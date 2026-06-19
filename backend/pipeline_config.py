@@ -41,7 +41,7 @@ class PipelineConfig:
     use_pipeline_cache: bool = True
     rule_router_min_score: float = 2.0
     rule_router_min_margin: float = 1.0
-    parallel_family_workers: int = 4
+    parallel_family_workers: int = 2
     max_body_chars: int = 8000
     max_evidence_window_chars: int = 1200
 

@@ -138,16 +138,30 @@ def call_fab_agent(user_message: str) -> str:
         "x-authentication": f"api-key {FAB_API_KEY}",
     }
     payload = {"input": {"query": user_message}}
-    for attempt in range(4):
-        resp = http_requests.post(FAB_AGENT_URL, json=payload, headers=headers, timeout=180)
+    last_error = None
+    for attempt in range(6):
+        try:
+            resp = http_requests.post(FAB_AGENT_URL, json=payload, headers=headers, timeout=300)
+        except http_requests.exceptions.RequestException as exc:
+            last_error = exc
+            wait = 10 * (attempt + 1)
+            log.warning("FAB agent connection error (attempt %d): %s — retrying in %ss", attempt + 1, exc, wait)
+            time.sleep(wait)
+            continue
         if resp.status_code == 429:
             wait = 15 * (attempt + 1)
             log.warning("FAB rate limited — retrying in %ss", wait)
             time.sleep(wait)
             continue
+        if resp.status_code in (500, 502, 503, 504):
+            wait = 10 * (attempt + 1)
+            log.warning("FAB agent returned %d (attempt %d) — retrying in %ss", resp.status_code, attempt + 1, wait)
+            last_error = Exception(f"FAB agent HTTP {resp.status_code}: {resp.text[:200]}")
+            time.sleep(wait)
+            continue
         resp.raise_for_status()
         return _extract_fab_content(resp.json())
-    raise Exception("FAB agent rate limit exceeded after retries")
+    raise Exception(f"FAB agent failed after {6} retries: {last_error}")
 
 
 def call_fab_improve_agent(user_message: str) -> str:
@@ -164,16 +178,30 @@ def call_fab_improve_agent(user_message: str) -> str:
             "COMPLETION_CONFIG": {"max_tokens": 16000, "temperature": 0.7, "top_p": 0.95}
         },
     }
-    for attempt in range(4):
-        resp = http_requests.post(url, json=payload, headers=headers, timeout=180)
+    last_error = None
+    for attempt in range(6):
+        try:
+            resp = http_requests.post(url, json=payload, headers=headers, timeout=300)
+        except http_requests.exceptions.RequestException as exc:
+            last_error = exc
+            wait = 10 * (attempt + 1)
+            log.warning("FAB improve agent connection error (attempt %d): %s — retrying in %ss", attempt + 1, exc, wait)
+            time.sleep(wait)
+            continue
         if resp.status_code == 429:
             wait = 15 * (attempt + 1)
             log.warning("FAB improve agent rate limited - retrying in %ss", wait)
             time.sleep(wait)
             continue
+        if resp.status_code in (500, 502, 503, 504):
+            wait = 10 * (attempt + 1)
+            log.warning("FAB improve agent returned %d (attempt %d) — retrying in %ss", resp.status_code, attempt + 1, wait)
+            last_error = Exception(f"FAB improve agent HTTP {resp.status_code}: {resp.text[:200]}")
+            time.sleep(wait)
+            continue
         resp.raise_for_status()
         return _extract_fab_content(resp.json())
-    raise Exception("FAB improve agent rate limit exceeded after retries")
+    raise Exception(f"FAB improve agent failed after {6} retries: {last_error}")
 
 
 def _extract_fab_content(data: dict) -> str:
@@ -644,9 +672,15 @@ def score_batch(req: ScoreBatchRequest):
     if not req.pairs:
         raise HTTPException(status_code=400, detail="No document pairs provided")
 
-    eval_mod = load_eval_module()
-    evaluate = eval_mod.evaluate
-    evaluate_detailed = getattr(eval_mod, "evaluate_detailed", None)
+    try:
+        eval_mod = load_eval_module()
+        evaluate = eval_mod.evaluate
+        evaluate_detailed = getattr(eval_mod, "evaluate_detailed", None)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        log.exception("Failed to load eval module")
+        raise HTTPException(status_code=500, detail=f"Failed to load eval module: {exc}") from exc
 
     km_filename = IMPROVABLE_STAGES[req.km_stage]
     if req.km_json.strip():
@@ -716,62 +750,74 @@ def score_batch(req: ScoreBatchRequest):
         return {
             "doc_id":    doc_id,
             "filename":  filename,
-            "ai_output": ai_output,
-            "gt_output": gt_text,
-            "score":     round(score, 2),
-            "precision": round(precision, 2),
-            "recall":    round(recall, 2),
+            "ai_output": str(ai_output) if ai_output is not None else "",
+            "gt_output": str(gt_text) if gt_text is not None else "",
+            "score":     round(float(score or 0), 2),
+            "precision": round(float(precision or 0), 2),
+            "recall":    round(float(recall or 0), 2),
             "set":       p.get("set", ""),
-            "error":     error_msg,
-            "method":    method,
-            "debug":     debug,
+            "error":     str(error_msg) if error_msg else "",
+            "method":    str(method) if method else "",
+            "debug":     debug if isinstance(debug, dict) else {},
         }
 
-    results = []
-    with ThreadPoolExecutor(max_workers=2) as ex:
-        futures = {ex.submit(process_pair, p): p for p in req.pairs}
-        for future in as_completed(futures):
-            try:
-                results.append(future.result())
-            except Exception as exc:
-                pair = futures.get(future, {})
-                log.exception("score_batch future failed for %s", pair.get("doc_id", "?"))
-                results.append({
-                    "doc_id":    pair.get("doc_id", ""),
-                    "filename":  pair.get("filename", ""),
-                    "ai_output": f"ERROR: {exc}",
-                    "gt_output": "",
-                    "score":     0.0,
-                    "precision": 0.0,
-                    "recall":    0.0,
-                    "set":       pair.get("set", ""),
-                    "error":     str(exc),
-                    "method":    "error",
-                    "debug":     {},
-                })
+    try:
+        results = []
+        # Process docs sequentially (max_workers=1) to avoid overwhelming
+        # the FAB agent with concurrent upstream pipeline calls.
+        # Each doc already runs family KMs in parallel internally.
+        with ThreadPoolExecutor(max_workers=1) as ex:
+            futures = {ex.submit(process_pair, p): p for p in req.pairs}
+            for future in as_completed(futures):
+                try:
+                    results.append(future.result())
+                except Exception as exc:
+                    pair = futures.get(future, {})
+                    log.exception("score_batch future failed for %s", pair.get("doc_id", "?"))
+                    results.append({
+                        "doc_id":    pair.get("doc_id", ""),
+                        "filename":  pair.get("filename", ""),
+                        "ai_output": f"ERROR: {exc}",
+                        "gt_output": "",
+                        "score":     0.0,
+                        "precision": 0.0,
+                        "recall":    0.0,
+                        "set":       pair.get("set", ""),
+                        "error":     str(exc),
+                        "method":    "error",
+                        "debug":     {},
+                    })
 
-    scores = [r["score"] for r in results]
-    precs = [r["precision"] for r in results]
-    recs = [r["recall"] for r in results]
-    avg_score = round(sum(scores) / len(scores), 2) if scores else 0.0
-    avg_prec = round(sum(precs) / len(precs), 2) if precs else 0.0
-    avg_rec = round(sum(recs) / len(recs), 2) if recs else 0.0
-    failures = [r for r in results if r["score"] < 50 or r.get("error")]
+        scores = [r["score"] for r in results]
+        precs = [r["precision"] for r in results]
+        recs = [r["recall"] for r in results]
+        avg_score = round(sum(scores) / len(scores), 2) if scores else 0.0
+        avg_prec = round(sum(precs) / len(precs), 2) if precs else 0.0
+        avg_rec = round(sum(recs) / len(recs), 2) if recs else 0.0
+        failures = [r for r in results if r["score"] < 50 or r.get("error")]
 
-    return {
-        "results":       results,
-        "average_score": avg_score,
-        "avg_precision": avg_prec,
-        "avg_recall":    avg_rec,
-        "failures":      failures,
-        "failure_count": len(failures),
-        "pipeline": {
-            "use_rule_extraction": pipeline_cfg.use_rule_extraction,
-            "use_rule_router": pipeline_cfg.use_rule_router,
-            "use_esrs_lookup": pipeline_cfg.use_esrs_lookup,
-            "use_pipeline_cache": False,
-        },
-    }
+        return {
+            "results":       results,
+            "average_score": avg_score,
+            "avg_precision": avg_prec,
+            "avg_recall":    avg_rec,
+            "failures":      failures,
+            "failure_count": len(failures),
+            "pipeline": {
+                "use_rule_extraction": pipeline_cfg.use_rule_extraction,
+                "use_rule_router": pipeline_cfg.use_rule_router,
+                "use_esrs_lookup": pipeline_cfg.use_esrs_lookup,
+                "use_pipeline_cache": False,
+            },
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        log.exception("score_batch endpoint failed unexpectedly")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Score batch failed: {type(exc).__name__}: {exc}",
+        ) from exc
 
 
 # ── Improve KM ────────────────────────────────────────────────────────────────
