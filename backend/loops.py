@@ -43,8 +43,13 @@ class RunState:
         return ""
     def record_loop(self, result: LoopResult):
         d = result.to_dict()
+        if not self.loop_results:
+            self.loop_results.append(d)
+            self.best_loop_idx = 0
+            return
+        prev_best_score = self.loop_results[self.best_loop_idx]["val_score"]
         self.loop_results.append(d)
-        if result.val_score >= self.loop_results[self.best_loop_idx]["val_score"]:
+        if result.val_score >= prev_best_score:
             self.best_loop_idx = len(self.loop_results) - 1
     def to_report(self) -> dict:
         return {

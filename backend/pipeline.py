@@ -45,8 +45,48 @@ EXTRACT_KEYS = {
     "km_01z_specific_topic_reconciler": ["final_specific_topics", "specific_topics", "SpecificTopic"],
     "km_02_applicable_sectors": ["final_applicable_sectors", "applicable_sectors", "sectors"],
     "km_03_esrs_mapping": ["final_closest_esrs_topics", "closest_esrs", "esrs_topics"],
-    "km_04_orchestrator_extraction": ["SpecificTopic"],
+    # Extraction produces non-tag metadata fields only — never SpecificTopic
+    "km_04_orchestrator_extraction": [],
 }
+
+# Alternate key spellings LLMs may emit instead of canonical EXTRACT_KEYS names
+_EXTRACT_KEY_ALIASES: dict[str, tuple[str, ...]] = {
+    "final_specific_topics": ("specific_topics", "SpecificTopic", "specific_topic", "topics"),
+    "final_applicable_sectors": ("applicable_sectors", "sectors", "ApplicableSectors"),
+    "final_closest_esrs_topics": ("closest_esrs", "esrs_topics", "ClosestESRSTopics", "closest_esrs_topics"),
+    "topic_families_to_run": ("primary_family", "families", "topic_families", "SpecificTopicFamily"),
+}
+
+
+def _is_schema_placeholder(text: str) -> bool:
+    """True when a string is an output_contract template, not extracted data."""
+    if not text or not isinstance(text, str):
+        return False
+    lower = text.lower().strip()
+    if len(lower) > 160:
+        return False
+    markers = (
+        "array of",
+        "0.0-1.0",
+        "yes|no",
+        "required when",
+        "canonical specific",
+        "canonical tag",
+        "label strings",
+        "max 5",
+    )
+    return any(marker in lower for marker in markers)
+
+
+def _lookup_obj_key(obj: dict, key: str) -> Any:
+    """Case- and separator-insensitive dict lookup."""
+    if key in obj:
+        return obj[key]
+    norm = re.sub(r"[_\s]", "", key).lower()
+    for candidate, value in obj.items():
+        if re.sub(r"[_\s]", "", str(candidate)).lower() == norm:
+            return value
+    return None
 
 
 @dataclass
@@ -145,16 +185,23 @@ def _labels_from_value(value: Any) -> list[str]:
     if isinstance(value, dict):
         # KM output_contract shape: {"value": [...], "confidence": ...}
         inner = value.get("value")
-        if inner is not None:
-            if isinstance(inner, str) and (
-                "array of" in inner.lower() or inner.strip().endswith("max 5")
-            ):
-                pass
-            else:
-                nested = _labels_from_value(inner)
-                if nested:
-                    return nested
-        for key in ("labels", "topics", "tags", "items", "final_specific_topics"):
+        if inner is not None and not (
+            isinstance(inner, str) and _is_schema_placeholder(inner)
+        ):
+            nested = _labels_from_value(inner)
+            if nested:
+                return nested
+        for key in (
+            "labels",
+            "topics",
+            "tags",
+            "items",
+            "final_specific_topics",
+            "final_specific_topics_from_this_family",
+            "final_applicable_sectors",
+            "final_closest_esrs_topics",
+            "tag_decisions",
+        ):
             if key in value:
                 nested = _labels_from_value(value[key])
                 if nested:
@@ -164,14 +211,16 @@ def _labels_from_value(value: Any) -> list[str]:
         labels: list[str] = []
         for item in value:
             if isinstance(item, dict):
+                if str(item.get("answer", "")).strip().lower() == "no":
+                    continue
                 tag = item.get("label") or item.get("tag") or item.get("name") or item.get("slug")
-                if tag:
+                if tag and not _is_schema_placeholder(str(tag)):
                     labels.append(str(tag).strip())
-            elif item:
+            elif item and not _is_schema_placeholder(str(item)):
                 labels.append(str(item).strip())
         return labels
     if isinstance(value, str):
-        if "array of" in value.lower() and "label" in value.lower():
+        if _is_schema_placeholder(value):
             return []
         return [part.strip() for part in re.split(r"[;,]", value) if part.strip()]
     return []
@@ -209,32 +258,59 @@ def _extract_field(obj: dict, keys: list[str]) -> str:
         "esrs_topics",
         "applicable_sectors",
         "sectors",
+        "topic_families_to_run",
+        "primary_family",
     ):
-        if direct_key in obj:
-            labels = _labels_from_value(obj[direct_key])
+        value = _lookup_obj_key(obj, direct_key)
+        if value is not None:
+            labels = _labels_from_value(value)
             if labels:
+                if direct_key in ("topic_families_to_run", "primary_family"):
+                    return format_router_families(obj)
                 return "; ".join(labels)
 
+    expanded_keys: list[str] = list(keys)
     for key in keys:
-        value = obj.get(key)
+        expanded_keys.extend(_EXTRACT_KEY_ALIASES.get(key, ()))
+
+    seen: set[str] = set()
+    for key in expanded_keys:
+        if key in seen:
+            continue
+        seen.add(key)
+        value = _lookup_obj_key(obj, key)
         if value is None:
             continue
 
         if isinstance(value, dict):
             inner = value.get("value")
-            if inner is not None:
+            if inner is not None and not (
+                isinstance(inner, str) and _is_schema_placeholder(inner)
+            ):
                 labels = _labels_from_value(inner)
                 if labels:
                     return "; ".join(labels)
-            if key == "topic_families_to_run":
+            labels = _labels_from_value(value)
+            if labels:
+                if key in ("topic_families_to_run", "primary_family"):
+                    return format_router_families(obj)
+                return "; ".join(labels)
+            if key in ("topic_families_to_run", "primary_family"):
                 return format_router_families(obj)
             continue
 
         labels = _labels_from_value(value)
         if labels:
-            if key == "topic_families_to_run" and labels and isinstance(value, list) and isinstance(value[0], dict):
+            if key in ("topic_families_to_run", "primary_family") and isinstance(value, list) and value and isinstance(value[0], dict):
                 return format_router_families(obj)
             return "; ".join(labels)
+
+    # Last resort: scan every top-level value for extractable labels
+    for value in obj.values():
+        if isinstance(value, (dict, list, str)):
+            labels = _labels_from_value(value)
+            if labels:
+                return "; ".join(labels)
 
     return ""
 
@@ -502,6 +578,7 @@ def run_tagging_pipeline(
     config: PipelineConfig | None = None,
     doc_id: str | None = None,
     cache_target_stage: str | None = None,
+    force_all_families: bool = False,
 ) -> dict:
     """Run the hybrid tagging pipeline on a single input document."""
     cfg = config or load_pipeline_config()
@@ -550,7 +627,7 @@ def run_tagging_pipeline(
                 km_dir,
                 call_fab_agent,
                 cfg,
-                allow_rule_router=not needs_families,
+                allow_rule_router=force_all_families or not needs_families,
             )
             state.methods["router"] = method
             trace["router"] = state.router_out
@@ -561,10 +638,14 @@ def run_tagging_pipeline(
     elif not state.routed_families:
         state.routed_families = normalize_routed_families(state.router_out) or list(STAGE_FAMILY_MAP.keys())
 
+    if force_all_families and _stage_enabled(selected_stages, "family_st_kms"):
+        state.routed_families = list(STAGE_FAMILY_MAP.keys())
+
     if _stage_enabled(selected_stages, "family_st_kms") and not state.family_candidates:
+        families_to_run = state.routed_families
         try:
             state.family_candidates = _run_families_parallel(
-                state.routed_families,
+                families_to_run,
                 evidence,
                 state.extraction_out,
                 state.router_out,
@@ -728,11 +809,7 @@ def score_document_for_stage(
     try:
         cfg = config or load_pipeline_config()
         needs_families = "family_st_kms" in _upstream_stages_for(target_stage)
-        scoring_cfg = replace(
-            cfg,
-            use_pipeline_cache=False,
-            use_rule_router=False if needs_families else cfg.use_rule_router,
-        )
+        scoring_cfg = replace(cfg, use_pipeline_cache=False)
 
         evidence = build_evidence_packet(input_doc, scoring_cfg)
         extra: dict[str, Any] = {}
@@ -747,6 +824,7 @@ def score_document_for_stage(
                 selected_stages=upstream,
                 config=scoring_cfg,
                 doc_id=None,
+                force_all_families=needs_families,
             )
             trace = partial.get("trace", {})
             methods = dict(trace.get("methods") or {})
@@ -853,7 +931,7 @@ def score_stage_output(
         if keys:
             ai_output = _extract_field(raw_out, keys)
         else:
-            ai_output = json.dumps(raw_out)
+            ai_output = json.dumps(raw_out, ensure_ascii=False)
         return ai_output, "llm", ""
     except Exception as exc:
         return f"ERROR: {exc}", "error", str(exc)

@@ -83,6 +83,18 @@ _gt_lock = threading.Lock()
 
 GT_COLUMNS = ["SpecificTopic", "SpecificTopicFamily", "ClosestESRSTopics", "ApplicableSectors"]
 
+
+def normalize_doc_id(doc_id: str) -> str:
+    """Canonical doc ID: basename only, no .json suffix."""
+    doc_id = (doc_id or "").strip()
+    if not doc_id:
+        return ""
+    doc_id = doc_id.replace("\\", "/").split("/")[-1]
+    if doc_id.endswith(".json"):
+        doc_id = doc_id[:-5]
+    return doc_id
+
+
 def load_gt_csv() -> dict:
     """Returns {doc_id: {col: value}} for all GT rows."""
     global _gt_cache
@@ -96,9 +108,8 @@ def load_gt_csv() -> dict:
         with open(gt_files[0], newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                doc_id = (row.get("input_doc_id") or row.get("input_file", "")).strip()
-                if doc_id.endswith(".json"):
-                    doc_id = doc_id[:-5]
+                raw_id = (row.get("input_doc_id") or row.get("input_file") or "").strip()
+                doc_id = normalize_doc_id(raw_id)
                 if doc_id:
                     result[doc_id] = row
         _gt_cache = result
@@ -107,8 +118,8 @@ def load_gt_csv() -> dict:
 
 def get_gt_for_doc(doc_id: str) -> dict:
     gt = load_gt_csv()
-    # try exact, then strip extension
-    row = gt.get(doc_id) or gt.get(doc_id.replace(".json", ""))
+    norm_id = normalize_doc_id(doc_id)
+    row = gt.get(norm_id) if norm_id else None
     if row is None:
         return {}
     return {col: row.get(col, "") for col in GT_COLUMNS}
@@ -550,7 +561,7 @@ def split_data(req: SplitRequest):
     # match input docs to GT by doc_id
     pairs = []
     for fname in input_docs:
-        doc_id = fname.replace(".json", "")
+        doc_id = normalize_doc_id(fname)
         gt     = get_gt_for_doc(doc_id)
         if gt:
             pairs.append({"filename": fname, "doc_id": doc_id, "gt": gt})
@@ -559,7 +570,7 @@ def split_data(req: SplitRequest):
     if n == 0:
         # no matched pairs — use all input docs without GT (for pipeline testing)
         for fname in input_docs:
-            pairs.append({"filename": fname, "doc_id": fname.replace(".json",""), "gt": {}})
+            pairs.append({"filename": fname, "doc_id": normalize_doc_id(fname), "gt": {}})
         n = len(pairs)
 
     if n == 0:
@@ -601,7 +612,7 @@ def run_pipeline(req: RunPipelineRequest):
     input_doc = read_input_doc(safe_name)
     if not input_doc:
         raise HTTPException(status_code=404, detail=f"Document not found: {safe_name}")
-    doc_id = req.doc_id or safe_name.replace(".json", "")
+    doc_id = normalize_doc_id(req.doc_id or safe_name)
     try:
         return run_tagging_pipeline(input_doc, KM_DIR, call_fab_agent, doc_id=doc_id)
     except HTTPException:
