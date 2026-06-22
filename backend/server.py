@@ -122,7 +122,23 @@ def get_gt_for_doc(doc_id: str) -> dict:
     row = gt.get(norm_id) if norm_id else None
     if row is None:
         return {}
-    return {col: row.get(col, "") for col in GT_COLUMNS}
+    result = {col: row.get(col, "") for col in GT_COLUMNS}
+    # Normalize SpecificTopicFamily GT values to canonical slugs so eval
+    # compares apples-to-apples (e.g. "workforce_and_labor" → "workforce_labor_rights")
+    from family_registry import GT_FAMILY_ALIASES, STAGE_FAMILY_MAP
+    import re as _re
+    raw_fam = result.get("SpecificTopicFamily", "")
+    if raw_fam:
+        parts = [p.strip() for p in _re.split(r"[;,]", raw_fam) if p.strip()]
+        normalized = []
+        for p in parts:
+            canon = GT_FAMILY_ALIASES.get(p, p)
+            # also accept canonical slugs as-is
+            if canon not in STAGE_FAMILY_MAP:
+                canon = p  # leave unknown values untouched
+            normalized.append(canon)
+        result["SpecificTopicFamily"] = "; ".join(normalized)
+    return result
 
 
 # ── FAB agent calls ───────────────────────────────────────────────────────────
@@ -249,12 +265,13 @@ def load_eval_module(*, force_reload: bool = False):
 
         path = scripts[0]
         source = path.read_text(encoding="utf-8", errors="replace")
-        if "FUZZY_THRESHOLD" not in source:
+        # Only auto-upgrade if the script is missing evaluate_detailed (precision/recall tracking)
+        if "evaluate_detailed" not in source:
             demo_path = ROOT / "eval_code" / "eval_tagging.py"
             if demo_path.exists():
                 source = demo_path.read_text(encoding="utf-8", errors="replace")
                 path.write_text(source, encoding="utf-8")
-                log.info("Upgraded eval script to token-overlap fuzzy matching (threshold 0.7)")
+                log.info("Upgraded eval script to add evaluate_detailed for precision/recall tracking")
         validate_eval_script_content(source)
 
         spec = importlib.util.spec_from_file_location("eval_mod", str(path))
@@ -437,7 +454,7 @@ def use_demo_script():
 
 _DEMO_EVAL = '''import re
 
-FUZZY_THRESHOLD = 0.7
+FUZZY_THRESHOLD = 0.6
 
 def _split_labels(text):
     parts = re.split(r"[;,]", text or "")
@@ -487,6 +504,21 @@ def evaluate(ai_output, gt_output):
     recall = tp / gold_n if gold_n else 1.0
     f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
     return round(f1 * 100, 2)
+
+def evaluate_detailed(ai_output, gt_output):
+    pred_labels = _split_labels(ai_output)
+    gold_labels = _split_labels(gt_output)
+    if not gold_labels:
+        p = 1.0 if not pred_labels else 0.0
+        return {"precision": p, "recall": 1.0, "f1": p}
+    if not pred_labels:
+        return {"precision": 0.0, "recall": 0.0, "f1": 0.0}
+    tp, fp, fn = _fuzzy_match_counts(pred_labels, gold_labels)
+    pred_n, gold_n = tp + fp, tp + fn
+    precision = tp / pred_n if pred_n else 0.0
+    recall = tp / gold_n if gold_n else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+    return {"precision": round(precision, 4), "recall": round(recall, 4), "f1": round(f1, 4)}
 '''
 
 
@@ -922,8 +954,8 @@ def improve_km(req: ImproveKMRequest):
 
     example_lines = []
     for i, r in enumerate(failure_pool[:15]):
-        ai = str(r.get("ai_output", ""))[:60]
-        gt = str(r.get("gt_output", ""))[:60]
+        ai = str(r.get("ai_output", ""))[:200]
+        gt = str(r.get("gt_output", ""))[:200]
         s = r.get("score", 0)
         example_lines.append(
             f"• [{i+1}] doc={r.get('doc_id', '?')[:40]} F1={s:.1f}%\n"
@@ -947,16 +979,24 @@ GT column being evaluated: {req.gt_column}
 
 This KM was tested on {req.n_learn_docs} documents and scored {req.learn_score:.1f}% F1 (target: {req.target_score}%).
 
-Failure modes and examples (predicted vs ground truth):
+Failure modes and examples (full predicted vs ground truth label values):
 {examples_str}
 
 Current knowledge model (full JSON):
-{req.current_km[:4000]}
+{req.current_km}
 
 Your task (TYPE 2 — TAGGING KNOWLEDGE MODEL IMPROVEMENT):
-- Analyse the failure examples to find the actual pattern behind mis-classifications.
-- Improve the knowledge model's rules (yes_when/no_when conditions, evidence_signals, routing/reconciliation logic) to reduce those failure modes.
-- Do NOT change the fundamental task, and do NOT change or remove the "output_contract" field or any other original top-level key — only refine the rules inside it.
+Step 1 — Classify each failure:
+  - OVER-PREDICTION: model predicted labels not in GT → tighten yes_when/run_when, add no_when exclusions
+  - UNDER-PREDICTION: model missed GT labels → broaden evidence_signals, add synonyms, relax conditions
+  - MIS-PREDICTION: model predicted wrong labels → fix routing/classification logic for confused categories
+  - HALLUCINATION: predicted labels are entirely fabricated → add strong negative conditions
+
+Step 2 — Apply targeted fixes to the KM rules based on the failure patterns found.
+
+Constraints:
+- Preserve ALL original top-level keys exactly (especially "output_contract"). Only refine rules inside existing fields.
+- Do NOT add new top-level keys or change the fundamental task description.
 - Return ONLY the complete improved knowledge model as a single JSON object, starting with {{ and ending with }}. No preamble, no explanation, no markdown code fences."""
 
     try:

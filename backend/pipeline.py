@@ -953,6 +953,16 @@ def score_stage_output(
             ai_output = _extract_field(raw_out, keys)
         else:
             ai_output = json.dumps(raw_out, ensure_ascii=False)
+        # For the router stage, always re-normalize through canonical_family_slug
+        # so predicted output uses the same slug form as the GT normalization in server.py
+        if target_stage == "km_01a_specific_topic_family_router" and ai_output:
+            import re as _re
+            from family_registry import canonical_family_slug, STAGE_FAMILY_MAP
+            parts = [p.strip() for p in _re.split(r"[;,]", ai_output) if p.strip()]
+            canon = [canonical_family_slug(p) for p in parts]
+            canon = [c for c in canon if c in STAGE_FAMILY_MAP]
+            if canon:
+                ai_output = "; ".join(canon)
         return ai_output, "llm", ""
     except Exception as exc:
         return f"ERROR: {exc}", "error", str(exc)
