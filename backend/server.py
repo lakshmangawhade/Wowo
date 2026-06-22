@@ -1024,43 +1024,21 @@ def improve_km(req: ImproveKMRequest):
                 ftype = f"OVER-PREDICTION (extra: {ai_parts - gt_parts})"
             else:
                 ftype = f"MIS-PREDICTION (extra: {ai_parts - gt_parts}, missed: {gt_parts - ai_parts})"
-<<<<<<< HEAD
         return (
             f"• [{i+1}] doc={r.get('doc_id', '?')[:40]} F1={s:.1f}% P={p:.2f} R={rec:.2f} | {ftype}\n"
             f"  Pred: {ai}\n"
             f"  GT:   {gt}"
-=======
-        snippet = _doc_snippet(doc_id, filename)
-        return (
-            f"• [{i+1}] doc={doc_id[:40]} F1={s:.1f}% P={p:.2f} R={rec:.2f} | {ftype}\n"
-            f"  Pred: {ai}\n"
-            f"  GT:   {gt}\n"
-            f"  DOC:  {snippet}"
->>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
         )
 
     example_lines = [fmt_result(r, i) for i, r in enumerate(failure_pool[:15])]
     examples_str = "\n".join(example_lines) or "No failure examples captured."
 
-<<<<<<< HEAD
     # Include a few success examples for contrast
-=======
-    # Include success examples for contrast — also with doc snippets
->>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
     success_lines = []
     for i, r in enumerate(successes[:5]):
         ai = str(r.get("ai_output", ""))[:200]
         gt = str(r.get("gt_output", ""))[:200]
-<<<<<<< HEAD
         success_lines.append(f"• [OK] doc={r.get('doc_id','?')[:40]} F1={r.get('score',0):.1f}%  Pred: {ai}  GT: {gt}")
-=======
-        snippet = _doc_snippet(r.get("doc_id", ""), r.get("filename", ""))[:300]
-        success_lines.append(
-            f"• [OK] doc={r.get('doc_id','?')[:40]} F1={r.get('score',0):.1f}%\n"
-            f"  Pred: {ai}  GT: {gt}\n"
-            f"  DOC:  {snippet}"
-        )
->>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
     success_str = "\n".join(success_lines) or "No successes yet."
 
     try:
