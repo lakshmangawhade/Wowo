@@ -628,8 +628,10 @@ GT_COLUMN_FOR_STAGE = {
 # ── Data split ────────────────────────────────────────────────────────────────
 class SplitRequest(BaseModel):
     seed: Optional[int] = 42
-    unseen_pct: float = Field(default=0.50, ge=0.0, le=1.0)
-    learn_pct:  float = Field(default=0.20, ge=0.0, le=1.0)
+    # Default: 0% unseen — use ALL docs for learn+val when you have < 30 docs.
+    # Increase unseen_pct only when you have 50+ documents to spare.
+    unseen_pct: float = Field(default=0.0, ge=0.0, le=1.0)
+    learn_pct:  float = Field(default=0.40, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
     def validate_percentages(self):
@@ -664,9 +666,24 @@ def split_data(req: SplitRequest):
     rng = random.Random(req.seed)
     rng.shuffle(pairs)
 
-    n_unseen = round(n * req.unseen_pct)
+    # For small datasets (< 30 docs): always use 0% unseen regardless of request.
+    # Hiding docs from the improve loop when you have few examples kills performance.
+    effective_unseen_pct = req.unseen_pct
+    if n < 30 and effective_unseen_pct > 0.0:
+        log.warning(
+            "split: only %d matched pairs — forcing unseen_pct=0.0 (was %.2f) to maximize training signal",
+            n, effective_unseen_pct,
+        )
+        effective_unseen_pct = 0.0
+
+    n_unseen = round(n * effective_unseen_pct)
     n_learn  = round(n * req.learn_pct)
     n_val    = max(0, n - n_unseen - n_learn)
+
+    # Guarantee at least 3 learn docs and 3 val docs when possible
+    if n >= 6:
+        n_learn = max(n_learn, min(3, n // 2))
+        n_val   = max(n_val, min(3, n - n_learn))
 
     for i, p in enumerate(pairs):
         if   i < n_unseen:             p["set"] = "unseen"
@@ -676,6 +693,10 @@ def split_data(req: SplitRequest):
     return {
         "total": n, "unseen": n_unseen, "learn": n_learn, "val": n_val,
         "pairs": pairs,
+        "note": (
+            f"Using {n_learn} learn + {n_val} val docs. "
+            + ("WARNING: small dataset — consider unseen_pct=0 to maximize improve signal." if n < 20 else "")
+        ),
     }
 
 
@@ -974,10 +995,38 @@ def improve_km(req: ImproveKMRequest):
     ]
     failure_pool.sort(key=lambda r: float(r.get("score", 0) or 0))
 
-    # Also collect partial successes (score 1-49) separately from total failures (score 0)
     total_failures = [r for r in failure_pool if float(r.get("score", 0) or 0) == 0]
     partial_failures = [r for r in failure_pool if 0 < float(r.get("score", 0) or 0) < 50]
     successes = [r for r in req.all_results if float(r.get("score", 0) or 0) >= 50]
+
+    def _doc_snippet(doc_id: str, filename: str) -> str:
+        """Pull title + first 600 chars of body from the input doc for the improve agent."""
+        try:
+            fname = filename or (doc_id + ".json" if doc_id else "")
+            if not fname:
+                return ""
+            doc = read_input_doc(fname)
+            if not doc:
+                return ""
+            title = (
+                doc.get("title")
+                or doc.get("OriginalTitle")
+                or (doc.get("metadata") or {}).get("dcterms:title")
+                or (doc.get("metadata") or {}).get("DC.title")
+                or ""
+            )
+            body = doc.get("body_text") or doc.get("text") or ""
+            subject = (doc.get("metadata") or {}).get("DC.subject") or ""
+            parts = []
+            if title:
+                parts.append(f"Title: {title[:200]}")
+            if subject:
+                parts.append(f"Subject: {subject[:150]}")
+            if body:
+                parts.append(f"Body excerpt: {body[:600]}")
+            return " | ".join(parts)
+        except Exception:
+            return ""
 
     def fmt_result(r, i):
         ai = str(r.get("ai_output", ""))[:300]
@@ -985,7 +1034,8 @@ def improve_km(req: ImproveKMRequest):
         s = r.get("score", 0)
         p = r.get("precision", 0)
         rec = r.get("recall", 0)
-        # Diagnose failure type
+        doc_id = r.get("doc_id", "?")
+        filename = r.get("filename", "")
         if not ai or ai.startswith("ERROR"):
             ftype = "NO OUTPUT / ERROR"
         elif not gt:
@@ -1003,21 +1053,28 @@ def improve_km(req: ImproveKMRequest):
                 ftype = f"OVER-PREDICTION (extra: {ai_parts - gt_parts})"
             else:
                 ftype = f"MIS-PREDICTION (extra: {ai_parts - gt_parts}, missed: {gt_parts - ai_parts})"
+        snippet = _doc_snippet(doc_id, filename)
         return (
-            f"• [{i+1}] doc={r.get('doc_id', '?')[:40]} F1={s:.1f}% P={p:.2f} R={rec:.2f} | {ftype}\n"
+            f"• [{i+1}] doc={doc_id[:40]} F1={s:.1f}% P={p:.2f} R={rec:.2f} | {ftype}\n"
             f"  Pred: {ai}\n"
-            f"  GT:   {gt}"
+            f"  GT:   {gt}\n"
+            f"  DOC:  {snippet}"
         )
 
     example_lines = [fmt_result(r, i) for i, r in enumerate(failure_pool[:15])]
     examples_str = "\n".join(example_lines) or "No failure examples captured."
 
-    # Include a few success examples for contrast
+    # Include success examples for contrast — also with doc snippets
     success_lines = []
     for i, r in enumerate(successes[:5]):
         ai = str(r.get("ai_output", ""))[:200]
         gt = str(r.get("gt_output", ""))[:200]
-        success_lines.append(f"• [OK] doc={r.get('doc_id','?')[:40]} F1={r.get('score',0):.1f}%  Pred: {ai}  GT: {gt}")
+        snippet = _doc_snippet(r.get("doc_id", ""), r.get("filename", ""))[:300]
+        success_lines.append(
+            f"• [OK] doc={r.get('doc_id','?')[:40]} F1={r.get('score',0):.1f}%\n"
+            f"  Pred: {ai}  GT: {gt}\n"
+            f"  DOC:  {snippet}"
+        )
     success_str = "\n".join(success_lines) or "No successes yet."
 
     try:
@@ -1041,27 +1098,40 @@ GT column being evaluated: {req.gt_column}
 Scored on {req.n_learn_docs} documents: {req.learn_score:.1f}% avg F1 (target: {req.target_score}%)
 {stats_line}
 
-=== FAILURE EXAMPLES (auto-diagnosed) ===
+=== FAILURE EXAMPLES — with actual document content ===
+Each failure shows: predicted family slug, correct GT family slug, AND the actual document title/body.
+Use the document content to understand WHY the routing went wrong and add the right keywords/signals.
 {examples_str}
 
-=== SUCCESS EXAMPLES (for contrast — keep what works) ===
+=== SUCCESS EXAMPLES — for contrast ===
 {success_str}
 
 === CURRENT KNOWLEDGE MODEL ===
 {req.current_km}
 
 === YOUR TASK ===
-Analyse every failure type above and improve the KM rules:
-- EMPTY PREDICTION / NO OUTPUT → The LLM is not understanding the output_contract format. Clarify the output structure, add explicit examples in the KM, ensure output keys match exactly what the pipeline expects.
-- UNDER-PREDICTION → Add more evidence_signals / keywords / synonyms for the missed labels. Loosen yes_when conditions.
-- OVER-PREDICTION → Add no_when exclusion conditions. Tighten yes_when to require stronger evidence.
-- MIS-PREDICTION → Fix the distinguishing conditions between confused categories.
+You can see the actual document content above. Use it to:
 
-IMPORTANT CONSTRAINTS:
-- Preserve ALL original top-level keys exactly (especially "output_contract"). Do NOT rename keys.
-- The pipeline extracts output using these key names in priority order: slug, family_id, tag, label, name. If your KM's output uses a different key, the result will be empty. Ensure output objects use "slug" or "family_id" for family identifiers.
-- For {req.km_stage}, the GT column is "{req.gt_column}" — predictions must match the format of the GT values in the success examples above.
-- Return ONLY the complete improved knowledge model as a single JSON object, starting with {{ and ending with }}. No preamble, no explanation, no markdown fences."""
+1. For UNDER-PREDICTION (missed a GT family):
+   - Look at the DOC content for the missed family — what specific words/phrases/topics does it discuss?
+   - Add those exact phrases as evidence_signals or run_when keywords for the missed family.
+
+2. For OVER-PREDICTION (predicted wrong family):
+   - Look at the DOC content — what is it actually about that confused the router?
+   - Add no_when exclusion conditions or tighten yes_when for the wrongly-predicted family.
+
+3. For MIS-PREDICTION (wrong family entirely):
+   - The DOC discusses X but you predicted Y. What distinguishing signals separate X from Y?
+   - Update both families' routing rules.
+
+4. For EMPTY/NO OUTPUT:
+   - The LLM returned nothing. Simplify the output_contract format, add a worked example inside the KM.
+
+CRITICAL OUTPUT FORMAT RULES:
+- Family identifiers in output objects MUST use key "slug" (e.g. {{"slug": "climate_energy", "confidence": 0.9}})
+- Valid slug values are ONLY: climate_energy, pollution_chemicals_air_soil, water_marine_fisheries, waste_circular_products, biodiversity_ecosystems_land, workforce_labor_rights, communities_indigenous_rights, consumers_products_privacy, governance_reporting_conduct
+- Preserve ALL original top-level keys. Do NOT add/remove top-level keys.
+- Return ONLY the complete improved JSON object, no preamble, no markdown fences."""
 
     try:
         raw = call_fab_improve_agent(prompt)
