@@ -1,14 +1,49 @@
 {
   "km_id": "KM_FINAL_ST_00_TOPIC_FAMILY_ROUTER",
   "km_name": "Optional SpecificTopic Family Router - Simplified",
-  "version": "5.0-simplified-binary",
-  "created": "2026-04-29",
-  "purpose": "Optionally route a source to relevant binary SpecificTopic family KMs. This router does not decide tags and there is no standalone SpecificTopic reconciler downstream.",
+  "version": "6.0-with-disambiguation",
+  "created": "2026-06-22",
+  "purpose": "Route a source document to relevant binary SpecificTopic family KMs. This router does not decide tags — it selects which family KMs to run.",
   "routing_policy": [
-    "Routing is optional; the safest simplified mode is to run all nine family KMs and let each answer its owned tags Yes/No.",
-    "When using routing for efficiency, choose families from source-supported title/scope/definitions/operative provisions, not filenames, URLs, row IDs, or benchmark answers.",
-    "Default to 1-2 families for narrow sources; add more only for separate central legal pillars or rare-family rescue triggers.",
-    "The router must never output final SpecificTopic labels."
+    "Choose families from source-supported title/scope/definitions/operative provisions — not filenames, URLs, or row IDs.",
+    "Default to 1-2 families for narrow sources; add more only for separate central legal pillars.",
+    "The router must never output final SpecificTopic labels.",
+    "When two families could both apply, use the disambiguation_rules below to pick the primary one.",
+    "pollution_chemicals_air_soil is for regulations primarily about chemical substances, industrial air/soil emissions, or contaminated land — NOT for regulations where water bodies, marine environment, or wastewater treatment are the central subject.",
+    "If the document's primary subject is water quality, wastewater, river basins, marine strategy, groundwater, or fisheries — always prefer water_marine_fisheries over pollution_chemicals_air_soil.",
+    "If the document's primary subject is product liability, consumer protection, GMO traceability, product safety, or data privacy — always prefer consumers_products_privacy, even if chemicals or substances are mentioned in a product context."
+  ],
+  "disambiguation_rules": [
+    {
+      "when": "Title or scope primarily concerns wastewater treatment, water quality standards, river basin management, groundwater, drinking water, bathing water, marine environment, marine strategy, or fisheries",
+      "prefer": "water_marine_fisheries",
+      "not": "pollution_chemicals_air_soil",
+      "example_docs": ["Urban Waste-Water Treatment Directive", "Water Framework Directive", "Marine Strategy Framework Directive", "Nitrates Directive"]
+    },
+    {
+      "when": "Title or scope primarily concerns defective products, product liability, consumer protection law, GMO traceability/labelling, product safety, data protection, or GDPR",
+      "prefer": "consumers_products_privacy",
+      "not": "pollution_chemicals_air_soil",
+      "example_docs": ["Liability for Defective Products Directive", "GMO Traceability Regulation", "GDPR"]
+    },
+    {
+      "when": "Title or scope primarily concerns end-of-life vehicles, WEEE, batteries, packaging waste, or circular economy",
+      "prefer": "waste_circular_products",
+      "not": "pollution_chemicals_air_soil",
+      "example_docs": ["End-of-Life Vehicles Directive", "Waste Framework Directive"]
+    },
+    {
+      "when": "Title or scope primarily concerns habitats, biodiversity, Natura 2000, species conservation, invasive species, or wildlife trade",
+      "prefer": "biodiversity_ecosystems_land",
+      "not": "pollution_chemicals_air_soil",
+      "example_docs": ["Habitats Directive", "Birds Directive"]
+    },
+    {
+      "when": "Title or scope primarily concerns fundamental rights, anti-corruption, non-financial reporting, ESG disclosure, or corporate governance",
+      "prefer": "governance_reporting_conduct",
+      "not": "pollution_chemicals_air_soil",
+      "example_docs": ["Charter of Fundamental Rights", "CSRD", "Corporate Sustainability Due Diligence Directive"]
+    }
   ],
   "families": [
     {
@@ -20,23 +55,17 @@
         "The source regulates renewable energy, energy efficiency, energy labelling, building energy performance, CCS, or energy audits.",
         "The source regulates vehicle, fuel, installation, building, or product emissions as climate/energy mechanisms."
       ],
+      "do_not_run_when": [
+        "The source only mentions emissions incidentally as part of product safety, wastewater, or chemical classification rules — without climate/energy targets or mechanisms."
+      ],
       "owned_tags_after_deduplication": [
-        "Building Performance Standards",
-        "Climate Change Mitigation",
-        "Climate Change Adaptation",
-        "Renewable Energy Targets",
-        "Carbon Trading and Emissions Trading Schemes",
-        "Nationally Determined Contributions (NDCs)",
-        "Emission Reduction Obligations",
-        "Carbon Capture and Storage (CCS) Regulations",
-        "Carbon Pricing",
-        "Voluntary Carbon Markets",
-        "Renewable Energy Integration",
-        "Greenhouse Gas Emissions Trading",
-        "Industrial Energy Efficiency and Audits",
-        "Energy Efficiency Standards",
-        "Energy Efficiency in Building Construction",
-        "Green Public Procurement"
+        "Building Performance Standards", "Climate Change Mitigation", "Climate Change Adaptation",
+        "Renewable Energy Targets", "Carbon Trading and Emissions Trading Schemes",
+        "Nationally Determined Contributions (NDCs)", "Emission Reduction Obligations",
+        "Carbon Capture and Storage (CCS) Regulations", "Carbon Pricing", "Voluntary Carbon Markets",
+        "Renewable Energy Integration", "Greenhouse Gas Emissions Trading",
+        "Industrial Energy Efficiency and Audits", "Energy Efficiency Standards",
+        "Energy Efficiency in Building Construction", "Green Public Procurement"
       ]
     },
     {
@@ -44,26 +73,24 @@
       "slug": "pollution_chemicals_air_soil",
       "name": "SpecificTopic Binary KM - Pollution, Chemicals, Air and Soil",
       "run_when": [
-        "The source mentions pollutants, air quality, ambient standards, industrial emissions, combustion plants, hazardous substances, chemicals, POPs, ozone-depleting substances, asbestos, silica, radioactive waste, soil contamination, or remediation.",
-        "The source regulates releases to air, water, soil, or land, especially through thresholds, permits, emission limits, substance restrictions, contamination cleanup, or classification duties."
+        "The source primarily regulates air quality standards, industrial air emissions, combustion plant emissions, ambient air pollutants, transboundary air pollution, or ozone-depleting substances.",
+        "The source primarily regulates chemical substances, hazardous chemicals, POPs, REACH, biocides, pesticides, asbestos, silica, or radioactive waste.",
+        "The source primarily regulates soil contamination, contaminated land remediation, or soil quality standards.",
+        "The source primarily regulates releases of chemical substances or industrial pollutants — where chemicals or air/soil emissions are the CENTRAL operative subject, not incidental."
+      ],
+      "do_not_run_when": [
+        "The primary subject is water bodies, wastewater treatment, river basins, groundwater, drinking water, marine environment, or fisheries — use water_marine_fisheries instead.",
+        "The primary subject is product liability, consumer product safety, defective products, GMO traceability, or data privacy — use consumers_products_privacy instead.",
+        "The primary subject is end-of-life vehicles, batteries, WEEE, or circular economy — use waste_circular_products instead.",
+        "Water pollution is mentioned only incidentally as a context for a regulation whose core subject is something else (e.g. Nitrates Directive primarily protects water quality → route to water_marine_fisheries)."
       ],
       "owned_tags_after_deduplication": [
-        "Air Quality",
-        "Ambient Air Quality Standards",
-        "Indoor Air Quality",
-        "Industrial Emissions",
-        "Contaminated Land Remediation",
-        "Agricultural Pollution",
-        "Soil Quality Standards",
-        "Emission Thresholds for Construction Products",
-        "Acidification Reduction",
-        "Transboundary Air Pollution Control",
-        "Registration of Biocidal Products",
-        "Elimination of Persistent Organic Pollutants",
-        "Chemical Safety",
-        "Chemical Regulation",
-        "Hazardous Substances",
-        "Restriction of Hazardous Substances"
+        "Air Quality", "Ambient Air Quality Standards", "Indoor Air Quality", "Industrial Emissions",
+        "Contaminated Land Remediation", "Agricultural Pollution", "Soil Quality Standards",
+        "Emission Thresholds for Construction Products", "Acidification Reduction",
+        "Transboundary Air Pollution Control", "Registration of Biocidal Products",
+        "Elimination of Persistent Organic Pollutants", "Chemical Safety",
+        "Chemical Regulation", "Hazardous Substances", "Restriction of Hazardous Substances"
       ]
     },
     {
@@ -71,24 +98,18 @@
       "slug": "water_marine_fisheries",
       "name": "SpecificTopic Binary KM - Water, Marine Resources and Fisheries",
       "run_when": [
-        "The source mentions water quality, wastewater, sewage, surface water, groundwater, river basins, water allocation, drought, marine environment, coastal zones, protected marine areas, fisheries, marine living resources, or water infrastructure."
+        "The source primarily regulates wastewater treatment, sewage treatment, or urban waste-water collection and discharge.",
+        "The source primarily regulates water quality standards, river basin management, groundwater protection, drinking water quality, or bathing water quality.",
+        "The source primarily regulates the marine environment, marine strategy, coastal zones, marine protected areas, or ocean quality.",
+        "The source primarily regulates fisheries, fish stocks, marine living resources, or aquaculture.",
+        "The source regulates nitrate or agricultural runoff where the PRIMARY protected object is water body quality.",
+        "Run here even if the regulation mentions pollution — if water bodies, marine areas, or wastewater are what the regulation is fundamentally protecting or managing."
       ],
       "owned_tags_after_deduplication": [
-        "Marine Pollution",
-        "Stormwater Management",
-        "Wastewater Treatment",
-        "Water Quality Standards",
-        "Water Resource Management",
-        "Water Use Efficiency",
-        "Water Allocation",
-        "Water Conservation",
-        "Drought Management",
-        "Transboundary Water Management",
-        "Fisheries Management",
-        "Coastal Zone Management",
-        "Water Infrastructure",
-        "Water Pricing",
-        "Marine Environment Protection"
+        "Marine Pollution", "Stormwater Management", "Wastewater Treatment", "Water Quality Standards",
+        "Water Resource Management", "Water Use Efficiency", "Water Allocation", "Water Conservation",
+        "Drought Management", "Transboundary Water Management", "Fisheries Management",
+        "Coastal Zone Management", "Water Infrastructure", "Water Pricing", "Marine Environment Protection"
       ]
     },
     {
@@ -99,10 +120,8 @@
         "The source mentions waste, recycling, reuse, recovery, packaging, WEEE, batteries, product stewardship, producer responsibility, circular economy, resource efficiency, end-of-life products, or electrical/electronic equipment."
       ],
       "owned_tags_after_deduplication": [
-        "Waste Reduction and Recycling",
-        "Circular Economy",
-        "Extended Producer Responsibility (EPR)",
-        "Electrical Equipment"
+        "Waste Reduction and Recycling", "Circular Economy",
+        "Extended Producer Responsibility (EPR)", "Electrical Equipment"
       ]
     },
     {
@@ -114,22 +133,12 @@
         "For EIA/SEA/planning laws, route here primarily for Land Use Planning; biodiversity/ecosystem labels require explicit biodiversity, species, habitats, protected-area, ecosystem, or nature-protection operative duties."
       ],
       "owned_tags_after_deduplication": [
-        "Soil Conservation",
-        "Marine Protected Areas",
-        "Land Use Planning",
-        "Biodiversity Conservation",
-        "Ecosystem Restoration",
-        "Protected Area Designation",
-        "Habitat Restoration",
-        "Endangered Species Protection",
-        "Invasive Species Control",
-        "Wildlife Trade Regulation",
-        "Pollinator Protection",
-        "Direct Impact Drivers of Biodiversity Loss",
-        "Impacts on the State of Species",
-        "Impacts on the Extent and Conditions of Ecosystems",
-        "Impacts on and Dependencies on Ecosystem Services",
-        "Animal Welfare"
+        "Soil Conservation", "Marine Protected Areas", "Land Use Planning", "Biodiversity Conservation",
+        "Ecosystem Restoration", "Protected Area Designation", "Habitat Restoration",
+        "Endangered Species Protection", "Invasive Species Control", "Wildlife Trade Regulation",
+        "Pollinator Protection", "Direct Impact Drivers of Biodiversity Loss",
+        "Impacts on the State of Species", "Impacts on the Extent and Conditions of Ecosystems",
+        "Impacts on and Dependencies on Ecosystem Services", "Animal Welfare"
       ]
     },
     {
@@ -140,30 +149,13 @@
         "The source mentions employees, workers, employment contracts, working conditions, wages, minimum wage, working time, leave, workplace safety, discrimination, equal pay, collective bargaining, social dialogue, forced labor, child labor, trafficking, training, disability inclusion, or harassment."
       ],
       "owned_tags_after_deduplication": [
-        "Minimum Wage",
-        "Employment Contracts",
-        "Non-Discrimination",
-        "Health and Safety",
-        "Work Environment",
-        "Ergonomics",
-        "Mental Health",
-        "Freedom of Association",
-        "Collective Bargaining",
-        "Occupational Health and Safety",
-        "Emergency Preparedness",
-        "Workforce Practices",
-        "Fair Labor Practices",
-        "Forced Labor and Human Trafficking",
-        "Child Labor",
-        "Secure Employment",
-        "Working Time",
-        "Adequate Wages",
-        "Social Dialogue",
-        "Work-Life Balance",
-        "Gender Equality and Equal Pay",
-        "Training and Skills Development",
-        "Inclusion of Persons with Disabilities",
-        "Measures Against Violence and Harassment in the Workplace",
+        "Minimum Wage", "Employment Contracts", "Non-Discrimination", "Health and Safety",
+        "Work Environment", "Ergonomics", "Mental Health", "Freedom of Association",
+        "Collective Bargaining", "Occupational Health and Safety", "Emergency Preparedness",
+        "Workforce Practices", "Fair Labor Practices", "Forced Labor and Human Trafficking",
+        "Child Labor", "Secure Employment", "Working Time", "Adequate Wages", "Social Dialogue",
+        "Work-Life Balance", "Gender Equality and Equal Pay", "Training and Skills Development",
+        "Inclusion of Persons with Disabilities", "Measures Against Violence and Harassment in the Workplace",
         "Diversity"
       ]
     },
@@ -176,10 +168,8 @@
         "Do not run for ordinary public participation, public notice, EIA/SEA consultation, land-use planning, biodiversity, or climate adaptation unless affected communities or community rights are explicit central objects."
       ],
       "owned_tags_after_deduplication": [
-        "Adequate Housing",
-        "Communities' Economic, Social, and Cultural Rights",
-        "Communities' Civil and Political Rights",
-        "Rights of Indigenous Peoples"
+        "Adequate Housing", "Communities' Economic, Social, and Cultural Rights",
+        "Communities' Civil and Political Rights", "Rights of Indigenous Peoples"
       ]
     },
     {
@@ -187,21 +177,19 @@
       "slug": "consumers_products_privacy",
       "name": "SpecificTopic Binary KM - Consumers, End-Users, Product Safety and Privacy",
       "run_when": [
-        "The source mentions consumers, end-users, product safety, defective products, labels, product information, recalls, marketing practices, unfair commercial practices, data protection, GDPR, personal data, privacy, biocidal products, food information, toys, cosmetics, textiles, or product certification.",
+        "The source primarily regulates defective products, product liability, consumer protection law, or product safety standards.",
+        "The source regulates GMO traceability, GMO labelling, or genetically modified organism approvals.",
+        "The source mentions consumers, end-users, product safety, labels, product information, recalls, marketing practices, unfair commercial practices, data protection, GDPR, personal data, privacy, biocidal products, food information, toys, cosmetics, textiles, or product certification.",
         "Also run for hybrid emissions/chemical/product laws when product safety, product information, consumer protection, privacy, market placement, safe use, data sharing, or product-risk controls are title/scope/operative objects."
       ],
+      "do_not_run_when": [
+        "The regulation primarily concerns industrial chemical substance management (REACH, POPs, biocide active substances) without a direct consumer-facing product placement or safety angle — use pollution_chemicals_air_soil instead."
+      ],
       "owned_tags_after_deduplication": [
-        "Product Safety",
-        "Compliance and Certification",
-        "Product Labeling",
-        "Consumer Protection Laws",
-        "Product Design and Manufacturing",
-        "Product Recall",
-        "Data Privacy (GDPR)",
-        "Data Privacy and Non-Financial Reporting",
-        "Information-Related Impacts on Consumers and End-Users",
-        "Personal Safety of Non-Consumers and End-Users",
-        "Social Inclusion of Consumers and End-Users"
+        "Product Safety", "Compliance and Certification", "Product Labeling", "Consumer Protection Laws",
+        "Product Design and Manufacturing", "Product Recall", "Data Privacy (GDPR)",
+        "Data Privacy and Non-Financial Reporting", "Information-Related Impacts on Consumers and End-Users",
+        "Personal Safety of Non-Consumers and End-Users", "Social Inclusion of Consumers and End-Users"
       ]
     },
     {
@@ -215,31 +203,23 @@
         "Do not run for ordinary environmental/social/product legislation merely because it contains duties, permits, monitoring, competent authorities, penalties, sanctions, transposition, implementation, or enforcement language."
       ],
       "owned_tags_after_deduplication": [
-        "Whistleblower Protection",
-        "Anti-Corruption",
-        "Anti-Bribery",
-        "ESG Reporting",
-        "ESG Due Diligence",
-        "Sustainability Reporting",
-        "Non-Financial Reporting",
-        "Compliance with Laws and Regulations",
-        "Financial Reporting",
-        "Corporate Social Responsibility",
-        "Political Engagement and Lobbying Activities",
-        "Protection of Whistleblowers",
+        "Whistleblower Protection", "Anti-Corruption", "Anti-Bribery", "ESG Reporting",
+        "ESG Due Diligence", "Sustainability Reporting", "Non-Financial Reporting",
+        "Compliance with Laws and Regulations", "Financial Reporting", "Corporate Social Responsibility",
+        "Political Engagement and Lobbying Activities", "Protection of Whistleblowers",
         "Relationships with Suppliers, Including Payment Practices",
-        "Corruption and Bribery Incidents",
-        "Corporate Culture"
+        "Corruption and Bribery Incidents", "Corporate Culture"
       ]
     }
   ],
   "output_contract": {
     "topic_families_to_run": [
       {
-        "family_id": "one of this KM families[].family_id",
+        "slug": "one of the slug values from families[] above (e.g. water_marine_fisheries)",
+        "family_id": "matching family_id from families[] above",
         "confidence": "0.0-1.0",
-        "reason": "source-supported routing reason",
-        "evidence_excerpt": "short excerpt"
+        "reason": "source-supported routing reason citing title/scope/operative provisions",
+        "evidence_excerpt": "short excerpt from the document supporting this routing decision"
       }
     ],
     "safe_fallback": "run_all_families"

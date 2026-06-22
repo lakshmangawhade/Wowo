@@ -1,6 +1,7 @@
 # server.py — TagForge API
 import io
 import os
+import sys
 import json
 import csv
 import random
@@ -26,11 +27,16 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator, model_validator
 from dotenv import load_dotenv
 
+# Ensure backend modules resolve whether started as `server:app` or `backend.server:app`
+_BACKEND_DIR = Path(__file__).resolve().parent
+_ROOT_DIR = _BACKEND_DIR.parent
+for _path in (str(_BACKEND_DIR), str(_ROOT_DIR)):
+    if _path not in sys.path:
+        sys.path.insert(0, _path)
+
 from backend.pipeline import (
-    build_evidence_packet,
-    build_prerequisite_context,
+    score_document_for_stage,
     run_tagging_pipeline,
-    score_stage_output,
 )
 from backend.pipeline_cache import clear_pipeline_cache
 from backend.pipeline_config import load_pipeline_config
@@ -77,6 +83,18 @@ _gt_lock = threading.Lock()
 
 GT_COLUMNS = ["SpecificTopic", "SpecificTopicFamily", "ClosestESRSTopics", "ApplicableSectors"]
 
+
+def normalize_doc_id(doc_id: str) -> str:
+    """Canonical doc ID: basename only, no .json suffix."""
+    doc_id = (doc_id or "").strip()
+    if not doc_id:
+        return ""
+    doc_id = doc_id.replace("\\", "/").split("/")[-1]
+    if doc_id.endswith(".json"):
+        doc_id = doc_id[:-5]
+    return doc_id
+
+
 def load_gt_csv() -> dict:
     """Returns {doc_id: {col: value}} for all GT rows."""
     global _gt_cache
@@ -90,9 +108,8 @@ def load_gt_csv() -> dict:
         with open(gt_files[0], newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                doc_id = (row.get("input_doc_id") or row.get("input_file", "")).strip()
-                if doc_id.endswith(".json"):
-                    doc_id = doc_id[:-5]
+                raw_id = (row.get("input_doc_id") or row.get("input_file") or "").strip()
+                doc_id = normalize_doc_id(raw_id)
                 if doc_id:
                     result[doc_id] = row
         _gt_cache = result
@@ -101,11 +118,27 @@ def load_gt_csv() -> dict:
 
 def get_gt_for_doc(doc_id: str) -> dict:
     gt = load_gt_csv()
-    # try exact, then strip extension
-    row = gt.get(doc_id) or gt.get(doc_id.replace(".json", ""))
+    norm_id = normalize_doc_id(doc_id)
+    row = gt.get(norm_id) if norm_id else None
     if row is None:
         return {}
-    return {col: row.get(col, "") for col in GT_COLUMNS}
+    result = {col: row.get(col, "") for col in GT_COLUMNS}
+    # Normalize SpecificTopicFamily GT values to canonical slugs so eval
+    # compares apples-to-apples (e.g. "workforce_and_labor" → "workforce_labor_rights")
+    from family_registry import GT_FAMILY_ALIASES, STAGE_FAMILY_MAP
+    import re as _re
+    raw_fam = result.get("SpecificTopicFamily", "")
+    if raw_fam:
+        parts = [p.strip() for p in _re.split(r"[;,]", raw_fam) if p.strip()]
+        normalized = []
+        for p in parts:
+            canon = GT_FAMILY_ALIASES.get(p, p)
+            # also accept canonical slugs as-is
+            if canon not in STAGE_FAMILY_MAP:
+                canon = p  # leave unknown values untouched
+            normalized.append(canon)
+        result["SpecificTopicFamily"] = "; ".join(normalized)
+    return result
 
 
 # ── FAB agent calls ───────────────────────────────────────────────────────────
@@ -132,16 +165,30 @@ def call_fab_agent(user_message: str) -> str:
         "x-authentication": f"api-key {FAB_API_KEY}",
     }
     payload = {"input": {"query": user_message}}
-    for attempt in range(4):
-        resp = http_requests.post(FAB_AGENT_URL, json=payload, headers=headers, timeout=180)
+    last_error = None
+    for attempt in range(6):
+        try:
+            resp = http_requests.post(FAB_AGENT_URL, json=payload, headers=headers, timeout=300)
+        except http_requests.exceptions.RequestException as exc:
+            last_error = exc
+            wait = 10 * (attempt + 1)
+            log.warning("FAB agent connection error (attempt %d): %s — retrying in %ss", attempt + 1, exc, wait)
+            time.sleep(wait)
+            continue
         if resp.status_code == 429:
             wait = 15 * (attempt + 1)
             log.warning("FAB rate limited — retrying in %ss", wait)
             time.sleep(wait)
             continue
+        if resp.status_code in (500, 502, 503, 504):
+            wait = 10 * (attempt + 1)
+            log.warning("FAB agent returned %d (attempt %d) — retrying in %ss", resp.status_code, attempt + 1, wait)
+            last_error = Exception(f"FAB agent HTTP {resp.status_code}: {resp.text[:200]}")
+            time.sleep(wait)
+            continue
         resp.raise_for_status()
-        return resp.json()["output"]["content"]
-    raise Exception("FAB agent rate limit exceeded after retries")
+        return _extract_fab_content(resp.json())
+    raise Exception(f"FAB agent failed after {6} retries: {last_error}")
 
 
 def call_fab_improve_agent(user_message: str) -> str:
@@ -158,16 +205,45 @@ def call_fab_improve_agent(user_message: str) -> str:
             "COMPLETION_CONFIG": {"max_tokens": 16000, "temperature": 0.7, "top_p": 0.95}
         },
     }
-    for attempt in range(4):
-        resp = http_requests.post(url, json=payload, headers=headers, timeout=180)
+    last_error = None
+    for attempt in range(6):
+        try:
+            resp = http_requests.post(url, json=payload, headers=headers, timeout=300)
+        except http_requests.exceptions.RequestException as exc:
+            last_error = exc
+            wait = 10 * (attempt + 1)
+            log.warning("FAB improve agent connection error (attempt %d): %s — retrying in %ss", attempt + 1, exc, wait)
+            time.sleep(wait)
+            continue
         if resp.status_code == 429:
             wait = 15 * (attempt + 1)
+            log.warning("FAB improve agent rate limited - retrying in %ss", wait)
+            time.sleep(wait)
+            continue
+        if resp.status_code in (500, 502, 503, 504):
+            wait = 10 * (attempt + 1)
+            log.warning("FAB improve agent returned %d (attempt %d) — retrying in %ss", resp.status_code, attempt + 1, wait)
+            last_error = Exception(f"FAB improve agent HTTP {resp.status_code}: {resp.text[:200]}")
             time.sleep(wait)
             continue
         resp.raise_for_status()
-        return resp.json()["output"]["content"]
-    raise Exception("FAB improve agent rate limit exceeded after retries")
+        return _extract_fab_content(resp.json())
+    raise Exception(f"FAB improve agent failed after {6} retries: {last_error}")
 
+
+def _extract_fab_content(data: dict) -> str:
+    """Extract text content from FAB agent JSON response."""
+    output = data.get("output")
+    if isinstance(output, dict):
+        text = output.get("content") or output.get("text") or output.get("message")
+        if text:
+            return str(text)
+    if isinstance(output, str):
+        return output
+    for key in ("content", "text", "message", "result"):
+        if data.get(key):
+            return str(data[key])
+    raise ValueError(f"FAB response missing content: {list(data.keys())}")
 
 
 # ── Eval script helpers ───────────────────────────────────────────────────────
@@ -189,6 +265,13 @@ def load_eval_module(*, force_reload: bool = False):
 
         path = scripts[0]
         source = path.read_text(encoding="utf-8", errors="replace")
+        # Only auto-upgrade if the script is missing evaluate_detailed (precision/recall tracking)
+        if "evaluate_detailed" not in source:
+            demo_path = ROOT / "eval_code" / "eval_tagging.py"
+            if demo_path.exists():
+                source = demo_path.read_text(encoding="utf-8", errors="replace")
+                path.write_text(source, encoding="utf-8")
+                log.info("Upgraded eval script to add evaluate_detailed for precision/recall tracking")
         validate_eval_script_content(source)
 
         spec = importlib.util.spec_from_file_location("eval_mod", str(path))
@@ -369,19 +452,73 @@ def use_demo_script():
     }
 
 
-_DEMO_EVAL = '''def evaluate(ai_output, gt_output):
-    """Semicolon-split label F1 for tagging evaluation."""
-    import re
-    def norm(t):
-        parts = re.split(r"[;,]", t or "")
-        return {p.strip().lower() for p in parts if p.strip()}
-    pred = norm(ai_output); gold = norm(gt_output)
-    if not gold: return 100.0 if not pred else 0.0
-    if not pred: return 0.0
-    tp = len(pred & gold)
-    if not tp: return 0.0
-    p = tp / len(pred); r = tp / len(gold)
-    return round(2*p*r/(p+r)*100, 2)
+_DEMO_EVAL = '''import re
+
+FUZZY_THRESHOLD = 0.6
+
+def _split_labels(text):
+    parts = re.split(r"[;,]", text or "")
+    return [p.strip() for p in parts if p.strip()]
+
+def _label_tokens(label):
+    norm = re.sub(r"[_\\-]+", " ", (label or "").lower())
+    return {t for t in re.split(r"[^\\w]+", norm) if len(t) > 1}
+
+def _token_overlap(a, b):
+    if not a or not b:
+        return 0.0
+    return len(a & b) / min(len(a), len(b))
+
+def _fuzzy_match_counts(pred_labels, gold_labels, threshold=FUZZY_THRESHOLD):
+    if not gold_labels:
+        return 0, len(pred_labels), 0
+    if not pred_labels:
+        return 0, 0, len(gold_labels)
+    pred_tokens = [_label_tokens(x) for x in pred_labels]
+    gold_tokens = [_label_tokens(x) for x in gold_labels]
+    used_pred = set()
+    tp = 0
+    for gt in gold_tokens:
+        best_idx, best_score = -1, 0.0
+        for idx, pt in enumerate(pred_tokens):
+            if idx in used_pred:
+                continue
+            score = _token_overlap(pt, gt)
+            if score >= threshold and score > best_score:
+                best_score, best_idx = score, idx
+        if best_idx >= 0:
+            tp += 1
+            used_pred.add(best_idx)
+    return tp, len(pred_labels) - len(used_pred), len(gold_labels) - tp
+
+def evaluate(ai_output, gt_output):
+    pred_labels = _split_labels(ai_output)
+    gold_labels = _split_labels(gt_output)
+    if not gold_labels:
+        return 100.0 if not pred_labels else 0.0
+    if not pred_labels:
+        return 0.0
+    tp, fp, fn = _fuzzy_match_counts(pred_labels, gold_labels)
+    pred_n, gold_n = tp + fp, tp + fn
+    precision = tp / pred_n if pred_n else 0.0
+    recall = tp / gold_n if gold_n else 1.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+    return round(f1 * 100, 2)
+
+def evaluate_detailed(ai_output, gt_output):
+    pred_labels = _split_labels(ai_output)
+    gold_labels = _split_labels(gt_output)
+    if not gold_labels:
+        p = 1.0 if not pred_labels else 0.0
+        return {"precision": p, "recall": 1.0, "f1": p}
+    if not pred_labels:
+        return {"precision": 0.0, "recall": 0.0, "f1": 0.0}
+    tp, fp, fn = _fuzzy_match_counts(pred_labels, gold_labels)
+    pred_n, gold_n = tp + fp, tp + fn
+    precision = tp / pred_n if pred_n else 0.0
+    recall = tp / gold_n if gold_n else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+    return {"precision": round(precision, 4), "recall": round(recall, 4), "f1": round(f1, 4)}
 '''
 
 
@@ -426,10 +563,17 @@ async def upload_gt_csv(file: UploadFile = File(...)):
         row_count = sum(1 for _ in csv.DictReader(io.StringIO(text)))
     except csv.Error as exc:
         raise HTTPException(status_code=400, detail=f"Invalid CSV: {exc}") from exc
-    for old in GT_CSV_DIR.glob("*.csv"):
-        old.unlink()
     dest = GT_CSV_DIR / name
-    dest.write_bytes(content)
+    tmp = GT_CSV_DIR / f".{name}.{os.getpid()}.tmp"
+    try:
+        tmp.write_bytes(content)
+        os.replace(tmp, dest)
+        for old in GT_CSV_DIR.glob("*.csv"):
+            if old.name != name:
+                old.unlink()
+    finally:
+        if tmp.exists():
+            tmp.unlink(missing_ok=True)
     with _gt_lock:
         _gt_cache = None
     return {"filename": name, "row_count": row_count}
@@ -477,6 +621,7 @@ GT_COLUMN_FOR_STAGE = {
     "km_01z_specific_topic_reconciler":    "SpecificTopic",
     "km_02_applicable_sectors":            "ApplicableSectors",
     "km_03_esrs_mapping":                  "ClosestESRSTopics",
+    "km_04_orchestrator_extraction":       "ShortTitle",
 }
 
 
@@ -501,7 +646,7 @@ def split_data(req: SplitRequest):
     # match input docs to GT by doc_id
     pairs = []
     for fname in input_docs:
-        doc_id = fname.replace(".json", "")
+        doc_id = normalize_doc_id(fname)
         gt     = get_gt_for_doc(doc_id)
         if gt:
             pairs.append({"filename": fname, "doc_id": doc_id, "gt": gt})
@@ -510,7 +655,7 @@ def split_data(req: SplitRequest):
     if n == 0:
         # no matched pairs — use all input docs without GT (for pipeline testing)
         for fname in input_docs:
-            pairs.append({"filename": fname, "doc_id": fname.replace(".json",""), "gt": {}})
+            pairs.append({"filename": fname, "doc_id": normalize_doc_id(fname), "gt": {}})
         n = len(pairs)
 
     if n == 0:
@@ -552,7 +697,7 @@ def run_pipeline(req: RunPipelineRequest):
     input_doc = read_input_doc(safe_name)
     if not input_doc:
         raise HTTPException(status_code=404, detail=f"Document not found: {safe_name}")
-    doc_id = req.doc_id or safe_name.replace(".json", "")
+    doc_id = normalize_doc_id(req.doc_id or safe_name)
     try:
         return run_tagging_pipeline(input_doc, KM_DIR, call_fab_agent, doc_id=doc_id)
     except HTTPException:
@@ -623,9 +768,15 @@ def score_batch(req: ScoreBatchRequest):
     if not req.pairs:
         raise HTTPException(status_code=400, detail="No document pairs provided")
 
-    eval_mod = load_eval_module()
-    evaluate = eval_mod.evaluate
-    evaluate_detailed = getattr(eval_mod, "evaluate_detailed", None)
+    try:
+        eval_mod = load_eval_module()
+        evaluate = eval_mod.evaluate
+        evaluate_detailed = getattr(eval_mod, "evaluate_detailed", None)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        log.exception("Failed to load eval module")
+        raise HTTPException(status_code=500, detail=f"Failed to load eval module: {exc}") from exc
 
     km_filename = IMPROVABLE_STAGES[req.km_stage]
     if req.km_json.strip():
@@ -642,124 +793,232 @@ def score_batch(req: ScoreBatchRequest):
     gt_col = req.gt_column or GT_COLUMN_FOR_STAGE.get(req.km_stage, "SpecificTopic")
     pipeline_cfg = load_pipeline_config()
 
+    # CRITICAL: When scoring/optimizing a specific KM stage, disable any rule-based
+    # shortcut that would bypass the LLM KM being tested. Otherwise the loop optimizes
+    # a KM that is never actually called during scoring.
+    from dataclasses import replace as _replace
+    if req.km_stage == "km_01a_specific_topic_family_router":
+        # Disable rule router so the LLM KM is actually evaluated
+        pipeline_cfg = _replace(pipeline_cfg, use_rule_router=False)
+        log.info("score_batch: disabled rule router for km_01a scoring — LLM KM will be used")
+    elif req.km_stage == "km_03_esrs_mapping":
+        # Disable ESRS lookup so the LLM KM is actually evaluated
+        pipeline_cfg = _replace(pipeline_cfg, use_esrs_lookup=False)
+        log.info("score_batch: disabled esrs lookup for km_03 scoring — LLM KM will be used")
+    elif req.km_stage == "km_04_orchestrator_extraction":
+        # Disable rule extraction so the LLM KM is actually evaluated
+        pipeline_cfg = _replace(pipeline_cfg, use_rule_extraction=False)
+        log.info("score_batch: disabled rule extraction for km_04 scoring — LLM KM will be used")
+
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     def process_pair(p):
-        doc_id   = p.get("doc_id", "")
+        doc_id = p.get("doc_id", "")
         filename = p.get("filename", "")
+        # Always go through get_gt_for_doc which applies alias normalization.
+        # Prefer doc_id lookup over raw pair GT to ensure normalization runs.
+        gt_vals = get_gt_for_doc(doc_id) if doc_id else {}
+        if not gt_vals:
+            # Fallback to pair-embedded GT (but normalize SpecificTopicFamily)
+            gt_vals = p.get("gt") or {}
+        if not gt_vals:
+            log.warning(
+                "GT lookup returned empty for doc_id=%r filename=%r — score will be 0",
+                doc_id,
+                filename,
+            )
+        gt_text = gt_vals.get(gt_col, "") if gt_vals else ""
+        if gt_vals and not gt_text:
+            log.warning(
+                "GT column %r empty for doc_id=%r — score will be 0",
+                gt_col,
+                doc_id,
+            )
         ai_output = ""
         error_msg = ""
         method = ""
         score = 0.0
         precision = recall = 0.0
+        debug: dict = {}
 
         try:
-            gt_vals  = p.get("gt") or get_gt_for_doc(doc_id)
-            gt_text  = gt_vals.get(gt_col, "") if gt_vals else ""
-
             input_doc = read_input_doc(filename) if filename else {}
-
-            if km_obj and input_doc:
-                evidence = build_evidence_packet(input_doc, pipeline_cfg)
-                extra_context = build_prerequisite_context(
+            if not input_doc:
+                error_msg = f"Document not found or empty: {filename}"
+            elif km_obj:
+                scored = score_document_for_stage(
                     input_doc,
                     KM_DIR,
-                    req.km_stage,
                     call_fab_agent,
-                    pipeline_cfg,
-                    doc_id,
-                )
-                ai_output, method, error_msg = score_stage_output(
                     req.km_stage,
                     km_obj,
-                    evidence,
-                    extra_context,
-                    call_fab_agent,
-                    KM_DIR,
-                    pipeline_cfg,
-                    input_doc,
+                    doc_id=doc_id,
+                    config=pipeline_cfg,
+                    gt_column=gt_col,
                 )
+                ai_output = scored.get("ai_output", "")
+                method = scored.get("method", "")
+                error_msg = scored.get("error", "")
+                families_ok = scored.get("families_ok", 0)
+                family_count = scored.get("family_count", 0)
+                debug = {
+                    "upstream_methods": scored.get("upstream_methods", {}),
+                    "families_ok": families_ok,
+                    "family_count": family_count,
+                }
+                if (
+                    family_count > 0
+                    and families_ok == 0
+                    and req.km_stage in (
+                        "km_01z_specific_topic_reconciler",
+                        "km_02_applicable_sectors",
+                        "km_03_esrs_mapping",
+                    )
+                ):
+                    log.warning(
+                        "No successful family KMs for doc_id=%r stage=%r (routed=%d, ok=0)",
+                        doc_id,
+                        req.km_stage,
+                        family_count,
+                    )
 
-            score_input = "" if ai_output.startswith("ERROR:") else ai_output
-            try:
+                score_input = "" if str(ai_output).startswith("ERROR:") else ai_output
                 score = float(evaluate(score_input, gt_text))
-            except Exception:
-                score = 0.0
 
-            if evaluate_detailed and not ai_output.startswith("ERROR:"):
-                try:
+                if evaluate_detailed and score_input:
                     detail = evaluate_detailed(ai_output, gt_text)
                     precision = detail.get("precision", 0)
                     recall = detail.get("recall", 0)
-                except Exception:
-                    pass
-
         except Exception as exc:
-            error_msg = f"process_pair failed: {exc}"
-            log.exception("score_batch process_pair error for doc_id=%s filename=%s", doc_id, filename)
-            gt_text = ""
+            error_msg = str(exc)
+            ai_output = f"ERROR: {exc}"
+            method = "error"
+            log.exception("score_batch process_pair failed for %s", doc_id or filename)
 
         return {
             "doc_id":    doc_id,
             "filename":  filename,
-            "ai_output": ai_output,
-            "gt_output": gt_text,
-            "score":     round(score, 2),
-            "precision": round(precision, 2),
-            "recall":    round(recall, 2),
+            "ai_output": str(ai_output) if ai_output is not None else "",
+            "gt_output": str(gt_text) if gt_text is not None else "",
+            "score":     round(float(score or 0), 2),
+            "precision": round(float(precision or 0), 2),
+            "recall":    round(float(recall or 0), 2),
             "set":       p.get("set", ""),
-            "error":     error_msg,
-            "method":    method,
+            "error":     str(error_msg) if error_msg else "",
+            "method":    str(method) if method else "",
+            "debug":     debug if isinstance(debug, dict) else {},
         }
 
-    results = []
-    with ThreadPoolExecutor(max_workers=2) as ex:
-        futures = {ex.submit(process_pair, p): p for p in req.pairs}
-        for future in as_completed(futures):
-            try:
-                results.append(future.result())
-            except Exception as exc:
-                log.exception("score_batch future raised unexpectedly: %s", exc)
+    try:
+        results = []
+        # Document-level parallelism; each doc still runs family KMs in parallel internally.
+        with ThreadPoolExecutor(max_workers=3) as ex:
+            futures = {ex.submit(process_pair, p): p for p in req.pairs}
+            for future in as_completed(futures):
+                try:
+                    results.append(future.result())
+                except Exception as exc:
+                    pair = futures.get(future, {})
+                    log.exception("score_batch future failed for %s", pair.get("doc_id", "?"))
+                    results.append({
+                        "doc_id":    pair.get("doc_id", ""),
+                        "filename":  pair.get("filename", ""),
+                        "ai_output": f"ERROR: {exc}",
+                        "gt_output": "",
+                        "score":     0.0,
+                        "precision": 0.0,
+                        "recall":    0.0,
+                        "set":       pair.get("set", ""),
+                        "error":     str(exc),
+                        "method":    "error",
+                        "debug":     {},
+                    })
 
-    scores    = [r["score"]     for r in results]
-    precs     = [r["precision"] for r in results]
-    recs      = [r["recall"]    for r in results]
-    avg_score = round(sum(scores) / len(scores), 2) if scores else 0.0
-    avg_prec  = round(sum(precs)  / len(precs),  2) if precs  else 0.0
-    avg_rec   = round(sum(recs)   / len(recs),   2) if recs   else 0.0
-    failures  = [r for r in results if r["score"] < 50 or r.get("error")]
+        scores = [r["score"] for r in results]
+        precs = [r["precision"] for r in results]
+        recs = [r["recall"] for r in results]
+        avg_score = round(sum(scores) / len(scores), 2) if scores else 0.0
+        avg_prec = round(sum(precs) / len(precs), 2) if precs else 0.0
+        avg_rec = round(sum(recs) / len(recs), 2) if recs else 0.0
+        failures = [r for r in results if r["score"] < 50 or r.get("error")]
 
-    return {
-        "results":       results,
-        "average_score": avg_score,
-        "avg_precision": avg_prec,
-        "avg_recall":    avg_rec,
-        "failures":      failures,
-        "failure_count": len(failures),
-        "pipeline": {
-            "use_rule_extraction": pipeline_cfg.use_rule_extraction,
-            "use_rule_router": pipeline_cfg.use_rule_router,
-            "use_esrs_lookup": pipeline_cfg.use_esrs_lookup,
-            "use_pipeline_cache": pipeline_cfg.use_pipeline_cache,
-        },
-    }
+        return {
+            "results":       results,
+            "average_score": avg_score,
+            "avg_precision": avg_prec,
+            "avg_recall":    avg_rec,
+            "failures":      failures,
+            "failure_count": len(failures),
+            "pipeline": {
+                "use_rule_extraction": pipeline_cfg.use_rule_extraction,
+                "use_rule_router": pipeline_cfg.use_rule_router,
+                "use_esrs_lookup": pipeline_cfg.use_esrs_lookup,
+                "use_pipeline_cache": False,
+            },
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        log.exception("score_batch endpoint failed unexpectedly")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Score batch failed: {type(exc).__name__}: {exc}",
+        ) from exc
 
 
 # ── Improve KM ────────────────────────────────────────────────────────────────
 @protected_api.post("/improve-km")
 def improve_km(req: ImproveKMRequest):
-    # build failure summary
-    example_lines = []
-    for i, r in enumerate(req.all_results[:5]):
-        ai  = str(r.get("ai_output", ""))[:300]
-        gt  = str(r.get("gt_output", ""))[:300]
-        s   = r.get("score", 0)
-        example_lines.append(
-            f"• [{i+1}] F1: {s:.1f}%\n"
-            f"  Predicted: {ai}\n"
-            f"  Ground truth: {gt}"
+    failure_pool = list(req.failures) if req.failures else [
+        r for r in req.all_results if float(r.get("score", 100) or 100) < 50
+    ]
+    failure_pool.sort(key=lambda r: float(r.get("score", 0) or 0))
+
+    # Also collect partial successes (score 1-49) separately from total failures (score 0)
+    total_failures = [r for r in failure_pool if float(r.get("score", 0) or 0) == 0]
+    partial_failures = [r for r in failure_pool if 0 < float(r.get("score", 0) or 0) < 50]
+    successes = [r for r in req.all_results if float(r.get("score", 0) or 0) >= 50]
+
+    def fmt_result(r, i):
+        ai = str(r.get("ai_output", ""))[:300]
+        gt = str(r.get("gt_output", ""))[:300]
+        s = r.get("score", 0)
+        p = r.get("precision", 0)
+        rec = r.get("recall", 0)
+        # Diagnose failure type
+        if not ai or ai.startswith("ERROR"):
+            ftype = "NO OUTPUT / ERROR"
+        elif not gt:
+            ftype = "NO GT"
+        else:
+            ai_parts = set(x.strip().lower() for x in re.split(r"[;,]", ai) if x.strip())
+            gt_parts = set(x.strip().lower() for x in re.split(r"[;,]", gt) if x.strip())
+            if not ai_parts:
+                ftype = "EMPTY PREDICTION"
+            elif ai_parts == gt_parts:
+                ftype = "EXACT MATCH (should not fail)"
+            elif ai_parts.issubset(gt_parts):
+                ftype = f"UNDER-PREDICTION (missed: {gt_parts - ai_parts})"
+            elif gt_parts.issubset(ai_parts):
+                ftype = f"OVER-PREDICTION (extra: {ai_parts - gt_parts})"
+            else:
+                ftype = f"MIS-PREDICTION (extra: {ai_parts - gt_parts}, missed: {gt_parts - ai_parts})"
+        return (
+            f"• [{i+1}] doc={r.get('doc_id', '?')[:40]} F1={s:.1f}% P={p:.2f} R={rec:.2f} | {ftype}\n"
+            f"  Pred: {ai}\n"
+            f"  GT:   {gt}"
         )
-    examples_str = "\n".join(example_lines) or "No examples captured."
+
+    example_lines = [fmt_result(r, i) for i, r in enumerate(failure_pool[:15])]
+    examples_str = "\n".join(example_lines) or "No failure examples captured."
+
+    # Include a few success examples for contrast
+    success_lines = []
+    for i, r in enumerate(successes[:5]):
+        ai = str(r.get("ai_output", ""))[:200]
+        gt = str(r.get("gt_output", ""))[:200]
+        success_lines.append(f"• [OK] doc={r.get('doc_id','?')[:40]} F1={r.get('score',0):.1f}%  Pred: {ai}  GT: {gt}")
+    success_str = "\n".join(success_lines) or "No successes yet."
 
     try:
         km_obj = json.loads(req.current_km)
@@ -769,24 +1028,40 @@ def improve_km(req: ImproveKMRequest):
     if not isinstance(km_obj, dict):
         raise HTTPException(status_code=400, detail="current_km must be a JSON object")
 
+    stats_line = (
+        f"Total failures (score=0): {len(total_failures)} | "
+        f"Partial failures (score 1-49): {len(partial_failures)} | "
+        f"Successes (score≥50): {len(successes)}"
+    )
+
     prompt = f"""You are an expert prompt engineer specialising in ESG/regulatory document tagging and classification.
 
 Pipeline stage being improved: {req.km_stage}
 GT column being evaluated: {req.gt_column}
+Scored on {req.n_learn_docs} documents: {req.learn_score:.1f}% avg F1 (target: {req.target_score}%)
+{stats_line}
 
-This KM was tested on {req.n_learn_docs} documents and scored {req.learn_score:.1f}% F1 (target: {req.target_score}%).
-
-Failure modes and examples (predicted vs ground truth):
+=== FAILURE EXAMPLES (auto-diagnosed) ===
 {examples_str}
 
-Current knowledge model (full JSON):
-{req.current_km[:4000]}
+=== SUCCESS EXAMPLES (for contrast — keep what works) ===
+{success_str}
 
-Your task (TYPE 2 — TAGGING KNOWLEDGE MODEL IMPROVEMENT):
-- Analyse the failure examples to find the actual pattern behind mis-classifications.
-- Improve the knowledge model's rules (yes_when/no_when conditions, evidence_signals, routing/reconciliation logic) to reduce those failure modes.
-- Do NOT change the fundamental task, and do NOT change or remove the "output_contract" field or any other original top-level key — only refine the rules inside it.
-- Return ONLY the complete improved knowledge model as a single JSON object, starting with {{ and ending with }}. No preamble, no explanation, no markdown code fences."""
+=== CURRENT KNOWLEDGE MODEL ===
+{req.current_km}
+
+=== YOUR TASK ===
+Analyse every failure type above and improve the KM rules:
+- EMPTY PREDICTION / NO OUTPUT → The LLM is not understanding the output_contract format. Clarify the output structure, add explicit examples in the KM, ensure output keys match exactly what the pipeline expects.
+- UNDER-PREDICTION → Add more evidence_signals / keywords / synonyms for the missed labels. Loosen yes_when conditions.
+- OVER-PREDICTION → Add no_when exclusion conditions. Tighten yes_when to require stronger evidence.
+- MIS-PREDICTION → Fix the distinguishing conditions between confused categories.
+
+IMPORTANT CONSTRAINTS:
+- Preserve ALL original top-level keys exactly (especially "output_contract"). Do NOT rename keys.
+- The pipeline extracts output using these key names in priority order: slug, family_id, tag, label, name. If your KM's output uses a different key, the result will be empty. Ensure output objects use "slug" or "family_id" for family identifiers.
+- For {req.km_stage}, the GT column is "{req.gt_column}" — predictions must match the format of the GT values in the success examples above.
+- Return ONLY the complete improved knowledge model as a single JSON object, starting with {{ and ending with }}. No preamble, no explanation, no markdown fences."""
 
     try:
         raw = call_fab_improve_agent(prompt)

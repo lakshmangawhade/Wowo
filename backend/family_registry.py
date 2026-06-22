@@ -38,9 +38,133 @@ GT_FAMILY_ALIASES: dict[str, str] = {
     "products_consumers_and_data": "consumers_products_privacy",
     "workforce_and_labor": "workforce_labor_rights",
     "governance_reporting_and_business_conduct": "governance_reporting_conduct",
+    "communities_and_indigenous_rights": "communities_indigenous_rights",
     "chemicals_hazardous_substances_and_restricted_products": "pollution_chemicals_air_soil",
     "land_buildings_and_construction": "biodiversity_ecosystems_land",
 }
+
+# Canonical router slug → primary GT-compatible label (for eval output)
+CANONICAL_TO_GT_LABEL: dict[str, str] = {
+    "climate_energy": "climate_carbon_and_energy",
+    "pollution_chemicals_air_soil": "air_soil_and_pollution",
+    "water_marine_fisheries": "water_marine_and_fisheries",
+    "waste_circular_products": "waste_and_circularity",
+    "biodiversity_ecosystems_land": "biodiversity_ecosystems_and_species",
+    "consumers_products_privacy": "products_consumers_and_data",
+    "workforce_labor_rights": "workforce_and_labor",
+    "communities_indigenous_rights": "communities_and_indigenous_rights",
+    "governance_reporting_conduct": "governance_reporting_and_business_conduct",
+}
+
+# Topics that strongly signal 'chemicals_hazardous_substances_and_restricted_products'
+# (not just generic air/soil pollution) — derived from GT analysis
+_CHEMICALS_SIGNAL_TOPICS: frozenset[str] = frozenset({
+    "Chemical Regulation",
+    "Chemical Safety",
+    "Hazardous Substances",
+    "Restriction of Hazardous Substances",
+    "Elimination of Persistent Organic Pollutants",
+    "Electrical Equipment",
+})
+
+# Topics that signal 'air_soil_and_pollution' but NOT chemicals
+_AIR_SOIL_SIGNAL_TOPICS: frozenset[str] = frozenset({
+    "Agricultural Pollution",
+    "Soil Conservation",
+    "Soil Quality Standards",
+    "Transboundary Air Pollution Control",
+    "Marine Environment Protection",
+    "Marine Protected Areas",
+    "Stormwater Management",
+    "Emergency Preparedness",
+    "Work Environment",
+    "Air Quality",
+    "Ambient Air Quality Standards",
+    "Industrial Emissions",
+    "Marine Pollution",
+    "Contaminated Land Remediation",
+    "Emissions Trading Schemes",
+    "Acidification Reduction",
+})
+
+# Topics that signal 'land_buildings_and_construction'
+_LAND_BUILDINGS_SIGNAL_TOPICS: frozenset[str] = frozenset({
+    "Land Use Planning",
+    "Building Performance Standards",
+    "Energy Efficiency in Building Construction",
+    "Emission Thresholds for Construction Products",
+})
+
+# Topics that signal 'biodiversity_ecosystems_and_species'
+_BIODIVERSITY_SIGNAL_TOPICS: frozenset[str] = frozenset({
+    "Biodiversity Conservation",
+    "Ecosystem Restoration",
+    "Habitat Restoration",
+    "Protected Area Designation",
+    "Endangered Species Protection",
+    "Invasive Species Control",
+    "Wildlife Trade Regulation",
+    "Pollinator Protection",
+    "Direct Impact Drivers of Biodiversity Loss",
+    "Impacts on the State of Species",
+    "Impacts on the Extent and Conditions of Ecosystems",
+    "Impacts on and Dependencies on Ecosystem Services",
+    "Animal Welfare",
+})
+
+
+def _refine_pollution_family_labels(
+    canonical_slugs: list[str],
+    specific_topics_str: str,
+) -> list[str]:
+    """
+    Resolve ambiguous canonical slugs to GT-compatible labels using reconciled
+    SpecificTopics as a signal.
+
+    - 'pollution_chemicals_air_soil' → 'air_soil_and_pollution' and/or
+      'chemicals_hazardous_substances_and_restricted_products'
+    - 'biodiversity_ecosystems_land' → 'biodiversity_ecosystems_and_species' and/or
+      'land_buildings_and_construction'
+    """
+    topics: set[str] = set()
+    for part in re.split(r"[;,]", specific_topics_str or ""):
+        t = part.strip()
+        if t:
+            topics.add(t)
+
+    result: list[str] = []
+
+    for slug in canonical_slugs:
+        if slug == "pollution_chemicals_air_soil":
+            has_chemicals = bool(topics & _CHEMICALS_SIGNAL_TOPICS)
+            has_air_soil = bool(topics & _AIR_SOIL_SIGNAL_TOPICS)
+            # Default to air_soil when ambiguous or when no specific signal
+            if has_air_soil or (not has_chemicals):
+                if "air_soil_and_pollution" not in result:
+                    result.append("air_soil_and_pollution")
+            if has_chemicals:
+                lbl = "chemicals_hazardous_substances_and_restricted_products"
+                if lbl not in result:
+                    result.append(lbl)
+
+        elif slug == "biodiversity_ecosystems_land":
+            has_bio = bool(topics & _BIODIVERSITY_SIGNAL_TOPICS)
+            has_land = bool(topics & _LAND_BUILDINGS_SIGNAL_TOPICS)
+            # Default to biodiversity when ambiguous
+            if has_bio or (not has_land):
+                if "biodiversity_ecosystems_and_species" not in result:
+                    result.append("biodiversity_ecosystems_and_species")
+            if has_land:
+                if "land_buildings_and_construction" not in result:
+                    result.append("land_buildings_and_construction")
+
+        else:
+            gt_label = CANONICAL_TO_GT_LABEL.get(slug, slug)
+            if gt_label not in result:
+                result.append(gt_label)
+
+    return result
+
 
 STAGE_ORDER: dict[str, int] = {
     "km_04_orchestrator_extraction": 0,
@@ -96,8 +220,16 @@ def normalize_routed_families(router_out: dict) -> list[str]:
     return slugs
 
 
-def format_router_families(router_out: dict) -> str:
-    return "; ".join(normalize_routed_families(router_out))
+def format_router_families(router_out: dict, specific_topics: str = "") -> str:
+    """Return GT-compatible family labels (not internal canonical slugs).
+
+    When *specific_topics* is provided the pollution/chemicals canonical family
+    is resolved to 'air_soil_and_pollution', 'chemicals_hazardous_substances_and_restricted_products',
+    or both, depending on which SpecificTopic labels were actually reconciled.
+    """
+    slugs = normalize_routed_families(router_out)
+    labels = _refine_pollution_family_labels(slugs, specific_topics)
+    return "; ".join(labels)
 
 
 def is_upstream_stage(stage: str, relative_to: str) -> bool:
