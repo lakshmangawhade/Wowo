@@ -34,13 +34,17 @@ for _path in (str(_BACKEND_DIR), str(_ROOT_DIR)):
     if _path not in sys.path:
         sys.path.insert(0, _path)
 
+<<<<<<< HEAD
 from backend.pipeline import (
+=======
+from pipeline import (
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
     score_document_for_stage,
     run_tagging_pipeline,
 )
-from backend.pipeline_cache import clear_pipeline_cache
-from backend.pipeline_config import load_pipeline_config
-from backend.security import (
+from pipeline_cache import clear_pipeline_cache
+from pipeline_config import load_pipeline_config
+from security import (
     MAX_CSV_BYTES,
     MAX_DOC_BYTES,
     MAX_EVAL_BYTES,
@@ -628,8 +632,10 @@ GT_COLUMN_FOR_STAGE = {
 # ── Data split ────────────────────────────────────────────────────────────────
 class SplitRequest(BaseModel):
     seed: Optional[int] = 42
-    unseen_pct: float = Field(default=0.50, ge=0.0, le=1.0)
-    learn_pct:  float = Field(default=0.20, ge=0.0, le=1.0)
+    # Default: 0% unseen — use ALL docs for learn+val when you have < 30 docs.
+    # Increase unseen_pct only when you have 50+ documents to spare.
+    unseen_pct: float = Field(default=0.0, ge=0.0, le=1.0)
+    learn_pct:  float = Field(default=0.40, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
     def validate_percentages(self):
@@ -664,9 +670,24 @@ def split_data(req: SplitRequest):
     rng = random.Random(req.seed)
     rng.shuffle(pairs)
 
-    n_unseen = round(n * req.unseen_pct)
+    # For small datasets (< 30 docs): always use 0% unseen regardless of request.
+    # Hiding docs from the improve loop when you have few examples kills performance.
+    effective_unseen_pct = req.unseen_pct
+    if n < 30 and effective_unseen_pct > 0.0:
+        log.warning(
+            "split: only %d matched pairs — forcing unseen_pct=0.0 (was %.2f) to maximize training signal",
+            n, effective_unseen_pct,
+        )
+        effective_unseen_pct = 0.0
+
+    n_unseen = round(n * effective_unseen_pct)
     n_learn  = round(n * req.learn_pct)
     n_val    = max(0, n - n_unseen - n_learn)
+
+    # Guarantee at least 3 learn docs and 3 val docs when possible
+    if n >= 6:
+        n_learn = max(n_learn, min(3, n // 2))
+        n_val   = max(n_val, min(3, n - n_learn))
 
     for i, p in enumerate(pairs):
         if   i < n_unseen:             p["set"] = "unseen"
@@ -676,6 +697,10 @@ def split_data(req: SplitRequest):
     return {
         "total": n, "unseen": n_unseen, "learn": n_learn, "val": n_val,
         "pairs": pairs,
+        "note": (
+            f"Using {n_learn} learn + {n_val} val docs. "
+            + ("WARNING: small dataset — consider unseen_pct=0 to maximize improve signal." if n < 20 else "")
+        ),
     }
 
 
@@ -974,18 +999,58 @@ def improve_km(req: ImproveKMRequest):
     ]
     failure_pool.sort(key=lambda r: float(r.get("score", 0) or 0))
 
+<<<<<<< HEAD
     # Also collect partial successes (score 1-49) separately from total failures (score 0)
+=======
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
     total_failures = [r for r in failure_pool if float(r.get("score", 0) or 0) == 0]
     partial_failures = [r for r in failure_pool if 0 < float(r.get("score", 0) or 0) < 50]
     successes = [r for r in req.all_results if float(r.get("score", 0) or 0) >= 50]
 
+<<<<<<< HEAD
+=======
+    def _doc_snippet(doc_id: str, filename: str) -> str:
+        """Pull title + first 600 chars of body from the input doc for the improve agent."""
+        try:
+            fname = filename or (doc_id + ".json" if doc_id else "")
+            if not fname:
+                return ""
+            doc = read_input_doc(fname)
+            if not doc:
+                return ""
+            title = (
+                doc.get("title")
+                or doc.get("OriginalTitle")
+                or (doc.get("metadata") or {}).get("dcterms:title")
+                or (doc.get("metadata") or {}).get("DC.title")
+                or ""
+            )
+            body = doc.get("body_text") or doc.get("text") or ""
+            subject = (doc.get("metadata") or {}).get("DC.subject") or ""
+            parts = []
+            if title:
+                parts.append(f"Title: {title[:200]}")
+            if subject:
+                parts.append(f"Subject: {subject[:150]}")
+            if body:
+                parts.append(f"Body excerpt: {body[:600]}")
+            return " | ".join(parts)
+        except Exception:
+            return ""
+
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
     def fmt_result(r, i):
         ai = str(r.get("ai_output", ""))[:300]
         gt = str(r.get("gt_output", ""))[:300]
         s = r.get("score", 0)
         p = r.get("precision", 0)
         rec = r.get("recall", 0)
+<<<<<<< HEAD
         # Diagnose failure type
+=======
+        doc_id = r.get("doc_id", "?")
+        filename = r.get("filename", "")
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
         if not ai or ai.startswith("ERROR"):
             ftype = "NO OUTPUT / ERROR"
         elif not gt:
@@ -1003,21 +1068,43 @@ def improve_km(req: ImproveKMRequest):
                 ftype = f"OVER-PREDICTION (extra: {ai_parts - gt_parts})"
             else:
                 ftype = f"MIS-PREDICTION (extra: {ai_parts - gt_parts}, missed: {gt_parts - ai_parts})"
+<<<<<<< HEAD
         return (
             f"• [{i+1}] doc={r.get('doc_id', '?')[:40]} F1={s:.1f}% P={p:.2f} R={rec:.2f} | {ftype}\n"
             f"  Pred: {ai}\n"
             f"  GT:   {gt}"
+=======
+        snippet = _doc_snippet(doc_id, filename)
+        return (
+            f"• [{i+1}] doc={doc_id[:40]} F1={s:.1f}% P={p:.2f} R={rec:.2f} | {ftype}\n"
+            f"  Pred: {ai}\n"
+            f"  GT:   {gt}\n"
+            f"  DOC:  {snippet}"
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
         )
 
     example_lines = [fmt_result(r, i) for i, r in enumerate(failure_pool[:15])]
     examples_str = "\n".join(example_lines) or "No failure examples captured."
 
+<<<<<<< HEAD
     # Include a few success examples for contrast
+=======
+    # Include success examples for contrast — also with doc snippets
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
     success_lines = []
     for i, r in enumerate(successes[:5]):
         ai = str(r.get("ai_output", ""))[:200]
         gt = str(r.get("gt_output", ""))[:200]
+<<<<<<< HEAD
         success_lines.append(f"• [OK] doc={r.get('doc_id','?')[:40]} F1={r.get('score',0):.1f}%  Pred: {ai}  GT: {gt}")
+=======
+        snippet = _doc_snippet(r.get("doc_id", ""), r.get("filename", ""))[:300]
+        success_lines.append(
+            f"• [OK] doc={r.get('doc_id','?')[:40]} F1={r.get('score',0):.1f}%\n"
+            f"  Pred: {ai}  GT: {gt}\n"
+            f"  DOC:  {snippet}"
+        )
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
     success_str = "\n".join(success_lines) or "No successes yet."
 
     try:
@@ -1041,10 +1128,19 @@ GT column being evaluated: {req.gt_column}
 Scored on {req.n_learn_docs} documents: {req.learn_score:.1f}% avg F1 (target: {req.target_score}%)
 {stats_line}
 
+<<<<<<< HEAD
 === FAILURE EXAMPLES (auto-diagnosed) ===
 {examples_str}
 
 === SUCCESS EXAMPLES (for contrast — keep what works) ===
+=======
+=== FAILURE EXAMPLES — with actual document content ===
+Each failure shows: predicted family slug, correct GT family slug, AND the actual document title/body.
+Use the document content to understand WHY the routing went wrong and add the right keywords/signals.
+{examples_str}
+
+=== SUCCESS EXAMPLES — for contrast ===
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
 {success_str}
 
 === CURRENT KNOWLEDGE MODEL ===

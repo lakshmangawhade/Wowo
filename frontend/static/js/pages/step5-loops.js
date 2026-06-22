@@ -141,17 +141,30 @@ const Step5 = (() => {
       updateProgress(i, maxLoops);
       log(`── Loop ${loopNum} ──`, "info");
 
-      // Score learn set
+      // Score learn set with retry
       log(`Scoring ${learnPairs.length} learn docs…`, "muted");
       let learnRes;
-      try {
-        learnRes = await API.scoreBatch({
-          pairs:     learnPairs,
-          km_stage:  kmStage,
-          km_json:   currentKM,
-          gt_column: gtCol,
-        });
-      } catch(e) { log("Score batch failed: " + e.message, "err"); break; }
+      {
+        let lastErr;
+        for (let retry = 0; retry < 3; retry++) {
+          try {
+            learnRes = await API.scoreBatch({
+              pairs:     learnPairs,
+              km_stage:  kmStage,
+              km_json:   currentKM,
+              gt_column: gtCol,
+            });
+            lastErr = null;
+            break;
+          } catch(e) {
+            lastErr = e;
+            const wait = (retry + 1) * 10;
+            log(`Learn batch attempt ${retry+1} failed: ${e.message} — retrying in ${wait}s…`, "warn");
+            await new Promise(r => setTimeout(r, wait * 1000));
+          }
+        }
+        if (lastErr) { log("Learn batch failed after 3 attempts: " + lastErr.message, "err"); break; }
+      }
 
       const learnScore = learnRes.average_score;
       const learnPrec  = learnRes.avg_precision || 0;
@@ -186,17 +199,33 @@ const Step5 = (() => {
 
       if (stopFlag) { log("Stopped before validation.", "warn"); break; }
 
-      // Validate
+      // Brief pause before validation to avoid overwhelming the FAB agent
+      await new Promise(r => setTimeout(r, 3000));
+
+      // Validate with retry
       log(`Validating on ${valPairs.length} val docs…`, "muted");
       let valRes;
-      try {
-        valRes = await API.scoreBatch({
-          pairs:     valPairs,
-          km_stage:  kmStage,
-          km_json:   currentKM,
-          gt_column: gtCol,
-        });
-      } catch(e) { log("Val batch failed: " + e.message, "err"); break; }
+      {
+        let lastErr;
+        for (let retry = 0; retry < 3; retry++) {
+          try {
+            valRes = await API.scoreBatch({
+              pairs:     valPairs,
+              km_stage:  kmStage,
+              km_json:   currentKM,
+              gt_column: gtCol,
+            });
+            lastErr = null;
+            break;
+          } catch(e) {
+            lastErr = e;
+            const wait = (retry + 1) * 10;
+            log(`Val batch attempt ${retry+1} failed: ${e.message} — retrying in ${wait}s…`, "warn");
+            await new Promise(r => setTimeout(r, wait * 1000));
+          }
+        }
+        if (lastErr) { log("Val batch failed after 3 attempts: " + lastErr.message, "err"); break; }
+      }
 
       const valScore = valRes.average_score;
       const valPrec  = valRes.avg_precision || 0;

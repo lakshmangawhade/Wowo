@@ -20,8 +20,13 @@ const API = (() => {
     }
     const res = await fetch(path, opts);
     if (!res.ok) {
-      const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(err.detail || res.statusText);
+      let detail = `HTTP ${res.status}: ${res.statusText}`;
+      try {
+        const err = await res.json();
+        if (err.detail) detail = err.detail;
+        else if (err.message) detail = err.message;
+      } catch(_) { /* response wasn't JSON */ }
+      throw new Error(detail);
     }
     return res.json();
   }

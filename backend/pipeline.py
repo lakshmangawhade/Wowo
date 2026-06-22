@@ -11,18 +11,25 @@ from typing import Any, Callable
 
 from dataclasses import replace
 
+<<<<<<< HEAD
 from backend.esrs_lookup import lookup_esrs_topics
 from backend.evidence import build_evidence_packet as _build_evidence_packet
 from backend.extraction_rules import extract_metadata_fields, extraction_is_complete
 from backend.family_registry import (
+=======
+from esrs_lookup import lookup_esrs_topics
+from evidence import build_evidence_packet as _build_evidence_packet
+from extraction_rules import extract_metadata_fields, extraction_is_complete
+from family_registry import (
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
     STAGE_FAMILY_MAP,
     format_router_families,
     normalize_routed_families,
 )
-from backend.pipeline_cache import get_cached_upstream, update_doc_context
-from backend.pipeline_config import PipelineConfig, load_pipeline_config
-from backend.router_rules import route_families_by_rules, router_output_to_families
-from backend.validator import validate_and_repair
+from pipeline_cache import get_cached_upstream, update_doc_context
+from pipeline_config import PipelineConfig, load_pipeline_config
+from router_rules import route_families_by_rules, router_output_to_families
+from validator import validate_and_repair
 
 ALL_PIPELINE_STAGES = [
     "km_04_orchestrator_extraction",
@@ -897,11 +904,14 @@ def score_document_for_stage(
             input_doc,
             gt_column=gt_column,
         )
+<<<<<<< HEAD
         print("DOC:", doc_id)
         print("PRED:", ai_output)
         print("METHOD:", method)
         print("ERROR:", error)
         print("-----")
+=======
+>>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
 
         families_ok = len(_successful_family_candidates(extra.get("family_candidates", [])))
 
