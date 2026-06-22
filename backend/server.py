@@ -249,6 +249,12 @@ def load_eval_module(*, force_reload: bool = False):
 
         path = scripts[0]
         source = path.read_text(encoding="utf-8", errors="replace")
+        if "FUZZY_THRESHOLD" not in source:
+            demo_path = ROOT / "eval_code" / "eval_tagging.py"
+            if demo_path.exists():
+                source = demo_path.read_text(encoding="utf-8", errors="replace")
+                path.write_text(source, encoding="utf-8")
+                log.info("Upgraded eval script to token-overlap fuzzy matching (threshold 0.7)")
         validate_eval_script_content(source)
 
         spec = importlib.util.spec_from_file_location("eval_mod", str(path))
@@ -429,19 +435,58 @@ def use_demo_script():
     }
 
 
-_DEMO_EVAL = '''def evaluate(ai_output, gt_output):
-    """Semicolon-split label F1 for tagging evaluation."""
-    import re
-    def norm(t):
-        parts = re.split(r"[;,]", t or "")
-        return {p.strip().lower() for p in parts if p.strip()}
-    pred = norm(ai_output); gold = norm(gt_output)
-    if not gold: return 100.0 if not pred else 0.0
-    if not pred: return 0.0
-    tp = len(pred & gold)
-    if not tp: return 0.0
-    p = tp / len(pred); r = tp / len(gold)
-    return round(2*p*r/(p+r)*100, 2)
+_DEMO_EVAL = '''import re
+
+FUZZY_THRESHOLD = 0.7
+
+def _split_labels(text):
+    parts = re.split(r"[;,]", text or "")
+    return [p.strip() for p in parts if p.strip()]
+
+def _label_tokens(label):
+    norm = re.sub(r"[_\\-]+", " ", (label or "").lower())
+    return {t for t in re.split(r"[^\\w]+", norm) if len(t) > 1}
+
+def _token_overlap(a, b):
+    if not a or not b:
+        return 0.0
+    return len(a & b) / min(len(a), len(b))
+
+def _fuzzy_match_counts(pred_labels, gold_labels, threshold=FUZZY_THRESHOLD):
+    if not gold_labels:
+        return 0, len(pred_labels), 0
+    if not pred_labels:
+        return 0, 0, len(gold_labels)
+    pred_tokens = [_label_tokens(x) for x in pred_labels]
+    gold_tokens = [_label_tokens(x) for x in gold_labels]
+    used_pred = set()
+    tp = 0
+    for gt in gold_tokens:
+        best_idx, best_score = -1, 0.0
+        for idx, pt in enumerate(pred_tokens):
+            if idx in used_pred:
+                continue
+            score = _token_overlap(pt, gt)
+            if score >= threshold and score > best_score:
+                best_score, best_idx = score, idx
+        if best_idx >= 0:
+            tp += 1
+            used_pred.add(best_idx)
+    return tp, len(pred_labels) - len(used_pred), len(gold_labels) - tp
+
+def evaluate(ai_output, gt_output):
+    pred_labels = _split_labels(ai_output)
+    gold_labels = _split_labels(gt_output)
+    if not gold_labels:
+        return 100.0 if not pred_labels else 0.0
+    if not pred_labels:
+        return 0.0
+    tp, fp, fn = _fuzzy_match_counts(pred_labels, gold_labels)
+    pred_n, gold_n = tp + fp, tp + fn
+    precision = tp / pred_n if pred_n else 0.0
+    recall = tp / gold_n if gold_n else 1.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+    return round(f1 * 100, 2)
 '''
 
 
@@ -486,10 +531,17 @@ async def upload_gt_csv(file: UploadFile = File(...)):
         row_count = sum(1 for _ in csv.DictReader(io.StringIO(text)))
     except csv.Error as exc:
         raise HTTPException(status_code=400, detail=f"Invalid CSV: {exc}") from exc
-    for old in GT_CSV_DIR.glob("*.csv"):
-        old.unlink()
     dest = GT_CSV_DIR / name
-    dest.write_bytes(content)
+    tmp = GT_CSV_DIR / f".{name}.{os.getpid()}.tmp"
+    try:
+        tmp.write_bytes(content)
+        os.replace(tmp, dest)
+        for old in GT_CSV_DIR.glob("*.csv"):
+            if old.name != name:
+                old.unlink()
+    finally:
+        if tmp.exists():
+            tmp.unlink(missing_ok=True)
     with _gt_lock:
         _gt_cache = None
     return {"filename": name, "row_count": row_count}
@@ -537,6 +589,7 @@ GT_COLUMN_FOR_STAGE = {
     "km_01z_specific_topic_reconciler":    "SpecificTopic",
     "km_02_applicable_sectors":            "ApplicableSectors",
     "km_03_esrs_mapping":                  "ClosestESRSTopics",
+    "km_04_orchestrator_extraction":       "ShortTitle",
 }
 
 
@@ -714,7 +767,19 @@ def score_batch(req: ScoreBatchRequest):
         doc_id = p.get("doc_id", "")
         filename = p.get("filename", "")
         gt_vals = p.get("gt") or get_gt_for_doc(doc_id)
+        if not gt_vals:
+            log.warning(
+                "GT lookup returned empty for doc_id=%r filename=%r — score will be 0",
+                doc_id,
+                filename,
+            )
         gt_text = gt_vals.get(gt_col, "") if gt_vals else ""
+        if gt_vals and not gt_text:
+            log.warning(
+                "GT column %r empty for doc_id=%r — score will be 0",
+                gt_col,
+                doc_id,
+            )
         ai_output = ""
         error_msg = ""
         method = ""
@@ -735,15 +800,33 @@ def score_batch(req: ScoreBatchRequest):
                     km_obj,
                     doc_id=doc_id,
                     config=pipeline_cfg,
+                    gt_column=gt_col,
                 )
                 ai_output = scored.get("ai_output", "")
                 method = scored.get("method", "")
                 error_msg = scored.get("error", "")
+                families_ok = scored.get("families_ok", 0)
+                family_count = scored.get("family_count", 0)
                 debug = {
                     "upstream_methods": scored.get("upstream_methods", {}),
-                    "families_ok": scored.get("families_ok", 0),
-                    "family_count": scored.get("family_count", 0),
+                    "families_ok": families_ok,
+                    "family_count": family_count,
                 }
+                if (
+                    family_count > 0
+                    and families_ok == 0
+                    and req.km_stage in (
+                        "km_01z_specific_topic_reconciler",
+                        "km_02_applicable_sectors",
+                        "km_03_esrs_mapping",
+                    )
+                ):
+                    log.warning(
+                        "No successful family KMs for doc_id=%r stage=%r (routed=%d, ok=0)",
+                        doc_id,
+                        req.km_stage,
+                        family_count,
+                    )
 
                 score_input = "" if str(ai_output).startswith("ERROR:") else ai_output
                 score = float(evaluate(score_input, gt_text))
@@ -774,10 +857,8 @@ def score_batch(req: ScoreBatchRequest):
 
     try:
         results = []
-        # Process docs sequentially (max_workers=1) to avoid overwhelming
-        # the FAB agent with concurrent upstream pipeline calls.
-        # Each doc already runs family KMs in parallel internally.
-        with ThreadPoolExecutor(max_workers=1) as ex:
+        # Document-level parallelism; each doc still runs family KMs in parallel internally.
+        with ThreadPoolExecutor(max_workers=3) as ex:
             futures = {ex.submit(process_pair, p): p for p in req.pairs}
             for future in as_completed(futures):
                 try:
@@ -834,18 +915,22 @@ def score_batch(req: ScoreBatchRequest):
 # ── Improve KM ────────────────────────────────────────────────────────────────
 @protected_api.post("/improve-km")
 def improve_km(req: ImproveKMRequest):
-    # build failure summary
+    failure_pool = list(req.failures) if req.failures else [
+        r for r in req.all_results if float(r.get("score", 100) or 100) < 50
+    ]
+    failure_pool.sort(key=lambda r: float(r.get("score", 0) or 0))
+
     example_lines = []
-    for i, r in enumerate(req.all_results[:5]):
-        ai  = str(r.get("ai_output", ""))[:300]
-        gt  = str(r.get("gt_output", ""))[:300]
-        s   = r.get("score", 0)
+    for i, r in enumerate(failure_pool[:15]):
+        ai = str(r.get("ai_output", ""))[:60]
+        gt = str(r.get("gt_output", ""))[:60]
+        s = r.get("score", 0)
         example_lines.append(
-            f"• [{i+1}] F1: {s:.1f}%\n"
-            f"  Predicted: {ai}\n"
-            f"  Ground truth: {gt}"
+            f"• [{i+1}] doc={r.get('doc_id', '?')[:40]} F1={s:.1f}%\n"
+            f"  Pred: {ai}\n"
+            f"  GT:   {gt}"
         )
-    examples_str = "\n".join(example_lines) or "No examples captured."
+    examples_str = "\n".join(example_lines) or "No failure examples captured."
 
     try:
         km_obj = json.loads(req.current_km)

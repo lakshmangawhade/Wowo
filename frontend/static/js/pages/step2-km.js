@@ -29,7 +29,7 @@ const Step2 = (() => {
     {
       id:      "km_04_orchestrator_extraction",
       name:    "Orchestrator Extraction",
-      gt_col:  "SpecificTopic",
+      gt_col:  "ShortTitle",
       desc:    "Non-tag extraction: dates, titles, type of regulation, sanctions, etc.",
     },
   ];

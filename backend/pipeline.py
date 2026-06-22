@@ -194,8 +194,11 @@ def _labels_from_value(value: Any) -> list[str]:
         for key in (
             "labels",
             "topics",
+            "topic",
+            "specific_topic",
             "tags",
             "items",
+            "value",
             "final_specific_topics",
             "final_specific_topics_from_this_family",
             "final_applicable_sectors",
@@ -254,6 +257,8 @@ def _extract_field(obj: dict, keys: list[str]) -> str:
         "final_applicable_sectors",
         "specific_topics",
         "SpecificTopic",
+        "specific_topic",
+        "topic",
         "closest_esrs",
         "esrs_topics",
         "applicable_sectors",
@@ -313,6 +318,24 @@ def _extract_field(obj: dict, keys: list[str]) -> str:
                 return "; ".join(labels)
 
     return ""
+
+
+def _extract_scalar_field(obj: dict, field_name: str) -> str:
+    """Return one named extraction field as a plain string for stage scoring."""
+    if not obj or not field_name:
+        return ""
+    val = _lookup_obj_key(obj, field_name)
+    if val is None:
+        return ""
+    if isinstance(val, (dict, list)):
+        labels = _labels_from_value(val)
+        if labels:
+            return "; ".join(labels)
+        return ""
+    text = str(val).strip()
+    if not text or text.lower() == "none":
+        return ""
+    return text
 
 
 def _call_llm(call_fab_agent: Callable[[str], str], query: str) -> dict:
@@ -578,7 +601,6 @@ def run_tagging_pipeline(
     config: PipelineConfig | None = None,
     doc_id: str | None = None,
     cache_target_stage: str | None = None,
-    force_all_families: bool = False,
 ) -> dict:
     """Run the hybrid tagging pipeline on a single input document."""
     cfg = config or load_pipeline_config()
@@ -619,7 +641,6 @@ def run_tagging_pipeline(
             trace["extraction_error"] = str(exc)
 
     if _stage_enabled(selected_stages, "km_01a_specific_topic_family_router") and not state.router_out:
-        needs_families = _stage_enabled(selected_stages, "family_st_kms")
         try:
             state.router_out, state.routed_families, method = _run_router(
                 evidence,
@@ -627,7 +648,7 @@ def run_tagging_pipeline(
                 km_dir,
                 call_fab_agent,
                 cfg,
-                allow_rule_router=force_all_families or not needs_families,
+                allow_rule_router=True,
             )
             state.methods["router"] = method
             trace["router"] = state.router_out
@@ -638,7 +659,7 @@ def run_tagging_pipeline(
     elif not state.routed_families:
         state.routed_families = normalize_routed_families(state.router_out) or list(STAGE_FAMILY_MAP.keys())
 
-    if force_all_families and _stage_enabled(selected_stages, "family_st_kms"):
+    if _stage_enabled(selected_stages, "family_st_kms") and not state.routed_families:
         state.routed_families = list(STAGE_FAMILY_MAP.keys())
 
     if _stage_enabled(selected_stages, "family_st_kms") and not state.family_candidates:
@@ -801,6 +822,7 @@ def score_document_for_stage(
     km_obj: dict,
     doc_id: str | None = None,
     config: PipelineConfig | None = None,
+    gt_column: str | None = None,
 ) -> dict:
     """
     Score one document for a pipeline stage.
@@ -824,7 +846,6 @@ def score_document_for_stage(
                 selected_stages=upstream,
                 config=scoring_cfg,
                 doc_id=None,
-                force_all_families=needs_families,
             )
             trace = partial.get("trace", {})
             methods = dict(trace.get("methods") or {})
@@ -833,23 +854,7 @@ def score_document_for_stage(
             if trace.get("router"):
                 extra["router_output"] = trace["router"]
             if trace.get("family_candidates"):
-                candidates = list(trace["family_candidates"])
-                if needs_families and not _successful_family_candidates(candidates):
-                    try:
-                        all_families = list(STAGE_FAMILY_MAP.keys())
-                        candidates = _run_families_parallel(
-                            all_families,
-                            evidence,
-                            extra.get("extraction_output", {}),
-                            extra.get("router_output", {}),
-                            km_dir,
-                            call_fab_agent_fn,
-                            scoring_cfg,
-                        )
-                        methods["families"] = "llm_parallel_retry_all"
-                    except Exception:
-                        methods["families"] = "retry_failed"
-                extra["family_candidates"] = candidates
+                extra["family_candidates"] = list(trace["family_candidates"])
 
         ai_output, method, error = score_stage_output(
             target_stage,
@@ -860,7 +865,10 @@ def score_document_for_stage(
             km_dir,
             scoring_cfg,
             input_doc,
+            gt_column=gt_column,
         )
+
+        families_ok = len(_successful_family_candidates(extra.get("family_candidates", [])))
 
         return {
             "ai_output": ai_output,
@@ -868,7 +876,8 @@ def score_document_for_stage(
             "error": error,
             "upstream_methods": methods,
             "family_count": len(extra.get("family_candidates", [])),
-            "families_ok": len(_successful_family_candidates(extra.get("family_candidates", []))),
+            "families_ok": families_ok,
+            "family_retry": False,
         }
     except Exception as exc:
         return {
@@ -890,6 +899,7 @@ def score_stage_output(
     km_dir: Path,
     config: PipelineConfig | None = None,
     input_doc: dict | None = None,
+    gt_column: str | None = None,
 ) -> tuple[str, str, str]:
     """
     Produce AI output string for a scoring stage.
@@ -897,12 +907,19 @@ def score_stage_output(
     """
     cfg = config or load_pipeline_config()
 
-    # Rule-based extraction shortcut
+    # Rule-based extraction shortcut — return only the GT target field
     if target_stage == "km_04_orchestrator_extraction" and cfg.use_rule_extraction and input_doc:
         try:
             ruled = extract_metadata_fields(input_doc)
+            if gt_column:
+                scalar = _extract_scalar_field(ruled, gt_column)
+                if scalar:
+                    return scalar, "rules", ""
             if extraction_is_complete(ruled):
-                return json.dumps(ruled), "rules", ""
+                field = gt_column or "ShortTitle"
+                scalar = _extract_scalar_field(ruled, field)
+                if scalar:
+                    return scalar, "rules", ""
         except Exception:
             pass
 
@@ -927,6 +944,10 @@ def score_stage_output(
         query = format_km_query(km_obj, evidence, extra_context or None)
         raw = call_fab_agent_fn(query)
         raw_out = parse_json_response(raw)
+        if target_stage == "km_04_orchestrator_extraction":
+            field = gt_column or "ShortTitle"
+            ai_output = _extract_scalar_field(raw_out, field)
+            return ai_output, "llm", ""
         keys = EXTRACT_KEYS.get(target_stage, [])
         if keys:
             ai_output = _extract_field(raw_out, keys)

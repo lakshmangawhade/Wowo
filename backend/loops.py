@@ -75,14 +75,14 @@ class RunState:
             "final_score":   self.final_score,
             "best_km":       self.best_km(),
         }
-def format_failures(failures: list[dict], max_show: int = 5) -> str:
+def format_failures(failures: list[dict], max_show: int = 15) -> str:
     lines = []
     for i, f in enumerate(failures[:max_show]):
         lines.append(
             f"• [{i+1}] doc: {f.get('doc_id', '?')} "
             f"— F1: {f.get('score', 0):.1f}% "
-            f"| Predicted: {f.get('ai_output', '')[:80]} "
-            f"| GT: {f.get('gt_output', '')[:80]}"
+            f"| Predicted: {f.get('ai_output', '')[:50]} "
+            f"| GT: {f.get('gt_output', '')[:50]}"
         )
     if len(failures) > max_show:
         lines.append(f"  … and {len(failures) - max_show} more failures")
