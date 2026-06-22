@@ -4,7 +4,7 @@ from __future__ import annotations
 import threading
 from typing import Any
 
-from family_registry import is_upstream_stage
+from backend.family_registry import is_upstream_stage
 
 _lock = threading.Lock()
 _cache: dict[str, dict[str, Any]] = {}

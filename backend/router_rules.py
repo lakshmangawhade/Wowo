@@ -53,7 +53,6 @@ def load_router_signals(km_dir: Path) -> dict[str, list[str]]:
 def invalidate_router_signals_cache() -> None:
     global _ROUTER_SIGNALS
     _ROUTER_SIGNALS = None
-<<<<<<< HEAD
 
 
 # ---------------------------------------------------------------------------
@@ -145,8 +144,6 @@ def _apply_priority(title_corpus: str, scores: list[tuple[str, float]]) -> list[
             if reordered:
                 return reordered
     return scores
-=======
->>>>>>> 68502fa87f199ad248b682c5a4d89dd7c63fcf12
 
 
 def score_families(
