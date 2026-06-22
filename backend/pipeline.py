@@ -173,7 +173,14 @@ def _extract_yes_tags(obj: dict) -> list[str]:
             continue
         if str(item.get("answer", "")).strip().lower() != "yes":
             continue
-        tag = item.get("tag") or item.get("label") or item.get("name")
+        # Prefer slug over tag/label/name for router outputs
+        tag = (
+            item.get("slug")
+            or item.get("family_id")
+            or item.get("tag")
+            or item.get("label")
+            or item.get("name")
+        )
         if tag:
             labels.append(str(tag).strip())
     return labels
@@ -216,7 +223,14 @@ def _labels_from_value(value: Any) -> list[str]:
             if isinstance(item, dict):
                 if str(item.get("answer", "")).strip().lower() == "no":
                     continue
-                tag = item.get("label") or item.get("tag") or item.get("name") or item.get("slug")
+                # Prefer slug/family_id (canonical identifiers) over human-readable label/name
+                tag = (
+                    item.get("slug")
+                    or item.get("family_id")
+                    or item.get("label")
+                    or item.get("tag")
+                    or item.get("name")
+                )
                 if tag and not _is_schema_placeholder(str(tag)):
                     labels.append(str(tag).strip())
             elif item and not _is_schema_placeholder(str(item)):
@@ -311,7 +325,16 @@ def _extract_field(obj: dict, keys: list[str]) -> str:
             return "; ".join(labels)
 
     # Last resort: scan every top-level value for extractable labels
-    for value in obj.values():
+    # GUARD: skip known non-output fields to prevent grabbing document content
+    _NON_OUTPUT_KEYS = frozenset({
+        "evidence_packet", "body_text", "text", "metadata", "description",
+        "title", "short_title", "source_url", "portal", "extraction_output",
+        "router_output", "evidence_windows", "_routing_method", "_routing_confidence",
+        "_extraction_method", "_esrs_method", "_validation",
+    })
+    for k, value in obj.items():
+        if k in _NON_OUTPUT_KEYS:
+            continue
         if isinstance(value, (dict, list, str)):
             labels = _labels_from_value(value)
             if labels:
@@ -839,6 +862,13 @@ def score_document_for_stage(
 
         upstream = _upstream_stages_for(target_stage)
         if upstream:
+            # When scoring km_01a (the router itself), upstream is only extraction.
+            # For all other stages that need upstream router output, we must NOT let
+            # the rule router bypass the LLM router KM being tested — but for those
+            # stages the target IS NOT the router, so this is fine.
+            # No special override needed here; the rule router only affects km_01a's
+            # own scoring indirectly through _run_router. Since km_01a upstream=[extraction],
+            # the router stage is not in upstream and does not fire here.
             partial = run_tagging_pipeline(
                 input_doc,
                 km_dir,

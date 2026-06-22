@@ -793,12 +793,34 @@ def score_batch(req: ScoreBatchRequest):
     gt_col = req.gt_column or GT_COLUMN_FOR_STAGE.get(req.km_stage, "SpecificTopic")
     pipeline_cfg = load_pipeline_config()
 
+    # CRITICAL: When scoring/optimizing a specific KM stage, disable any rule-based
+    # shortcut that would bypass the LLM KM being tested. Otherwise the loop optimizes
+    # a KM that is never actually called during scoring.
+    from dataclasses import replace as _replace
+    if req.km_stage == "km_01a_specific_topic_family_router":
+        # Disable rule router so the LLM KM is actually evaluated
+        pipeline_cfg = _replace(pipeline_cfg, use_rule_router=False)
+        log.info("score_batch: disabled rule router for km_01a scoring — LLM KM will be used")
+    elif req.km_stage == "km_03_esrs_mapping":
+        # Disable ESRS lookup so the LLM KM is actually evaluated
+        pipeline_cfg = _replace(pipeline_cfg, use_esrs_lookup=False)
+        log.info("score_batch: disabled esrs lookup for km_03 scoring — LLM KM will be used")
+    elif req.km_stage == "km_04_orchestrator_extraction":
+        # Disable rule extraction so the LLM KM is actually evaluated
+        pipeline_cfg = _replace(pipeline_cfg, use_rule_extraction=False)
+        log.info("score_batch: disabled rule extraction for km_04 scoring — LLM KM will be used")
+
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     def process_pair(p):
         doc_id = p.get("doc_id", "")
         filename = p.get("filename", "")
-        gt_vals = p.get("gt") or get_gt_for_doc(doc_id)
+        # Always go through get_gt_for_doc which applies alias normalization.
+        # Prefer doc_id lookup over raw pair GT to ensure normalization runs.
+        gt_vals = get_gt_for_doc(doc_id) if doc_id else {}
+        if not gt_vals:
+            # Fallback to pair-embedded GT (but normalize SpecificTopicFamily)
+            gt_vals = p.get("gt") or {}
         if not gt_vals:
             log.warning(
                 "GT lookup returned empty for doc_id=%r filename=%r — score will be 0",
@@ -952,17 +974,51 @@ def improve_km(req: ImproveKMRequest):
     ]
     failure_pool.sort(key=lambda r: float(r.get("score", 0) or 0))
 
-    example_lines = []
-    for i, r in enumerate(failure_pool[:15]):
-        ai = str(r.get("ai_output", ""))[:200]
-        gt = str(r.get("gt_output", ""))[:200]
+    # Also collect partial successes (score 1-49) separately from total failures (score 0)
+    total_failures = [r for r in failure_pool if float(r.get("score", 0) or 0) == 0]
+    partial_failures = [r for r in failure_pool if 0 < float(r.get("score", 0) or 0) < 50]
+    successes = [r for r in req.all_results if float(r.get("score", 0) or 0) >= 50]
+
+    def fmt_result(r, i):
+        ai = str(r.get("ai_output", ""))[:300]
+        gt = str(r.get("gt_output", ""))[:300]
         s = r.get("score", 0)
-        example_lines.append(
-            f"• [{i+1}] doc={r.get('doc_id', '?')[:40]} F1={s:.1f}%\n"
+        p = r.get("precision", 0)
+        rec = r.get("recall", 0)
+        # Diagnose failure type
+        if not ai or ai.startswith("ERROR"):
+            ftype = "NO OUTPUT / ERROR"
+        elif not gt:
+            ftype = "NO GT"
+        else:
+            ai_parts = set(x.strip().lower() for x in re.split(r"[;,]", ai) if x.strip())
+            gt_parts = set(x.strip().lower() for x in re.split(r"[;,]", gt) if x.strip())
+            if not ai_parts:
+                ftype = "EMPTY PREDICTION"
+            elif ai_parts == gt_parts:
+                ftype = "EXACT MATCH (should not fail)"
+            elif ai_parts.issubset(gt_parts):
+                ftype = f"UNDER-PREDICTION (missed: {gt_parts - ai_parts})"
+            elif gt_parts.issubset(ai_parts):
+                ftype = f"OVER-PREDICTION (extra: {ai_parts - gt_parts})"
+            else:
+                ftype = f"MIS-PREDICTION (extra: {ai_parts - gt_parts}, missed: {gt_parts - ai_parts})"
+        return (
+            f"• [{i+1}] doc={r.get('doc_id', '?')[:40]} F1={s:.1f}% P={p:.2f} R={rec:.2f} | {ftype}\n"
             f"  Pred: {ai}\n"
             f"  GT:   {gt}"
         )
+
+    example_lines = [fmt_result(r, i) for i, r in enumerate(failure_pool[:15])]
     examples_str = "\n".join(example_lines) or "No failure examples captured."
+
+    # Include a few success examples for contrast
+    success_lines = []
+    for i, r in enumerate(successes[:5]):
+        ai = str(r.get("ai_output", ""))[:200]
+        gt = str(r.get("gt_output", ""))[:200]
+        success_lines.append(f"• [OK] doc={r.get('doc_id','?')[:40]} F1={r.get('score',0):.1f}%  Pred: {ai}  GT: {gt}")
+    success_str = "\n".join(success_lines) or "No successes yet."
 
     try:
         km_obj = json.loads(req.current_km)
@@ -972,32 +1028,40 @@ def improve_km(req: ImproveKMRequest):
     if not isinstance(km_obj, dict):
         raise HTTPException(status_code=400, detail="current_km must be a JSON object")
 
+    stats_line = (
+        f"Total failures (score=0): {len(total_failures)} | "
+        f"Partial failures (score 1-49): {len(partial_failures)} | "
+        f"Successes (score≥50): {len(successes)}"
+    )
+
     prompt = f"""You are an expert prompt engineer specialising in ESG/regulatory document tagging and classification.
 
 Pipeline stage being improved: {req.km_stage}
 GT column being evaluated: {req.gt_column}
+Scored on {req.n_learn_docs} documents: {req.learn_score:.1f}% avg F1 (target: {req.target_score}%)
+{stats_line}
 
-This KM was tested on {req.n_learn_docs} documents and scored {req.learn_score:.1f}% F1 (target: {req.target_score}%).
-
-Failure modes and examples (full predicted vs ground truth label values):
+=== FAILURE EXAMPLES (auto-diagnosed) ===
 {examples_str}
 
-Current knowledge model (full JSON):
+=== SUCCESS EXAMPLES (for contrast — keep what works) ===
+{success_str}
+
+=== CURRENT KNOWLEDGE MODEL ===
 {req.current_km}
 
-Your task (TYPE 2 — TAGGING KNOWLEDGE MODEL IMPROVEMENT):
-Step 1 — Classify each failure:
-  - OVER-PREDICTION: model predicted labels not in GT → tighten yes_when/run_when, add no_when exclusions
-  - UNDER-PREDICTION: model missed GT labels → broaden evidence_signals, add synonyms, relax conditions
-  - MIS-PREDICTION: model predicted wrong labels → fix routing/classification logic for confused categories
-  - HALLUCINATION: predicted labels are entirely fabricated → add strong negative conditions
+=== YOUR TASK ===
+Analyse every failure type above and improve the KM rules:
+- EMPTY PREDICTION / NO OUTPUT → The LLM is not understanding the output_contract format. Clarify the output structure, add explicit examples in the KM, ensure output keys match exactly what the pipeline expects.
+- UNDER-PREDICTION → Add more evidence_signals / keywords / synonyms for the missed labels. Loosen yes_when conditions.
+- OVER-PREDICTION → Add no_when exclusion conditions. Tighten yes_when to require stronger evidence.
+- MIS-PREDICTION → Fix the distinguishing conditions between confused categories.
 
-Step 2 — Apply targeted fixes to the KM rules based on the failure patterns found.
-
-Constraints:
-- Preserve ALL original top-level keys exactly (especially "output_contract"). Only refine rules inside existing fields.
-- Do NOT add new top-level keys or change the fundamental task description.
-- Return ONLY the complete improved knowledge model as a single JSON object, starting with {{ and ending with }}. No preamble, no explanation, no markdown code fences."""
+IMPORTANT CONSTRAINTS:
+- Preserve ALL original top-level keys exactly (especially "output_contract"). Do NOT rename keys.
+- The pipeline extracts output using these key names in priority order: slug, family_id, tag, label, name. If your KM's output uses a different key, the result will be empty. Ensure output objects use "slug" or "family_id" for family identifiers.
+- For {req.km_stage}, the GT column is "{req.gt_column}" — predictions must match the format of the GT values in the success examples above.
+- Return ONLY the complete improved knowledge model as a single JSON object, starting with {{ and ending with }}. No preamble, no explanation, no markdown fences."""
 
     try:
         raw = call_fab_improve_agent(prompt)
